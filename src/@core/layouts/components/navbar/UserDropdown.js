@@ -41,34 +41,10 @@ const UserDropdown = () => {
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
       <DropdownMenu end>
-        <DropdownItem tag='a' href='/pages/profile' onClick={e => e.preventDefault()}>
-          <User size={14} className='me-75' />
-          <span className='align-middle'>Profile</span>
-        </DropdownItem>
-        <DropdownItem tag='a' href='/apps/email' onClick={e => e.preventDefault()}>
-          <Mail size={14} className='me-75' />
-          <span className='align-middle'>Inbox</span>
-        </DropdownItem>
-        <DropdownItem tag='a' href='/apps/todo' onClick={e => e.preventDefault()}>
-          <CheckSquare size={14} className='me-75' />
-          <span className='align-middle'>Tasks</span>
-        </DropdownItem>
-        <DropdownItem tag='a' href='/apps/chat' onClick={e => e.preventDefault()}>
-          <MessageSquare size={14} className='me-75' />
-          <span className='align-middle'>Chats</span>
-        </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem tag='a' href='/pages/account-settings' onClick={e => e.preventDefault()}>
+        <DropdownItem tag='a' href='/account-settings'>
+        {/* <DropdownItem tag='a' to='/account-settings'> */}
           <Settings size={14} className='me-75' />
           <span className='align-middle'>Settings</span>
-        </DropdownItem>
-        <DropdownItem tag='a' href='/pages/pricing' onClick={e => e.preventDefault()}>
-          <CreditCard size={14} className='me-75' />
-          <span className='align-middle'>Pricing</span>
-        </DropdownItem>
-        <DropdownItem tag='a' href='/pages/faq' onClick={e => e.preventDefault()}>
-          <HelpCircle size={14} className='me-75' />
-          <span className='align-middle'>FAQ</span>
         </DropdownItem>
         <DropdownItem tag={Link} to='/login'>
           <Power size={14} className='me-75' />

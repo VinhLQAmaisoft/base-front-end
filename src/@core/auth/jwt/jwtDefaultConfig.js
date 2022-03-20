@@ -1,7 +1,9 @@
 // ** Auth Endpoints
+export const URL = 'http://localhost:3000/'
+
 export default {
-  loginEndpoint: '/jwt/login',
-  registerEndpoint: '/jwt/register',
+  loginEndpoint: `${URL}account/login`,
+  registerEndpoint: `${URL}account/register`,
   refreshEndpoint: '/jwt/refresh-token',
   logoutEndpoint: '/jwt/logout',
 
