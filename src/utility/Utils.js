@@ -77,3 +77,12 @@ export const selectThemeColors = theme => ({
     neutral30: '#ededed' // for input hover border-color
   }
 })
+
+export const convertParamsToQuery = params => {
+  let result = '?';
+  for (let key in params) {
+    result += key + '=' + params[key] + '&'
+  }
+  result = result.substring(0, result.length - 2);
+  return result
+}

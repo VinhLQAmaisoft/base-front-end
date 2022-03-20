@@ -37,6 +37,11 @@ const Routes = [
     }
   },
   {
+    path: '/shopkeeper/post-manage',
+    component: lazy(() => import('../../views/apps/shopkeeper/postManage')),
+    layout: 'VerticalLayout'
+  },
+  {
     path: '/error',
     component: lazy(() => import('../../views/Error')),
     layout: 'BlankLayout'
