@@ -6,6 +6,10 @@ import useJwt from '@src/auth/jwt/useJwt'
 
 const config = useJwt.jwtConfig
 
+const initialState = {
+  userData: {}
+}
+
 // const initialUser = () => {
 //   const item = window.localStorage.getItem('userData')
 //   //** Parse stored json or if none return initialValue
@@ -14,10 +18,7 @@ const config = useJwt.jwtConfig
 
 export const authSlice = createSlice({
   name: 'authentication',
-  initialState: {
-    // userData: initialUser()
-    userData: {}
-  },
+  initialState: initialState.userData,
   reducers: {
     handleLogin: (state, action) => {
       console.log(action)

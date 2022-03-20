@@ -68,7 +68,7 @@ const Login = () => {
           console.log(res.data)
           dispatch(handleLogin(data))
           console.log(res)
-          // setCookie('token', res.data.data.token, 99)
+          setCookie('token', res.data.data.token, 99)
           history.push(getHomeRouteForLoggedInUser(data.type))
           toast.success(
             <ToastContent name={data.fullname} role={GetRoleByType(data.type)} />,
