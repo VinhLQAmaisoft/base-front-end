@@ -10,15 +10,27 @@ const DefaultRoute = '/home'
 const Routes = [
   {
     path: '/home',
-    component: lazy(() => import('../../views/apps/Home'))
+    component: lazy(() => import('../../views/apps/admin/UserManagement'))
   },
   {
     path: '/second-page',
-    component: lazy(() => import('../../views/apps/SecondPage'))
+    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
+  },
+  {
+    path: '/account-settings',
+    component: lazy(() => import('../../views/pages/account-settings'))
   },
   {
     path: '/login',
     component: lazy(() => import('../../views/pages/authentication/Login')),
+    layout: 'BlankLayout',
+    meta: {
+      authRoute: true
+    }
+  },
+  {
+    path: '/register',
+    component: lazy(() => import('../../views/pages/authentication/Register')),
     layout: 'BlankLayout',
     meta: {
       authRoute: true

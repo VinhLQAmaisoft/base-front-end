@@ -1,69 +1,112 @@
+import { Fragment } from 'react'
+import { useDispatch } from 'react-redux'
 import { useSkin } from '@hooks/useSkin'
-import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Mail, GitHub } from 'react-feather'
+import { Link, useHistory } from 'react-router-dom'
 import InputPasswordToggle from '@components/input-password-toggle'
+import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, CardTitle, CardText, Form, Label, Input, Button } from 'reactstrap'
 import '@styles/react/pages/page-authentication.scss'
+import useJwt from '../../../auth/jwt/useJwt'
+import { handleLogin } from '../../../redux/authentication'
+import { toast, Slide } from 'react-toastify'
+import { getHomeRouteForLoggedInUser } from '../../../auth/utils'
 
-const LoginCover = () => {
+const ToastContent = ({ name, role }) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Chào mừng, {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>Bạn đã đăng nhập thành công với vai trò là {role} trong 3SF. Bây giờ bạn có thể làm việc!</span>
+    </div>
+  </Fragment>
+)
+
+const GetRoleByType = (type) => {
+  console.log(type)
+  if (type === 2) {
+    return 'admin'
+  }
+}
+
+const setCookie = (cname, cvalue, exdays) => {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  const expires = 'expires=' + d.toUTCString();
+  document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+}
+
+const defaultValues = {
+  loginPassword: '123456789',
+  loginUsername: 'admin'
+}
+
+const Login = () => {
   const { skin } = useSkin()
+  const dispatch = useDispatch()
+  const history = useHistory()
+  // const ability = useContext(AbilityContext)
+  const {
+    control,
+    setError,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({ defaultValues })
 
   const illustration = skin === 'dark' ? 'login-v2-dark.svg' : 'login-v2.svg',
     source = require(`@src/assets/images/pages/${illustration}`).default
+
+  const onSubmit = data => {
+    if (Object.values(data).every(field => field.length > 0)) {
+      useJwt
+        .login({ username: data.loginUsername, password: data.loginPassword })
+        .then(res => {
+          // const data = { ...res.data.data._doc }
+          const data = { ...res.data.data }
+          console.log(res.data)
+          dispatch(handleLogin(data))
+          console.log(res)
+          // setCookie('token', res.data.data.token, 99)
+          history.push(getHomeRouteForLoggedInUser(data.type))
+          toast.success(
+            <ToastContent name={data.fullname} role={GetRoleByType(data.type)} />,
+            { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+          )
+          // console.log(res)
+        })
+        .catch(err => console.log(err))
+    } else {
+      for (const key in data) {
+        if (data[key].length === 0) {
+          setError(key, {
+            type: 'manual'
+          })
+        }
+      }
+    }
+    console.log(data)
+  }
 
   return (
     <div className='auth-wrapper auth-cover'>
       <Row className='auth-inner m-0'>
         <Link className='brand-logo' to='/' onClick={e => e.preventDefault()}>
-          <svg viewBox='0 0 139 95' version='1.1' height='28'>
+          {/* <svg viewBox='0 0 139 95' version='1.1' height='28'>
+            
+          </svg> */}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox='0 0 374 374' version='1.0' height='28'>
             <defs>
-              <linearGradient x1='100%' y1='10.5120544%' x2='50%' y2='89.4879456%' id='linearGradient-1'>
-                <stop stopColor='#000000' offset='0%'></stop>
-                <stop stopColor='#FFFFFF' offset='100%'></stop>
-              </linearGradient>
-              <linearGradient x1='64.0437835%' y1='46.3276743%' x2='37.373316%' y2='100%' id='linearGradient-2'>
-                <stop stopColor='#EEEEEE' stopOpacity='0' offset='0%'></stop>
-                <stop stopColor='#FFFFFF' offset='100%'></stop>
-              </linearGradient>
+              <clipPath id="a">
+                <path d="M 20.199219 20.199219 L 354.699219 20.199219 L 354.699219 354.699219 L 20.199219 354.699219 Z M 20.199219 20.199219" />
+              </clipPath>
             </defs>
-            <g id='Page-1' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
-              <g id='Artboard' transform='translate(-400.000000, -178.000000)'>
-                <g id='Group' transform='translate(400.000000, 178.000000)'>
-                  <path
-                    d='M-5.68434189e-14,2.84217094e-14 L39.1816085,2.84217094e-14 L69.3453773,32.2519224 L101.428699,2.84217094e-14 L138.784583,2.84217094e-14 L138.784199,29.8015838 C137.958931,37.3510206 135.784352,42.5567762 132.260463,45.4188507 C128.736573,48.2809251 112.33867,64.5239941 83.0667527,94.1480575 L56.2750821,94.1480575 L6.71554594,44.4188507 C2.46876683,39.9813776 0.345377275,35.1089553 0.345377275,29.8015838 C0.345377275,24.4942122 0.230251516,14.560351 -5.68434189e-14,2.84217094e-14 Z'
-                    id='Path'
-                    className='text-primary'
-                    style={{ fill: 'currentColor' }}
-                  ></path>
-                  <path
-                    d='M69.3453773,32.2519224 L101.428699,1.42108547e-14 L138.784583,1.42108547e-14 L138.784199,29.8015838 C137.958931,37.3510206 135.784352,42.5567762 132.260463,45.4188507 C128.736573,48.2809251 112.33867,64.5239941 83.0667527,94.1480575 L56.2750821,94.1480575 L32.8435758,70.5039241 L69.3453773,32.2519224 Z'
-                    id='Path'
-                    fill='url(#linearGradient-1)'
-                    opacity='0.2'
-                  ></path>
-                  <polygon
-                    id='Path-2'
-                    fill='#000000'
-                    opacity='0.049999997'
-                    points='69.3922914 32.4202615 32.8435758 70.5039241 54.0490008 16.1851325'
-                  ></polygon>
-                  <polygon
-                    id='Path-2'
-                    fill='#000000'
-                    opacity='0.099999994'
-                    points='69.3922914 32.4202615 32.8435758 70.5039241 58.3683556 20.7402338'
-                  ></polygon>
-                  <polygon
-                    id='Path-3'
-                    fill='url(#linearGradient-2)'
-                    opacity='0.099999994'
-                    points='101.428699 0 83.0667527 94.1480575 130.378721 47.0740288'
-                  ></polygon>
-                </g>
-              </g>
+            <g clip-path="url(#a)">
+              <path fill="#FC4368" d="M 187.394531 20.34375 C 95.027344 20.34375 20.148438 95.222656 20.148438 187.585938 C 20.148438 276.777344 89.96875 349.644531 177.929688 354.554688 C 178.820312 343.847656 179.59375 334.28125 180.214844 326.152344 C 182.105469 301.265625 161.394531 290.867188 150.78125 283.386719 C 88.554688 239.550781 122.980469 161.894531 126.207031 148.660156 C 128.5 139.175781 152.949219 73.808594 187.402344 73.808594 C 221.851562 73.808594 246.3125 139.175781 248.597656 148.660156 C 251.832031 161.894531 286.210938 239.488281 224.023438 283.386719 C 213.4375 290.867188 192.839844 301.265625 194.738281 326.152344 C 195.347656 334.273438 196.125 343.84375 197.003906 354.539062 C 284.898438 349.5625 354.648438 276.730469 354.648438 187.585938 C 354.648438 95.222656 279.765625 20.34375 187.394531 20.34375" />
             </g>
           </svg>
-          <h2 className='brand-text text-primary ms-1'>Vuexy</h2>
+          <h2 className='brand-text text-primary ms-1'>3SF.</h2>
         </Link>
         <Col className='d-none d-lg-flex align-items-center p-5' lg='8' sm='12'>
           <div className='w-100 d-lg-flex align-items-center justify-content-center px-5'>
@@ -73,41 +116,61 @@ const LoginCover = () => {
         <Col className='d-flex align-items-center auth-bg px-2 p-lg-5' lg='4' sm='12'>
           <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
             <CardTitle tag='h2' className='fw-bold mb-1'>
-              Welcome to Vuexy! 👋
+              Chào mừng bạn đến với 3SF! 👋
             </CardTitle>
-            <CardText className='mb-2'>Please sign-in to your account and start the adventure</CardText>
-            <Form className='auth-login-form mt-2' onSubmit={e => e.preventDefault()}>
+            <CardText className='mb-2'>Đăng nhập vào tài khoản của bạn và bắt đầu công việc</CardText>
+            <Form className='auth-login-form mt-2' onSubmit={handleSubmit(onSubmit)}>
               <div className='mb-1'>
-                <Label className='form-label' for='login-email'>
-                  Email
+                <Label className='form-label' for='login-username'>
+                  Tên tài khoản
                 </Label>
-                <Input type='email' id='login-email' placeholder='john@example.com' autoFocus />
+                <Controller
+                  id='loginUsername'
+                  name='loginUsername'
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      autoFocus
+                      placeholder='Tên tài khoản'
+                      invalid={errors.loginEmail && true}
+                      {...field}
+                    />
+                    // console.log(field)
+                  )}
+                />
               </div>
               <div className='mb-1'>
                 <div className='d-flex justify-content-between'>
                   <Label className='form-label' for='login-password'>
-                    Password
+                    Mật khẩu
                   </Label>
                   <Link to='/pages/forgot-password-cover'>
-                    <small>Forgot Password?</small>
+                    <small>Quên mật khẩu?</small>
                   </Link>
                 </div>
-                <InputPasswordToggle className='input-group-merge' id='login-password' />
+                <Controller
+                  id='loginPassword'
+                  name='loginPassword'
+                  control={control}
+                  render={({ field }) => (
+                    <InputPasswordToggle className='input-group-merge' invalid={errors.loginPassword && true} {...field} />
+                  )}
+                />
               </div>
               <div className='form-check mb-1'>
                 <Input type='checkbox' id='remember-me' />
                 <Label className='form-check-label' for='remember-me'>
-                  Remember Me
+                  Duy trì đăng nhập
                 </Label>
               </div>
-              <Button color='primary' tag={Link} block to='/'>
-                Sign in
+              <Button color='primary' block>
+                Đăng nhập
               </Button>
             </Form>
             <p className='text-center mt-2'>
-              <span className='me-25'>New on our platform?</span>
-              <Link to='/pages/register-cover'>
-                <span>Create an account</span>
+              <span className='me-25'>Bạn là người mới?</span>
+              <Link to='/register'>
+                <span>Tạo tài khoản ngay</span>
               </Link>
             </p>
           </Col>
@@ -117,4 +180,4 @@ const LoginCover = () => {
   )
 }
 
-export default LoginCover
+export default Login

@@ -80,16 +80,8 @@ export default class JwtService {
     return localStorage.getItem(this.jwtConfig.storageTokenKeyName)
   }
 
-  getRefreshToken() {
-    return localStorage.getItem(this.jwtConfig.storageRefreshTokenKeyName)
-  }
-
   setToken(value) {
     localStorage.setItem(this.jwtConfig.storageTokenKeyName, value)
-  }
-
-  setRefreshToken(value) {
-    localStorage.setItem(this.jwtConfig.storageRefreshTokenKeyName, value)
   }
 
   login(...args) {
@@ -98,11 +90,5 @@ export default class JwtService {
 
   register(...args) {
     return axios.post(this.jwtConfig.registerEndpoint, ...args)
-  }
-
-  refreshToken() {
-    return axios.post(this.jwtConfig.refreshEndpoint, {
-      refreshToken: this.getRefreshToken()
-    })
   }
 }
