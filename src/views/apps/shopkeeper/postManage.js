@@ -1,9 +1,10 @@
 // ** React Imports
 import { Fragment, useState, forwardRef } from 'react'
-
+import GroupIcon from '@src/assets/custom-icon/group.png'
+import PostData from '@src/dummyData/posts.json'
+import PostCard from '../../components/Cards/PostCard'
 // ** Table Data & Columns
-import { data, advSearchColumns } from '../shopkeeper/data'
-
+import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
 import AddNewModal from './AddNewModal'
 
@@ -22,10 +23,15 @@ import {
   Button,
   CardTitle,
   CardHeader,
+  CardSubtitle,
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  UncontrolledButtonDropdown
+  UncontrolledButtonDropdown,
+  Badge,
+  CardBody,
+  CardFooter,
+  Dropdown
 } from 'reactstrap'
 
 // ** Bootstrap Checkbox Component
@@ -35,13 +41,13 @@ const BootstrapCheckbox = forwardRef((props, ref) => (
   </div>
 ))
 
-const UserManagement = () => {
+const PostManage = () => {
   // ** States
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
-
+  const [filterStatus, setFilterStatus] = useState(-1)
   // ** Function to handle Modal toggle
   const handleModal = () => setModal(!modal)
 
@@ -146,6 +152,23 @@ const UserManagement = () => {
     return result
   }
 
+  function renderPostCard(listPost) {
+    let result = [];
+    for (let post of listPost) {
+      if ((filterStatus != -1 && post.status == filterStatus) || filterStatus == -1) {
+        if (post.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+          result.push(
+            <Col sm='4' className='mb-1' key={post.fb_id}>
+              <PostCard props={post} />
+            </Col>
+          )
+        }
+      }
+    }
+    return result
+  }
+
+
   // ** Downloads CSV
   function downloadCSV(array) {
     const link = document.createElement('a')
@@ -165,78 +188,65 @@ const UserManagement = () => {
 
   return (
     <Fragment>
-      <Card>
-        <CardHeader className='flex-md-row flex-column align-md-items-center align-items-start border-bottom'>
-          <CardTitle tag='h4'>DataTable with Buttons</CardTitle>
-          <div className='d-flex mt-md-0 mt-1'>
-            <UncontrolledButtonDropdown>
-              <DropdownToggle color='secondary' caret outline>
-                <Share size={15} />
-                <span className='align-middle ms-50'>Export</span>
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer size={15} />
-                  <span className='align-middle ms-50'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(data)}>
-                  <FileText size={15} />
-                  <span className='align-middle ms-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid size={15} />
-                  <span className='align-middle ms-50'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File size={15} />
-                  <span className='align-middle ms-50'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy size={15} />
-                  <span className='align-middle ms-50'>Copy</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledButtonDropdown>
-            <Button className='ms-2' color='primary' onClick={handleModal}>
-              <Plus size={15} />
-              <span className='align-middle ms-50'>Add Record</span>
-            </Button>
-          </div>
-        </CardHeader>
-        <Row className='justify-content-end mx-0'>
-          <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Label className='me-1' for='search-input'>
-              Search
-            </Label>
-            <Input
-              className='dataTable-filter mb-50'
-              type='text'
-              bsSize='sm'
-              id='search-input'
-              value={searchValue}
-              onChange={handleFilter}
-            />
-          </Col>
-        </Row>
-        <div className='react-dataTable'>
-          <DataTable
-            noHeader
-            pagination
-            selectableRows
-            columns={advSearchColumns}
-            paginationPerPage={7}
-            className='react-dataTable'
-            sortIcon={<ChevronDown size={10} />}
-            paginationDefaultPage={currentPage + 1}
-            paginationComponent={CustomPagination}
-            data={searchValue.length ? filteredData : data}
-            selectableRowsComponent={BootstrapCheckbox}
-          />
-        </div>
-      </Card>
+      <Row>
+        <Col sm={12}>
+          <Card className="p-1">
+            <CardTitle>Bộ Lọc</CardTitle>
+
+            <Row>
+              <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                <Label style={{ fontSize: '15px', marginRight: '10px' }} >
+                  Trạng Thái:
+                </Label>
+                <UncontrolledButtonDropdown>
+                  <DropdownToggle color='secondary' caret outline>
+                    <span className='align-middle ms-50'>{filterStatus == -1 ? "Tất Cả" : filterStatus == 0 ? "Hoạt Động" : "Kết thúc"}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(-1)}>
+
+                      <span className='align-middle ms-50'>Tất Cả</span>
+                    </DropdownItem>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(0)}>
+
+                      <span className='align-middle ms-50'>Hoạt Động</span>
+                    </DropdownItem>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(1)}>
+
+                      <span className='align-middle ms-50'>Kết Thúc</span>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledButtonDropdown>
+              </Col>
+              <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
+                <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
+                  Search
+                </Label>
+                <Input
+                  className='dataTable-filter mb-50'
+                  style={{ padding: '0.78rem 1.5rem' }}
+                  placeholder="Nội dung muốn tìm"
+                  type='text'
+                  bsSize='sm'
+                  id='search-input'
+                  value={searchValue}
+                  onChange={handleFilter}
+                />
+              </Col>
+            </Row>
+
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        {renderPostCard(PostData)}
+      </Row>
+      <style>
+
+      </style>
       <AddNewModal open={modal} handleModal={handleModal} />
-    </Fragment>
+    </Fragment >
   )
 }
 
-export default UserManagement
+export default PostManage

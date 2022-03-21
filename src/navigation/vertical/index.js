@@ -18,5 +18,11 @@ export default [
     title: 'Customer Management',
     icon: <Users size={20} />,
     navLink: '/third-page'
+  },
+  {
+    id: 'postmanage',
+    title: 'Quản Lý Bài Đăng',
+    icon: <Users size={20} />,
+    navLink: '/shopkeeper/post-manage'
   }
 ]
