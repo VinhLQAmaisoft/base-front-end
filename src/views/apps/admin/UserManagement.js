@@ -2,7 +2,7 @@
 import { Fragment, useState, forwardRef } from 'react'
 
 // ** Table Data & Columns
-import { data, advSearchColumns } from './data'
+import { data, advSearchColumns } from '../shopkeeper/data'
 
 // ** Add New Modal Component
 import AddNewModal from './AddNewModal'
