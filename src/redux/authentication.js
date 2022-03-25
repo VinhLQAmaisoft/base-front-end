@@ -1,44 +1,64 @@
-// ** Redux Imports
-import { createSlice } from '@reduxjs/toolkit'
-
-// ** UseJWT import to get config
-import useJwt from '@src/auth/jwt/useJwt'
-
-const config = useJwt.jwtConfig
+import { createSlice } from '@reduxjs/toolkit';
+import { sendUserLogin, sendUserSignup } from '../services/auth/index'
 
 const initialState = {
-  userData: {}
+  currentUser: null,
+  isAuth: false,
+  isSignup: false,
+  signUpResult: null,
 }
 
-// const initialUser = () => {
-//   const item = window.localStorage.getItem('userData')
-//   //** Parse stored json or if none return initialValue
-//   return item ? JSON.parse(item) : {}
-// }
-
-export const authSlice = createSlice({
+const slice = createSlice({
   name: 'authentication',
-  initialState: initialState.userData,
+  initialState: initialState,
   reducers: {
-    handleLogin: (state, action) => {
-      console.log(action)
-      state.userData = action.payload
-      state[config.storageTokenKeyName] = action.payload[config.storageTokenKeyName]
-      // localStorage.setItem('userData', JSON.stringify(action.payload))
-      // localStorage.setItem(config.storageTokenKeyName, JSON.stringify(action.payload.accessToken))
-    },
-    handleLogout: state => {
-      state.userData = {}
-      state[config.storageTokenKeyName] = null
-      state[config.storageRefreshTokenKeyName] = null
-      // ** Remove user, accessToken & refreshToken from localStorage
+    // fetching(state) {
+    //   state.loading = true
+    // },
+    // reset(state) {
+    //   state.loading = false
+    //   state.updatingSuccess = true
+    // },
+    logoutAction: (state) => {
+      state.currentUser = null
       localStorage.removeItem('userData')
-      localStorage.removeItem(config.storageTokenKeyName)
-      localStorage.removeItem(config.storageRefreshTokenKeyName)
-    }
+    },
+  },
+  extraReducers: (builder) => {
+    //Sign in
+    // builder.addCase(sendUserLogin.pending, (state) => {
+    //   state.loading = true;
+    //   state.updatingSuccess = false;
+    // })
+    builder.addCase(sendUserLogin.fulfilled, (state, action) => {
+      state.isAuth = true;
+      // state.loading = true;
+      // state.updatingSuccess = false;
+      state.currentUser = action.payload.data
+      console.log(state, action)
+    });
+    builder.addCase(sendUserLogin.rejected, (state, action) => {
+      // state.updatingSuccess = false;
+      state.isAuth = false;
+      // state.loading = false;
+      console.log('err:', action.error);
+    });
+    //Sign up
+    builder.addCase(sendUserSignup.fulfilled, (state, action) => {
+      state.isSignup = true;
+      // state.loading = true;
+      // state.updatingSuccess = false;
+      state.signUpResult = action.payload
+      console.log(state, action)
+    });
+    builder.addCase(sendUserSignup.rejected, (state, action) => {
+      state.isSignup = false;
+      // state.loading = true;
+      // state.updatingSuccess = false;
+      console.log(state, action)
+    });
   }
-})
+});
 
-export const { handleLogin, handleLogout } = authSlice.actions
-
-export default authSlice.reducer
+export const { fetching, reset, logoutAction } = slice.actions;
+export default slice.reducer;

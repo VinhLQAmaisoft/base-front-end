@@ -3,17 +3,20 @@
 import Layout from '@layouts/VerticalLayout'
 
 // ** Menu Items Array
-import {adminNavigation, shipperNavigation} from '@src/navigation/vertical'
+import { adminNavigation, shipperNavigation } from '@src/navigation/vertical'
 
 const VerticalLayout = props => {
-  // const [menuData, setMenuData] = useState([])
 
-  // useEffect(() => {
-  //   axios.get(URL).then(response => setMenuData(response.data))
-  // }, [])
+  const userData = JSON.parse(localStorage.getItem('userData'))
+  let navigation = []
+  if (userData.type === 2) {
+    navigation = adminNavigation
+  } else if (userData.type === 1) {
+    navigation = shipperNavigation
+  }
 
   return (
-    <Layout menuData={shipperNavigation} {...props}>
+    <Layout menuData={navigation} {...props}>
       {props.children}
     </Layout>
   )
