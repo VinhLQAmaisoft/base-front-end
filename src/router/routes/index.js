@@ -38,7 +38,16 @@ const Routes = [
   },
   {
     path: '/shopkeeper/post-manage',
-    component: lazy(() => import('../../views/apps/shopkeeper/postManage')),
+    component: lazy(() => import('../../views/apps/shopkeeper/PostManage')),
+    layout: 'VerticalLayout'
+  }, {
+    path: '/shopkeeper/sell-campaign',
+    component: lazy(() => import('../../views/apps/shopkeeper/SellCampaign')),
+    layout: 'VerticalLayout'
+  },
+  , {
+    path: '/shopkeeper/order-manage',
+    component: lazy(() => import('../../views/apps/shopkeeper/OrderManage')),
     layout: 'VerticalLayout'
   },
   {

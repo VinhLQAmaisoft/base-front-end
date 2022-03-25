@@ -34,12 +34,6 @@ import {
   Dropdown
 } from 'reactstrap'
 
-// ** Bootstrap Checkbox Component
-const BootstrapCheckbox = forwardRef((props, ref) => (
-  <div className='form-check'>
-    <Input type='checkbox' ref={ref} {...props} />
-  </div>
-))
 
 const PostManage = () => {
   // ** States
@@ -48,8 +42,35 @@ const PostManage = () => {
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
   const [filterStatus, setFilterStatus] = useState(-1)
+  const [sortOption, setSortOption] = useState({
+    value: { createAt: 1 },
+    label: "Mới nhất"
+  })
   // ** Function to handle Modal toggle
   const handleModal = () => setModal(!modal)
+
+  const sortOptions = [
+    {
+      value: { createAt: 1 },
+      label: "Mới nhất"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Comment tăng dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Comment giảm dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Order tăng dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Order giảm dần"
+    },
+  ]
 
   // ** Function to handle filter
   const handleFilter = e => {
@@ -96,61 +117,8 @@ const PostManage = () => {
     }
   }
 
-  // ** Function to handle Pagination
-  const handlePagination = page => {
-    setCurrentPage(page.selected)
-  }
 
-  // ** Custom Pagination
-  const CustomPagination = () => (
-    <ReactPaginate
-      previousLabel=''
-      nextLabel=''
-      forcePage={currentPage}
-      onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(data.length / 7) || 1}
-      breakLabel='...'
-      pageRangeDisplayed={2}
-      marginPagesDisplayed={2}
-      activeClassName='active'
-      pageClassName='page-item'
-      breakClassName='page-item'
-      nextLinkClassName='page-link'
-      pageLinkClassName='page-link'
-      breakLinkClassName='page-link'
-      previousLinkClassName='page-link'
-      nextClassName='page-item next-item'
-      previousClassName='page-item prev-item'
-      containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
-    />
-  )
 
-  // ** Converts table to CSV
-  function convertArrayOfObjectsToCSV(array) {
-    let result
-
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    const keys = Object.keys(data[0])
-
-    result = ''
-    result += keys.join(columnDelimiter)
-    result += lineDelimiter
-
-    array.forEach(item => {
-      let ctr = 0
-      keys.forEach(key => {
-        if (ctr > 0) result += columnDelimiter
-
-        result += item[key]
-
-        ctr++
-      })
-      result += lineDelimiter
-    })
-
-    return result
-  }
 
   function renderPostCard(listPost) {
     let result = [];
@@ -168,31 +136,27 @@ const PostManage = () => {
     return result
   }
 
+  function renderSortOption(options) {
+    let result = [];
+    for (let option of options) {
+      result.push(
+        <DropdownItem key={option.value} className='w-100' onClick={() => setSortOption(option)}>
+          <span className='align-middle ms-50'>{option.label}</span>
+        </DropdownItem>
+      )
 
-  // ** Downloads CSV
-  function downloadCSV(array) {
-    const link = document.createElement('a')
-    let csv = convertArrayOfObjectsToCSV(array)
-    if (csv === null) return
-
-    const filename = 'export.csv'
-
-    if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`
     }
-
-    link.setAttribute('href', encodeURI(csv))
-    link.setAttribute('download', filename)
-    link.click()
+    return result
   }
+
 
   return (
     <Fragment>
+      {/* BỘ LỌC */}
       <Row>
         <Col sm={12}>
           <Card className="p-1">
             <CardTitle>Bộ Lọc</CardTitle>
-
             <Row>
               <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
@@ -218,6 +182,21 @@ const PostManage = () => {
                   </DropdownMenu>
                 </UncontrolledButtonDropdown>
               </Col>
+
+              <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                <Label style={{ fontSize: '15px', marginRight: '10px' }} >
+                  Sắp Xếp:
+                </Label>
+                <UncontrolledButtonDropdown>
+                  <DropdownToggle color='secondary' caret outline>
+                    <span className='align-middle ms-50'>{sortOption.label}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {renderSortOption(sortOptions)}
+                  </DropdownMenu>
+                </UncontrolledButtonDropdown>
+              </Col>
+
               <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
                   Search
