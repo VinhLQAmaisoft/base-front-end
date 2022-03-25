@@ -1,16 +1,8 @@
-// ** React Imports
-import { useContext, useState, Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-
-// ** Custom Hooks
 import { useSkin } from '@hooks/useSkin'
-import useJwt from '@src/auth/jwt/useJwt'
-
-// ** Store & Actions
-import { useDispatch } from 'react-redux'
-import { handleLogin } from '@store/authentication'
-
-// ** Third Party Components
+import { useDispatch, useSelector } from 'react-redux'
+import { sendUserSignup } from '../../../services/auth/index'
 import { useForm, Controller } from 'react-hook-form'
 import Flatpickr from 'react-flatpickr'
 import * as yup from 'yup'
@@ -21,11 +13,7 @@ import classnames from 'classnames'
 import { toast, Slide } from 'react-toastify'
 // ** Context
 import { AbilityContext } from '@src/utility/context/Can'
-
-// ** Custom Components
 import InputPasswordToggle from '@components/input-password-toggle'
-
-// ** Reactstrap Imports
 import { Row, Col, CardTitle, CardText, Label, Button, Form, Input, FormFeedback } from 'reactstrap'
 
 // ** Styles
@@ -35,14 +23,14 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/pages/page-form-validation.scss'
 
 const defaultValues = {
-  fullname: '',
-  email: '',
-  username: '',
-  password: '',
-  phone: '',
-  repeatpassword: '',
+  fullname: 'Tran Duc Anh',
+  email: 'dtran3565@gmail.com',
+  username: 'admin10',
+  password: 'Tda123456',
+  phone: '0866585470',
+  repeatpassword: 'Tda123456',
   birthdate: new Date(),
-  role: null
+  role: 1
 }
 
 const ToastContent = () => (
@@ -54,6 +42,18 @@ const ToastContent = () => (
     </div>
     <div className='toastify-body'>
       <span>Bạn đã đăng kí thành công, bạn đã trở thành thành viên của 3Sf</span>
+    </div>
+  </Fragment>
+)
+const ToastErrorContent = () => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Đăng kí không thành công</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>Tài khoản đã tồn tại</span>
     </div>
   </Fragment>
 )
@@ -82,6 +82,7 @@ const Register = () => {
   const { skin } = useSkin()
   const history = useHistory()
   const dispatch = useDispatch()
+  const { isSignup, signUpResult } = useSelector(state => state.auth);
   const {
     control,
     setError,
@@ -97,35 +98,30 @@ const Register = () => {
     // delete tempData.repeatpassword
     delete tempData.role
     const { fullname, username, password, rePassword, email, phone, birthday, type } = tempData
-
-    // console.log({ username, email, phone, birthdate, password, role: role.value })
     console.log(data)
     console.log({ fullname, username, password, rePassword, email, phone, birthday, type })
-    useJwt
-      .register({ fullname, username, password, rePassword, email, phone, birthday, type })
-      .then(res => {
-        if (res.data.error) {
-          for (const property in res.data.error) {
-            if (res.data.error[property] !== null) {
-              setError(property, {
-                type: 'manual',
-                message: res.data.error[property]
-              })
-            }
-          }
-        } else {
-          toast.success(
-            <ToastContent/>,
-            { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-          )
-          history.push('/')
-        }
-        console.log(res)
-      })
-      .catch(err => console.log(err))
-
-    // console.log(tempData)
+    dispatch(sendUserSignup({ fullname, username, password, rePassword, email, phone, birthday, type }))
   }
+
+  useEffect(() => {
+    if (signUpResult !== null) {
+      if (signUpResult.data === null) {
+        toast.error(
+          <ToastErrorContent />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else {
+        toast.success(
+          <ToastContent />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        history.push('/login')
+      }
+    } else {
+      console.log(signUpResult)
+    }
+  }, [signUpResult])
+
 
   return (
     <div className='auth-wrapper auth-cover'>
@@ -249,7 +245,7 @@ const Register = () => {
                   name='birthdate'
                   control={control}
                   render={({ field }) => (
-                    <Flatpickr id='date-time-picker' className='form-control' value={field.value} onChange={(date) => field.onChange(date)}/>
+                    <Flatpickr id='date-time-picker' className='form-control' value={field.value} onChange={(date) => field.onChange(date)} />
                   )}
                 />
                 {/* {errors.birthdate ? <FormFeedback>{errors.birthdate.message}</FormFeedback> : null} */}
@@ -268,7 +264,7 @@ const Register = () => {
                       options={roleOptions}
                       classNamePrefix='select'
                       theme={selectThemeColors}
-                      className={classnames('role', { 'is-invalid': defaultValues !== null && field.value === null })} 
+                      className={classnames('role', { 'is-invalid': defaultValues !== null && field.value === null })}
                       // className='role' 
                       {...field}
                     />

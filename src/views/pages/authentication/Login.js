@@ -1,15 +1,13 @@
-import { Fragment } from 'react'
-import { useDispatch } from 'react-redux'
+import { Fragment, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSkin } from '@hooks/useSkin'
 import { Link, useHistory } from 'react-router-dom'
 import InputPasswordToggle from '@components/input-password-toggle'
 import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, CardTitle, CardText, Form, Label, Input, Button } from 'reactstrap'
 import '@styles/react/pages/page-authentication.scss'
-import useJwt from '../../../auth/jwt/useJwt'
-import { handleLogin } from '../../../redux/authentication'
+import { sendUserLogin } from '../../../services/auth/index'
 import { toast, Slide } from 'react-toastify'
-import { getHomeRouteForLoggedInUser } from '../../../auth/utils'
 
 const ToastContent = ({ name, role }) => (
   <Fragment>
@@ -25,7 +23,6 @@ const ToastContent = ({ name, role }) => (
 )
 
 const GetRoleByType = (type) => {
-  console.log(type)
   if (type === 2) {
     return 'admin'
   }
@@ -47,7 +44,7 @@ const Login = () => {
   const { skin } = useSkin()
   const dispatch = useDispatch()
   const history = useHistory()
-  // const ability = useContext(AbilityContext)
+  const { currentUser, isAuth } = useSelector(state => state.auth);
   const {
     control,
     setError,
@@ -60,23 +57,9 @@ const Login = () => {
 
   const onSubmit = data => {
     if (Object.values(data).every(field => field.length > 0)) {
-      useJwt
-        .login({ username: data.loginUsername, password: data.loginPassword })
-        .then(res => {
-          // const data = { ...res.data.data._doc }
-          const data = { ...res.data.data }
-          console.log(res.data)
-          dispatch(handleLogin(data))
-          console.log(res)
-          // setCookie('token', res.data.data.token, 99)
-          history.push(getHomeRouteForLoggedInUser(data.type))
-          toast.success(
-            <ToastContent name={data.fullname} role={GetRoleByType(data.type)} />,
-            { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-          )
-          // console.log(res)
-        })
-        .catch(err => console.log(err))
+      // console.log({ username: data.loginUsername, password: data.loginPassword })
+      dispatch(sendUserLogin({ username: data.loginUsername, password: data.loginPassword }))
+      console.log(currentUser)
     } else {
       for (const key in data) {
         if (data[key].length === 0) {
@@ -86,8 +69,30 @@ const Login = () => {
         }
       }
     }
-    console.log(data)
+    // console.log(data)
   }
+
+  useEffect(() => {
+    if (currentUser === null) {
+      console.log('hahaha')
+    } else {
+      setCookie('token', currentUser.token, 99)
+      const userData = {
+        fullname: currentUser.fullname,
+        birthdate: currentUser.birthdate,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        type: currentUser.type
+      }
+      localStorage.setItem('userData', JSON.stringify(userData))
+      history.push('/')
+      toast.success(
+        <ToastContent name={currentUser.fullname} role={GetRoleByType(currentUser.type)} />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    }
+  }, [currentUser])
+
 
   return (
     <div className='auth-wrapper auth-cover'>
