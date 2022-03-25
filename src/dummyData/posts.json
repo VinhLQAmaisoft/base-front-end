@@ -1,0 +1,706 @@
+[{
+  "_id": {
+    "$oid": "62233d9f51ab6741f93a12a8"
+  },
+  "username": "user1",
+  "content": "Đây là vinh test đăng bài",
+  "fb_id": "899372277385235",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/899372277385235/",
+  "attachment": [
+    "62233d9b51ab6741f93a12a1",
+    "62233d9b51ab6741f93a12a3"
+  ],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 0,
+  "order": [
+    "622796f48f91c1bb6d115590",
+    "622798e7da53c5eb74be1505",
+    "62279d7ca1bb201b29ba6f3f"
+  ],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62233d2a51ab6741f93a128b"
+      },
+      "title": "Cơm 1",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 1",
+        "C1",
+        "C 1"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3051ab6741f93a128e"
+      },
+      "title": "Cơm 2",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 2",
+        "C2",
+        "C 2"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3451ab6741f93a1291"
+      },
+      "title": "Cơm 3",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 3",
+        "C3",
+        "C 3"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3b51ab6741f93a1294"
+      },
+      "title": "Cơm 4",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 4",
+        "C4",
+        "C 4"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-05T10:35:38.065Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62247e4f82ac5745452cab18"
+  },
+  "username": "user1",
+  "content": "Đăng bài bán hàng buổi chiều ",
+  "fb_id": "899907167331746",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/899907167331746/",
+  "attachment": [],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 0,
+  "order": [],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62233d2a51ab6741f93a128b"
+      },
+      "title": "Cơm 1",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 1",
+        "C1",
+        "C 1"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3051ab6741f93a128e"
+      },
+      "title": "Cơm 2",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 2",
+        "C2",
+        "C 2"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3451ab6741f93a1291"
+      },
+      "title": "Cơm 3",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 3",
+        "C3",
+        "C 3"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-06T09:22:13.938Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622853a9648f1033b28571f3"
+  },
+  "username": "user1",
+  "content": "Test Đăng ảnh",
+  "fb_id": "901539157168547",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/901539157168547/",
+  "attachment": [
+    "622853a4648f1033b28571ec",
+    "622853a4648f1033b28571ee"
+  ],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": -1,
+  "order": [],
+  "products": [],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-09T07:12:19.199Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622854b4648f1033b285721f"
+  },
+  "username": "user1",
+  "content": "Test Đăng ảnh",
+  "fb_id": "697089314819017",
+  "fb_url": "https://www.facebook.com/groups/fptudrama/permalink/697089314819017/",
+  "attachment": [
+    "622854b1648f1033b285721a"
+  ],
+  "group": {
+    "name": "CLB HÍT HÀ DRAMA FU",
+    "groupId": "523189832208967"
+  },
+  "status": 1,
+  "order": [],
+  "products": [],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-09T07:12:19.199Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622854cb648f1033b285722d"
+  },
+  "username": "user1",
+  "content": "Test Đăng ảnh",
+  "fb_id": "901540580501738",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/901540580501738/",
+  "attachment": [
+    "622854c7648f1033b2857228"
+  ],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 1,
+  "order": [],
+  "products": [],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-09T07:12:19.199Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6229ff66d89d052b9906fa3c"
+  },
+  "username": "user1",
+  "content": "Buổi bán hàng demo",
+  "fb_id": "902224450433351",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/902224450433351/",
+  "attachment": [
+    "6229ff63d89d052b9906fa35",
+    "6229ff63d89d052b9906fa37"
+  ],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 1,
+  "order": [
+    "622a01b2d89d052b9906fa89"
+  ],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62233d2a51ab6741f93a128b"
+      },
+      "title": "Cơm 1",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 1",
+        "C1",
+        "C 1"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3051ab6741f93a128e"
+      },
+      "title": "Cơm 2",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 2",
+        "C2",
+        "C 2"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3451ab6741f93a1291"
+      },
+      "title": "Cơm 3",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 3",
+        "C3",
+        "C 3"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3b51ab6741f93a1294"
+      },
+      "title": "Cơm 4",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 4",
+        "C4",
+        "C 4"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-10T13:36:35.342Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622cc9e437f624a77e71b016"
+  },
+  "username": "user1",
+  "content": "Test long",
+  "fb_id": "903431870312609",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/903431870312609/",
+  "attachment": [],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 1,
+  "order": [
+    "622cca2e37f624a77e71b050",
+    "622f1f6d9cd71d6daa1c8655",
+    "622f2084840467923df86f80",
+    "622f228df187e15ef6ccb00c"
+  ],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62233d2a51ab6741f93a128b"
+      },
+      "title": "Cơm 1",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 1",
+        "C1",
+        "C 1"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3051ab6741f93a128e"
+      },
+      "title": "Cơm 2",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 2",
+        "C2",
+        "C 2"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3451ab6741f93a1291"
+      },
+      "title": "Cơm 3",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 3",
+        "C3",
+        "C 3"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3b51ab6741f93a1294"
+      },
+      "title": "Cơm 4",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 4",
+        "C4",
+        "C 4"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-12T16:24:15.898Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6236f618a39f0bf5eb750ff1"
+  },
+  "username": "user1",
+  "content": "Test Long lan 2",
+  "fb_id": "907835279872268",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/907835279872268/",
+  "attachment": [],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 1,
+  "order": [
+    "6236f66da39f0bf5eb75102e",
+    "6236f6cfa39f0bf5eb751052",
+    "6236f782286ce16be4f59584",
+    "6236f7d9286ce16be4f595a1",
+    "6236f976e72965cba6892bf4",
+    "6236f9abe72965cba6892bfe",
+    "6236fae3e72965cba6892c4b"
+  ],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62233d2a51ab6741f93a128b"
+      },
+      "title": "Cơm 1",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 1",
+        "C1",
+        "C 1"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3051ab6741f93a128e"
+      },
+      "title": "Cơm 2",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 2",
+        "C2",
+        "C 2"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3451ab6741f93a1291"
+      },
+      "title": "Cơm 3",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 3",
+        "C3",
+        "C 3"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "62233d3b51ab6741f93a1294"
+      },
+      "title": "Cơm 4",
+      "price": 3000,
+      "username": "user1",
+      "keyword": [
+        "Cơm 4",
+        "C4",
+        "C 4"
+      ],
+      "createAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-05T10:35:38.067Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-20T08:50:39.650Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62372bfc555e514e1169d06f"
+  },
+  "username": "admin1",
+  "content": "abcd",
+  "fb_id": "907927823196347",
+  "fb_url": "https://www.facebook.com/groups/877660292889767/permalink/907927823196347/",
+  "attachment": [],
+  "group": {
+    "name": "Test Đồ Án",
+    "groupId": "877660292889767"
+  },
+  "status": 1,
+  "order": [
+    "62372cca555e514e1169d0c1",
+    "62372e4d555e514e1169d0e8",
+    "62372e52555e514e1169d0f0",
+    "62372e56555e514e1169d0f8"
+  ],
+  "products": [
+    {
+      "_id": {
+        "$oid": "62372bcf555e514e1169d05f"
+      },
+      "title": "banh ga",
+      "price": 120000,
+      "username": "admin1",
+      "keyword": [
+        "banh ga",
+        "bg",
+        "b ga",
+        "bga"
+      ],
+      "createAt": {
+        "$date": "2022-03-20T11:59:29.756Z"
+      },
+      "updateAt": {
+        "$date": "2022-03-20T11:59:29.756Z"
+      },
+      "__v": 0
+    }
+  ],
+  "commentList": [],
+  "shipper": [],
+  "config": {
+    "autoComment": 60,
+    "autoReply": false,
+    "autoCreateOrder": false,
+    "scanDuration": 120
+  },
+  "shipCost": 3000,
+  "createAt": {
+    "$date": "2022-03-20T11:59:29.755Z"
+  },
+  "__v": 0
+}]
