@@ -1,12 +1,13 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-
+import {useDispatch} from 'react-redux'
 // ** Custom Components
 import Avatar from '@components/avatar'
 
 // ** Utils
 // import { isUserLoggedIn } from '@utils'
+import { logoutAction } from '../../../../redux/authentication'
 
 // ** Third Party Components
 import { User, Mail, CheckSquare, MessageSquare, Settings, CreditCard, HelpCircle, Power } from 'react-feather'
@@ -20,7 +21,7 @@ import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
 const UserDropdown = () => {
   // ** State
   const [userData] = useState(null)
-
+  const dispatch = useDispatch()
   //** ComponentDidMount
   // useEffect(() => {
   //   if (isUserLoggedIn() !== null) {
@@ -42,11 +43,10 @@ const UserDropdown = () => {
       </DropdownToggle>
       <DropdownMenu end>
         <DropdownItem tag='a' href='/account-settings'>
-        {/* <DropdownItem tag='a' to='/account-settings'> */}
           <Settings size={14} className='me-75' />
           <span className='align-middle'>Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to='/login'>
+        <DropdownItem tag={Link} to='/login' onClick={() => dispatch(logoutAction())}>
           <Power size={14} className='me-75' />
           <span className='align-middle'>Logout</span>
         </DropdownItem>
