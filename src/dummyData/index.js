@@ -5,4 +5,4 @@ import Products from './products.json'
 export const CommentData = Comments
 export const OrderData = Orders
 export const PostData = Posts
-export const ProducData = Products 
+export const ProductData = Products 

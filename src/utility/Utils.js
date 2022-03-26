@@ -86,3 +86,33 @@ export const convertParamsToQuery = params => {
   result = result.substring(0, result.length - 2);
   return result
 }
+
+export const formatMoney = (str) => {
+  try {
+    // console.log("Trigger");
+    let str2 = parseFloat(str)
+    if (!str2) throw new Error();
+    let formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    });
+    let result = formatter.format(str2)
+    return result;
+  } catch (e) {
+    return str
+  }
+}
+
+export const formatTimeStamp = (timestamp) => {
+  
+  console.log("Type of timestamp: ", timestamp);
+  if (typeof timestamp == "object") return timestamp?.$date
+  var date = new Date(timestamp);
+  let result = date.getDate() +
+    "/" + (date.getMonth() + 1) +
+    "/" + date.getFullYear() +
+    " " + date.getHours() +
+    ":" + date.getMinutes() +
+    ":" + date.getSeconds()
+  return result
+}

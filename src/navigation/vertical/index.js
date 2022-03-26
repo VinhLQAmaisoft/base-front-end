@@ -38,6 +38,12 @@ export const adminNavigation = [
     title: 'Quản Lý Đơn Hàng',
     icon: <Truck size={20} />,
     navLink: '/shopkeeper/order-manage'
+  },
+  {
+    id: 'productmanage',
+    title: 'Quản Lý Sản Phẩm',
+    icon: <Truck size={20} />,
+    navLink: '/shopkeeper/product-manage'
   }
 ]
 

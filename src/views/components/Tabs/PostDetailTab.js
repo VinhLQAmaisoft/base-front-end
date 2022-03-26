@@ -14,7 +14,7 @@ export default function PostDetailTab(props) {
     }, [])
 
     useEffect(() => {
-        console.log("Trigger Rerender")
+        // console.log("Trigger Rerender")
         setCommentRender(renderComment());
     }, [comments, commentFilter])
 

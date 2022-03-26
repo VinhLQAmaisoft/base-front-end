@@ -21,11 +21,12 @@ import {
     Collapse
 } from 'reactstrap'
 import { User, Phone, Home } from 'react-feather'
+import { formatMoney } from '@utils'
 export default function OrderCard(props) {
     const [orderStatus, setOrderStatus] = useState(0)
     const [order, setOrder] = useState(props?.order)
     const [total, setTotal] = useState('');
-    console.log("Order Found: ", props)
+    // console.log("Order Found: ", props)
     /*
      CREATED: 0,
             READY: 1,
@@ -36,7 +37,7 @@ export default function OrderCard(props) {
 
     function renderHeader(status, updateAt) {
         // status = parseInt(status)
-        console.log("Order status: ", status)
+        // console.log("Order status: ", status)
         let label = '';
         let delayLabel = '';
         switch (status) {
@@ -66,8 +67,9 @@ export default function OrderCard(props) {
         let result = [];
         let sum = 0
         for (const product of order.product) {
+            index++;
             result.push(
-                <tr>
+                <tr key={index}>
                     <th scope="row">
                         {product.product.title}
                     </th>
@@ -75,7 +77,7 @@ export default function OrderCard(props) {
                         {product.quantity}
                     </td>
                     <td>
-                        {parseInt(product.quantity) * product.product.price} ₫
+                        {formatMoney(parseInt(product.quantity) * product.product.price)}
                     </td>
                 </tr>
             )
@@ -130,7 +132,7 @@ export default function OrderCard(props) {
                         </Table></Col>
                 </Row>
                 <Row className='mb-1'>
-                    <Col sm={12} className='mb-1'> Tổng Tiền: {calTotal()}₫</Col>
+                    <Col sm={12} className='mb-1'> Tổng Tiền: {formatMoney(calTotal())}</Col>
                     <Col sm={12} className='mb-1'>
                         <Label className='me-1'>Trạng Thái: </Label>
                         <UncontrolledButtonDropdown>
