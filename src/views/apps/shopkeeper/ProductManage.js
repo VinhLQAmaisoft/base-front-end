@@ -105,12 +105,9 @@ export default function ProductManage() {
             return listKeywords.map(keyword => (
                 <Badge outline={true} style={{ padding: '5px' }} className='me-1' color='info'>
                     {keyword}
-                    <Button size="sm" outline={true}
-                        style={{ marginLeft: '5px', backgroundColor: 'red', color: 'white' }}
-                        className=" p-0"
-                        onClick={() => { deleteKeyword(keyword) }}>
-                        X
-                    </Button>
+                    <Button close
+                        size="sm"
+                        onClick={() => { deleteKeyword(keyword) }} />
                 </Badge>
             ))
         }

@@ -1,0 +1,216 @@
+[{
+  "_id": {
+    "$oid": "622332e738a40081ec548859"
+  },
+  "fullname": "Le Quang Vinh",
+  "username": "user1",
+  "password": "123123",
+  "birthdate": "08/04/2005",
+  "email": "vinh261100@gmail.com",
+  "type": 1,
+  "createAt": 1646473911454,
+  "phone": "0966592831",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0,
+  "facebook": {
+    "cookie": {
+      "data": "sb=q2f7W0lDtylRt6iIS_WQFCwj;datr=2iK-X_hgQTrAQBjLET17a63U;c_user=100004603997082;dpr=1.25;wd=1536x722;xs=50%3AF50awrT77GE2rA%3A2%3A1618237323%3A-1%3A6382%3A%3AAcWSfVlQv-Ovyr4E5NTiSLATm0MVzegwyksERVCvCGT2GA;fr=0oa6zwXxUxfJ4CPL2.AWWmRLwP5HUnPfYXw8cPLEk5Itw.BiNuwN.ft.AAA.0.0.BiNvPy.AWXt8BZGpSQ;presence=C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1647768967904%2C%22v%22%3A1%7D;",
+      "status": 1
+    },
+    "token": "EAAGNO4a7r2wBAC5o2uZAEpAN9RyJ9SldGskXzEBfCiATnD5Dzp7YfGsZAzllrWUyjSMaQVZBfMlldvsN15ZAy82tC3oj6dr6YNOpui7D0caKS7dZA0gkkadyLWQUDtDDJomRVmPgUh5tF5TfeeWy91nxwRGptlDJJ0HoVmisOkzXs5tZAcnZBJd",
+    "dtsg": "AQH_yOyvRnKBQfc:50:1618237323",
+    "uid": "100004603997082"
+  },
+  "isActive": true
+},{
+  "_id": {
+    "$oid": "62249251cb519680494bcffb"
+  },
+  "fullname": "Duc Anh",
+  "username": "admin",
+  "password": "123456789",
+  "birthdate": "05/11/2000",
+  "email": "dtran3565@gmail.com",
+  "type": 2,
+  "createAt": 1646563747477,
+  "phone": "0866585470",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0,
+  "isActive": true
+},{
+  "_id": {
+    "$oid": "6228afe119537ee1e578982a"
+  },
+  "fullname": "Nguyễn Việt Thắng 10000",
+  "username": "thang",
+  "password": "thangthangthang",
+  "birthdate": "06/11/2000",
+  "email": "thangnvhe141552@fpt.edu.vn",
+  "type": 1,
+  "createAt": 1646833495736,
+  "phone": "0978221743",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0,
+  "isActive": true
+},{
+  "_id": {
+    "$oid": "6228be6b79ea6fffec25d89d"
+  },
+  "fullname": "Nguyễn Việt Thắng 10",
+  "username": "thang1",
+  "password": "thangthangg",
+  "birthdate": "06/11/2000",
+  "email": "thangnvhe141552@fpt.edu.vn",
+  "type": 1,
+  "isActive": true,
+  "createAt": 1646837202162,
+  "phone": "0978221743",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622dffab13f2a5217b36cb0e"
+  },
+  "fullname": "admin1",
+  "username": "admin1",
+  "password": "123123",
+  "birthdate": "13/3/2022",
+  "email": "admin@gmail.com.vn",
+  "type": 0,
+  "isActive": true,
+  "createAt": 1647181546043,
+  "phone": "0987654321",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0,
+  "facebook": {
+    "cookie": {
+      "data": "sb=E9bBYY1t5jgwxj4DZxud1BPV;datr=E9bBYfJueennPcb2QlLdOHtH;locale=vi_VN;c_user=100078345621901;xs=4%3AppkUB1vFRXJF_Q%3A2%3A1647782069%3A-1%3A-1;fr=0cUPErqWqCWI7d6Ma.AWXgZ28GDmbwNS9qBvZzZIeZeNw.BiNyiQ.BX.AAA.0.0.BiNyi2.AWXR80U57SU;presence=C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1647782076603%2C%22v%22%3A1%7D;wd=1745x852;cppo=1;dpr=1.100000023841858;usida=eyJ2ZXIiOjEsImlkIjoiQXI5MW92djgzNW1sayIsInRpbWUiOjE2NDc3ODI4Mzl9;",
+      "status": 1
+    },
+    "token": "EAABsbCS1iHgBABCZAgkZAX7vcyhnEHeElVaItKKmyjEZCR1Vg5XFjj3sZAOkTiFUfZA24mncs5QQXHIOMQErAJA7snYLHX6kNZC8NbmSI9cjixqlpVS4JNRGzJK4VRZBeNzZBqZAxeMBC8ppWR4daHvxFzqzK70dAbGF9kXlYo27yNbvVfnEtYRty",
+    "dtsg": "AQHK0YA4_GVb3VU:4:1647782069",
+    "uid": "100078345621901"
+  },
+  "owner": []
+},{
+  "_id": {
+    "$oid": "622e25fbe2567b142887cbfe"
+  },
+  "fullname": "Tran Duc Anh",
+  "username": "admin6",
+  "password": "Tda123456",
+  "birthdate": "05/11/2000",
+  "email": "dtran123@gmail.com",
+  "type": 1,
+  "createAt": 1647190548751,
+  "phone": "0866581234",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622f7ae95a612cad945c7fa7"
+  },
+  "fullname": "Anh Tran",
+  "username": "admin8",
+  "password": "Tda12345678",
+  "birthdate": "15/3/2022",
+  "email": "dtran3565@gmail.com",
+  "type": 1,
+  "createAt": 1647270234167,
+  "phone": "0866585470",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "623c988c6959eb0bbb1570ac"
+  },
+  "fullname": "long1234",
+  "username": "shippper",
+  "password": "123456",
+  "birthdate": "30/6/2000",
+  "email": "longtennis2000@gmail.com",
+  "type": 0,
+  "isActive": true,
+  "createAt": 1648138246037,
+  "phone": "0347911038",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "623d82999faa921bd100c615"
+  },
+  "fullname": "Tran Anh Duc",
+  "username": "admin10",
+  "password": "Tda1234567@",
+  "birthdate": "1/3/2022",
+  "email": "dtran3565@gmail.com",
+  "type": 1,
+  "isActive": true,
+  "createAt": 1648195896682,
+  "phone": "0866585470",
+  "post": [],
+  "product": [],
+  "replySyntaxs": [
+    "cho mình xin địa chỉ",
+    "cho mình xin số điện thoại",
+    "bạn order gì?",
+    "ok"
+  ],
+  "__v": 0
+}]

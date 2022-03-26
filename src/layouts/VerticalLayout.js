@@ -3,16 +3,21 @@
 import Layout from '@layouts/VerticalLayout'
 
 // ** Menu Items Array
-import { adminNavigation, shipperNavigation } from '@src/navigation/vertical'
+import { adminNavigation, shipperNavigation, shopkeeperNavigation } from '@src/navigation/vertical'
 
 const VerticalLayout = props => {
 
+  // try {
   const userData = JSON.parse(localStorage.getItem('userData'))
   let navigation = []
-  if (userData.type === 2) {
-    navigation = adminNavigation
-  } else if (userData.type === 1) {
+  if (!userData.type) {
+    window.location.href = "/login";
+  } else if(userData.type === 0) {
     navigation = shipperNavigation
+  } else if (userData.type === 1) {
+    navigation = shopkeeperNavigation
+  } else if (userData.type === 2) {
+    navigation = adminNavigation
   }
 
   return (
@@ -20,6 +25,9 @@ const VerticalLayout = props => {
       {props.children}
     </Layout>
   )
+  // } catch (error) {
+  //   window.location.href = '/login'
+  // }
 }
 
 export default VerticalLayout
