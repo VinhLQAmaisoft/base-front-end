@@ -3,7 +3,7 @@
 import Layout from '@layouts/VerticalLayout'
 
 // ** Menu Items Array
-import { adminNavigation, shipperNavigation } from '@src/navigation/vertical'
+import { adminNavigation, shipperNavigation, shopkeeperNavigation} from '@src/navigation/vertical'
 
 const VerticalLayout = props => {
 
@@ -11,6 +11,8 @@ const VerticalLayout = props => {
   let navigation = []
   if (userData.type === 2) {
     navigation = adminNavigation
+  } else if (userData.type === 0) {
+    navigation = shopkeeperNavigation
   } else if (userData.type === 1) {
     navigation = shipperNavigation
   }

@@ -5,22 +5,34 @@ import { User, Globe, Users, DollarSign, Aperture, Truck } from 'react-feather'
 export const adminNavigation = [
   {
     id: 'usermanage',
-    title: 'User Management',
+    title: 'Quản lý người dùng',
     icon: <User size={20} />,
     navLink: '/home'
   },
   {
     id: 'cookiemanage',
-    title: 'Cookie Management',
+    title: 'Quản lý Cookie',
     icon: <Globe size={20} />,
     navLink: '/second-page'
   },
   {
     id: 'customermanage',
-    title: 'Customer Management',
+    title: 'Quản lý khách hàng',
     icon: <Users size={20} />,
     navLink: '/third-page'
   },
+]
+
+export const shipperNavigation = [
+  {
+    id: 'shipperOrdermanage',
+    title: 'Quản lý đơn hàng',
+    icon: <User size={20} />,
+    navLink: '/home'
+  },
+]
+
+export const shopkeeperNavigation = [
   {
     id: 'sellcampaign',
     title: 'Bán Hàng',
@@ -38,35 +50,5 @@ export const adminNavigation = [
     title: 'Quản Lý Đơn Hàng',
     icon: <Truck size={20} />,
     navLink: '/shopkeeper/order-manage'
-  }
-]
-
-export const shipperNavigation = [
-  {
-    id: 'usermanage',
-    title: 'User Management',
-    icon: <User size={20} />,
-    navLink: '/home'
-  },
-  {
-    id: 'cookiemanage',
-    title: 'Cookie Management',
-    icon: <Globe size={20} />,
-    navLink: '/second-page'
-  },
-]
-
-export const shopkeeperNavigation = [
-  {
-    id: 'usermanage',
-    title: 'User Management',
-    icon: <User size={20} />,
-    navLink: '/home'
-  },
-  {
-    id: 'customermanage',
-    title: 'Customer Management',
-    icon: <Users size={20} />,
-    navLink: '/third-page'
   }
 ]

@@ -1,8 +1,8 @@
 // ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 import GroupIcon from '@src/assets/custom-icon/group.png'
-import { OrderData } from '@dummyData/'
-import OrderCard from '@my-components/Cards/OrderCard'
+import { OrderData } from '../../../dummyData/index'
+import OrderCard from '../../components/Cards/OrderCard'
 // ** Table Data & Columns
 import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
