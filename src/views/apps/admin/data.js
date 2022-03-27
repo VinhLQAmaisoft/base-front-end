@@ -2,7 +2,7 @@
 import Avatar from '@components/avatar'
 
 // ** Third Party Components
-import axios from 'axios'
+import { useSelector } from 'react-redux'
 import { MoreVertical, Edit, FileText, Archive, Trash } from 'react-feather'
 
 // ** Reactstrap Imports
@@ -17,12 +17,60 @@ const status = {
   0: { title: 'Ngừng hoạt động', color: 'light-success' },
 }
 
-export let data = UserData.map(item => {
+export let allDataUser = () => {
+  const { allUser } = useSelector(state => state.adminReducer);
+  return allUser
+}
+
+
+// console.log(allUser)
+
+export let userdata = UserData.map(item => {
   const status = item.isActive === undefined ? 0 : Number(item.isActive)
   return {full_name: item.fullname, phone: item.phone, role: item.type, salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: item.createAt, post_total: item.post.length, product_total: item.product.length}
 })
 
 export const userManageColumns = [
+  {
+    name: 'Người dùng',
+    sortable: true,
+    minWidth: '200px',
+    selector: row => row.full_name
+  },
+  {
+    name: 'Số điện thoại',
+    sortable: true,
+    minWidth: '250px',
+    selector: row => row.phone
+  },
+  {
+    name: 'Vai trò',
+    sortable: true,
+    minWidth: '250px',
+    selector: row => row.role
+  },
+  {
+    name: 'Doanh thu',
+    sortable: true,
+    minWidth: '100px',
+    selector: row => row.salary
+  },
+  {
+    name: 'Trạng thái',
+    sortable: true,
+    minWidth: '150px',
+    selector: row => row.status,
+    cell: row => {
+      return (
+        <Badge color={status[row.status].color} pill>
+          {status[row.status].title}
+        </Badge>
+      )
+    }
+  },
+]
+
+export const cookieManageColumns = [
   {
     name: 'Người dùng',
     sortable: true,

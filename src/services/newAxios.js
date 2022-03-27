@@ -24,8 +24,8 @@ const getCookie = (cname) => {
 
 instance.interceptors.request.use(config => {
   const token = getCookie('token')
+  console.log(token)
   config.headers.Authorization = token ? `${token}` : '';
-  // config.headers.Cookie = document.cookie;
   return config;
 }, err => {
   return Promise.reject(err);
