@@ -13,7 +13,7 @@ export const adminNavigation = [
     id: 'cookiemanage',
     title: 'Quản lý Cookie',
     icon: <Globe size={20} />,
-    navLink: '/second-page'
+    navLink: '/admin/cookie-management'
   },
   {
     id: 'customermanage',
