@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col, Label, Input, CardBody, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledButtonDropdown, FormGroup, Badge } from 'reactstrap';
+import { PostServices } from '@services'
+import { formatTimeStamp } from '@utils'
 import classnames from 'classnames';
 import CreatePostTab from '../../components/Tabs/CreatePostTab'
 import PostDetailTab from '../../components/Tabs/PostDetailTab'
-import { PostData, CommentData, OrderData, ProductData } from '@src/dummyData'
 export default ({ props }) => {
     const [activeTab, setActiveTab] = useState("1")
     const [postList, setPostList] = useState([])
     useEffect(() => {
-        let activePost = PostData.filter(post => post.status === 1)
-        console.log("Tìm thấy số bài viết = " + activePost.length)
-        setPostList(activePost)
+        PostServices.getPost('?status=1').then(data => { if (data.data?.data) setPostList([...data.data.data]) })
+        // let activePost = PostData.filter(post => post.status === 1)
+        // setPostList(activePost)
+        console.log("Tìm thấy số bài viết = " + postList.length)
     }, [])
 
     function toggle(tab) {
@@ -20,16 +22,26 @@ export default ({ props }) => {
     }
 
     function renderNavItem() {
-        return postList.map(post =>
-        (<NavItem key={post.fb_id}>
-            <NavLink
-                className={classnames({ active: activeTab === post.fb_id })}
-                onClick={() => { toggle(post.fb_id); }}
-            >
-                Chiến dịch {post.createAt.$date.split(".")[0].replace("T", "__")}
-            </NavLink>
-        </NavItem>)
+        if (postList.length == 0) return;
+        return postList.map(post => {
+            console.log("Check Post:", post)
+            try {
+                return (<NavItem key={post.fb_id}>
+                    <NavLink
+                        className={classnames({ active: activeTab == post?.fb_id })}
+                        onClick={() => { toggle(post?.fb_id); }}
+                    >
+                        Chiến dịch {formatTimeStamp(post.createAt)}
+                    </NavLink>
+                </NavItem>)
+            } catch (error) {
+                console.log("Render Nav Item Failed: ", error)
+                console.log("Không thể render: ", post)
+
+            }
+        }
         )
+
     }
 
     function renderTabItem() {

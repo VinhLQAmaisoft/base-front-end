@@ -24,6 +24,7 @@ module.exports = {
       '@dummyData': path.resolve(__dirname, 'src/dummyData'),
       '@layouts': path.resolve(__dirname, 'src/@core/layouts'),
       '@store': path.resolve(__dirname, 'src/redux'),
+      '@services':path.resolve(__dirname, 'src/services'),
       '@styles': path.resolve(__dirname, 'src/@core/scss'),
       '@configs': path.resolve(__dirname, 'src/configs'),
       '@utils': path.resolve(__dirname, 'src/utility/Utils'),

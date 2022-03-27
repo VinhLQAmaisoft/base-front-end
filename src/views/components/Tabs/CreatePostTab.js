@@ -1,9 +1,16 @@
 import React from 'react'
 import ImageUploading from 'react-images-uploading';
 import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
-
+import { UserServices, PostServices, ProductServices, AttachmentServices } from '@services';
 export default function CreatePostTab(props) {
     const [images, setImages] = React.useState([]);
+    const [cookie, setCookie] = React.useState('');
+    const [token, setToken] = React.useState('');
+    const [groupList, setGroupList] = React.useState([]);
+    const [productList, setProductList] = React.useState([]);
+    const [selectedGroup, setSelectedGroup] = React.useState({});
+    const [selectedProducts, setSelectedProduct] = React.useState([]);
+    const [selectedContent, setSelectedContent] = React.useState('');
     const maxNumber = 5;
 
     const onChange = (imageList, addUpdateIndex) => {
@@ -12,6 +19,110 @@ export default function CreatePostTab(props) {
         setImages(imageList);
     };
 
+    const addCookie = async () => {
+        let fbToken = document.getElementById('token').value;
+        let fbCookie = document.getElementById('cookie').value;
+        if (fbCookie === "" || fbToken === "")
+            return alert("Không được bỏ trống Token hoặc Cookie")
+        // KHỞI TẠO COOKIE & TOKEN
+        await UserServices.addCookie({ fbCookie, fbToken })
+            .then(data => {
+                alert(data.data.message)
+                if (data.data.data) {
+                    setCookie(fbCookie);
+                    setToken(fbToken);
+                }
+            })
+        // KHỞI TẠO DANH SÁCH NHÓM
+        await UserServices.getGroupList("").then(data => {
+            if (data.data?.data && data.data?.data.length) {
+                setGroupList(data.data.data)
+            } else {
+                alert("Không tìm thấy group facebook của bạn")
+            }
+        })
+        // KHỞI TẠO DANH SÁCH SẢN PHẨM
+        await ProductServices.getProduct("").then(data => {
+            if (data.data?.data && data.data?.data.length) {
+                setProductList(data.data.data)
+            } else {
+                alert("Không tìm thấy sản phẩm của bạn")
+            }
+        })
+    }
+
+    function handleCheckProduct(value, product) {
+        let index = -1, count = 0;
+        for (const prd of selectedProducts) {
+            if (prd._id === product._id) {
+                index = count;
+                break;
+            }
+            count++;
+        }
+        if (value) {
+            if (index > -1) return
+            else setSelectedProduct([...selectedProducts, product])
+        } else {
+            if (index > -1) {
+                let temp = selectedProducts;
+                temp.splice(index, 1);
+                setSelectedProduct(temp)
+            }
+        }
+
+    }
+
+    const uploadPost = async () => {
+        let attachments = await uploadAttachment().then(data => data.data.data).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
+        let content = document.getElementById("content").value
+        console.log("Bài viết mới:")
+        if (content != "" && selectedProducts.length > 0 && selectedGroup) {
+            PostServices.uploadPost({
+                content,
+                group: selectedGroup,
+                products: selectedProducts,
+                attachments
+            }).then(data => {
+                alert(data.data.message)
+                if (data.data.data) {
+                    window.location.reload()
+                }
+            })
+        }
+        console.log(content)
+        console.log(attachments)
+        console.log(selectedProducts)
+        console.log(selectedGroup)
+    }
+
+    const uploadAttachment = () => {
+        let formData = new FormData()
+        for (let i = 0; i < images.length; i++) {
+            console.log("Xử lý file thứ " + i + 1)
+            const file = images[i].file;
+            formData.append('images', file)
+        }
+        return AttachmentServices.uploadImage(formData)
+    }
+
+    function renderGroupList() {
+        return groupList.map(group => (
+            <DropdownItem className='w-100' onClick={() => { setSelectedGroup(group) }}>
+                <span className='align-middle ms-50'>{group.name}</span>
+            </DropdownItem>))
+    }
+
+    function renderProduct() {
+        return productList.map(product => (<FormGroup check inline >
+            <Input type="checkbox" key={product._id} onChange={(event) => {
+                handleCheckProduct(event.target.checked, product)
+            }} />
+            <Label check>
+                {product.title}
+            </Label>
+        </FormGroup>))
+    }
 
     return (
         <TabPane tabId={props.tabId}>
@@ -24,21 +135,28 @@ export default function CreatePostTab(props) {
                     <Row className="justify-content-center align-items-end">
                         <Col sm="4">
                             <Label className="text-dark fs-5">Cookie: </Label>
-                            <Input type='text' className='form-control' />
+                            <Input id="cookie" type='text' className='form-control' />
+                            <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
+                                Lấy cookie & token Facebook tại đây
+                            </a>
                         </Col>
                         <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
-                            <Input type='text' className='form-control' />
+                            <Input id="token" type='text' className='form-control' />
+                            <a target="_blank"
+                                href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
+                                Lấy token facebook tại đây
+                            </a>
                         </Col>
                         <Col sm="2">
-                            <Button color="primary">
+                            <Button color="primary" onClick={() => { addCookie() }}>
                                 Bắt Đầu
                             </Button>
                         </Col>
                     </Row>
                 </CardBody>
             </Card>
-            <Card className="bg-light p-1 mb-1">
+            {cookie && token && (<Card className="bg-light p-1 mb-1">
                 <CardTitle className="text-primary mb-0 fs-4">
                     Thông tin bài viết
                 </CardTitle>
@@ -46,22 +164,14 @@ export default function CreatePostTab(props) {
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}
-                        <Col sm="6" className="d-flex mb-1">
+                        <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
                             <UncontrolledButtonDropdown className="ml-2">
                                 <DropdownToggle color='secondary' caret outline>
-                                    <span className='align-middle ms-50'>Group</span>
+                                    <span className='align-middle ms-50'>{selectedGroup.name ? selectedGroup.name : "Group"}</span>
                                 </DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem className='w-100' onClick={() => { }}>
-                                        <span className='align-middle ms-50'>Group 1</span>
-                                    </DropdownItem>
-                                    <DropdownItem className='w-100' onClick={() => { }}>
-                                        <span className='align-middle ms-50'>Group 2</span>
-                                    </DropdownItem>
-                                    <DropdownItem className='w-100' onClick={() => { }}>
-                                        <span className='align-middle ms-50'>Group 3</span>
-                                    </DropdownItem>
+                                    {renderGroupList()}
                                 </DropdownMenu>
                             </UncontrolledButtonDropdown>
                         </Col>
@@ -71,7 +181,7 @@ export default function CreatePostTab(props) {
                                 Nội Dung
                             </Label>
                             <Input
-                                id="exampleText"
+                                id="content"
                                 name="text"
                                 type="textarea"
                             />
@@ -81,24 +191,8 @@ export default function CreatePostTab(props) {
                             <Label className="text-dark fs-5" for="exampleText">
                                 Sản Phẩm
                             </Label><br />
-                            <FormGroup check inline >
-                                <Input type="checkbox" />
-                                <Label check>
-                                    Sản phẩm 1
-                                </Label>
-                            </FormGroup>
-                            <FormGroup check inline >
-                                <Input type="checkbox" />
-                                <Label check>
-                                    Sản phẩm 2
-                                </Label>
-                            </FormGroup>
-                            <FormGroup check inline >
-                                <Input type="checkbox" />
-                                <Label check>
-                                    Sản phẩm 3
-                                </Label>
-                            </FormGroup>
+                            {renderProduct()}
+
                         </Col>
                         {/* ẢNH ĐÍNH KÈM */}
                         <Col sm="12" className="mb-2">
@@ -107,6 +201,7 @@ export default function CreatePostTab(props) {
                             </Label>
                             <br />
                             <ImageUploading
+                                id='uploadImage'
                                 multiple
                                 value={images}
                                 onChange={onChange}
@@ -149,13 +244,14 @@ export default function CreatePostTab(props) {
                             </ImageUploading>
                         </Col>
                         <Col sm="2">
-                            <Button color="primary">
+                            <Button color="primary" onClick={() => uploadPost()}>
                                 Bắt Đầu
                             </Button>
                         </Col>
                     </Row>
                 </CardBody>
-            </Card>
-        </TabPane>
+            </Card>)
+            }
+        </TabPane >
     )
 }

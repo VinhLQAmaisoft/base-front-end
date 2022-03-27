@@ -1,29 +1,37 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import CustomTable from '@my-components/DataTable/CustomTable'
-import { ProductData } from '@dummyData'
+import { ProductServices } from '@services'
 import { formatMoney, formatTimeStamp } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, Input, Label, Row } from 'reactstrap'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
+// import { isNum } from 'react-toastify/dist/utils'
 export default function ProductManage() {
     const [currentPage, setCurrentPage] = useState(0)
     const [product, setProduct] = useState([])
+    const [activeProduct, setActiveProduct] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null)
+    const [tempProduct, setTempProduct] = useState(null)
     useEffect(() => {
-        setProduct(ProductData)
+        ProductServices.getProduct().then(data => {
+            if (data.data.data) {
+                setProduct(data.data.data)
+                getCurrentObject(product)
+            }
+        })
     }, [])
     const pageSize = 10;
     const tableColumns = [{
         name: 'Sản Phẩm',
         sortable: true,
-        minWidth: '200px',
+        minWidth: '100px',
         selector: row => row.title
 
     }, {
         name: 'Giá Tiền',
         sortable: true,
-        minWidth: '200px',
+        minWidth: '50px',
         selector: row => row.price,
         format: row => formatMoney(row.price)
 
@@ -41,38 +49,116 @@ export default function ProductManage() {
         selector: row => {
             return (
                 <Fragment>
-                    <Button color="primary" size="sm" onClick={() => { selectProduct(row._id.$oid) }} className='me-1'>Chi Tiết</Button>
-                    <Button color="danger" size="sm" onClick={() => { deleteProduct(row._id.$oid) }} >Xóa</Button>
+                    <Button color="primary" size="sm" onClick={() => { selectProduct(row._id) }} className='me-1'>Chi Tiết</Button>
+                    <Button color="danger" size="sm" onClick={() => { deleteProduct(row._id) }} >Xóa</Button>
                 </Fragment>
             )
         }
     }]
 
+    const getCurrentObject = (source) => {
+        let target = [...source]
+        let start = currentPage * pageSize;
+        let end = start + pageSize;
+        return target.slice(start, end)
+    }
+
+
+
     const selectProduct = (id) => {
-        let selected = product.filter(p => p._id.$oid === id)
+        let selected = product.filter(p => p._id === id)
         if (selected) {
-            setSelectedProduct(Object.assign(selected[0]))
+            let prd = JSON.stringify(selected[0])
+            setSelectedProduct(JSON.parse(prd))
             let title = document.getElementById("d-title");
             let price = document.getElementById("d-price");
             let createAt = document.getElementById("d-createAt");
-            title.value = selected[0].title
-            price.value = selected[0].price
-            createAt.value = formatTimeStamp(selected[0].createAt)
+            title.value = selectedProduct.title
+            price.value = selectedProduct.price
+            createAt.value = formatTimeStamp(selectedProduct.createAt)
             // renderKeywords(selected[0].keyword)
         }
     }
 
-    const deleteProduct = (id) => {
-        alert('Chọn Sản Phẩm:' + id)
+    const updateProduct = () => {
+        console.log("Sản phẩm cũ: ", selectedProduct)
+        let title = document.getElementById("d-title").value;
+        let price = document.getElementById("d-price").value;
+        console.log("New Title: " + title)
+        console.log(`New Price ${price} -> Invalid: ` + /\D/g.test(price))
+
+        let oldKeyWord = [...selectedProduct.keyword];
+        console.log("Old Keyword: ", oldKeyWord)
+        let newKeyWord = document.getElementById("d-newKeyWord").value;
+        newKeyWord = newKeyWord != '' ? newKeyWord.split(',') : []
+        newKeyWord = newKeyWord.length > 0 ? newKeyWord.filter(keyword => keyword.trim()) : [];
+        console.log("New Keyword: ", newKeyWord)
+
+        if (newKeyWord && newKeyWord.length > 0) {
+            for (const keyword of newKeyWord) {
+                if (oldKeyWord.indexOf(keyword) > -1)
+                    return alert(`Trùng từ khóa "${keyword}"`)
+            }
+        }
+        if (title == "" || /\D/.test(price)) {
+            return alert("Tên hoặc giá không phù hợp");
+        }
+        let newProduct = JSON.parse(JSON.stringify(selectedProduct));
+        newProduct.title = title;
+        newProduct.price = parseFloat(price);
+        newProduct.keyword = [...oldKeyWord, ...newKeyWord];
+        ProductServices.updateProduct(newProduct).then(data => {
+            alert(data.data.message);
+            ProductServices.getProduct().then(data => {
+                if (data.data.data) {
+                    setProduct(data.data.data)
+                    getCurrentObject(product)
+                }
+            })
+        })
+
     }
+
+    const addProduct = () => {
+        let title = document.getElementById("a-title").value;
+        let price = document.getElementById("a-price").value;
+        if (!/\D/.test(price) && !title == "") {
+            ProductServices.createProduct({ title, price }).then(data => {
+                alert(data.data.message);
+                setProduct([...product, data.data.data])
+                getCurrentObject(product)
+
+            })
+        } else alert("Giá tiền hoặc tên sản phẩm không phù hợp")
+    }
+
+    const deleteProduct = (id) => {
+        ProductServices.deleteProduct({ _id: id }).then(data => {
+            alert(data.data.message);
+            ProductServices.getProduct().then(data => {
+                if (data.data.data) {
+                    setProduct(data.data.data)
+                    getCurrentObject(product)
+
+                }
+            })
+        })
+    }
+
     const deleteKeyword = (keyword) => {
         let temp = { ...selectedProduct };
         let index = temp.keyword.indexOf(keyword)
         if (index > -1) {
             temp.keyword.splice(temp.keyword.indexOf(keyword), 1)
-            setSelectedProduct(temp)
+            setSelectedProduct({ ...temp })
         }
     }
+
+    const handlePagination = page => {
+        setCurrentPage(page.selected)
+        setActiveProduct(getCurrentObject(product))
+    }
+
 
     const CustomPagination = () => (
         <ReactPaginate
@@ -98,12 +184,18 @@ export default function ProductManage() {
     )
 
     const renderKeywords = (listKeywords) => {
-        return listKeywords.map(keyword => (<Badge className='me-1' color='info'>{keyword}</Badge>))
+        return listKeywords.map(keyword => (<Badge className='me-1' color='info' keyword={keyword}>{keyword}</Badge>))
     }
     const renderDetailKeywords = (listKeywords) => {
         if (listKeywords) {
             return listKeywords.map(keyword => (
-                <Badge outline={true} style={{ padding: '5px' }} className='me-1' color='info'>
+                <Badge
+                    outline={true}
+                    style={{ padding: '5px' }}
+                    className='me-1'
+                    color='info'
+                    key={`detail - ${keyword}`}
+                >
                     {keyword}
                     <Button close
                         size="sm"
@@ -119,7 +211,7 @@ export default function ProductManage() {
             {/* Bảng Sản Phẩm */}
             <Row>
                 <Col className='react-dataTable'>
-                    {console.log("Final Table's Data: ", ProductData.length)}
+                    {console.log("Final Table's Data: ", product.length)}
                     <Card className="p-1">
                         <CardTitle>Các Sản Phẩm</CardTitle>
                         <DataTable
@@ -164,11 +256,13 @@ export default function ProductManage() {
                                     <div id="d-keyword">
                                         {renderDetailKeywords(selectedProduct?.keyword)}
                                     </div>
+                                    <Label className="text-primary mt-1">Thêm Từ Khóa</Label>
+                                    <Input id="d-newKeyWord" type='text' placeholder="Từ khóa 1, Từ khóa 2, từ khóa 3,..." />
                                 </Col>
                             </Row>
                         </CardBody>
                         <CardFooter >
-                            <Button color='primary' onClick={() => { }}>Cập Nhật</Button>
+                            <Button color='primary' onClick={() => { updateProduct() }}>Cập Nhật</Button>
                         </CardFooter>
                     </Card>
                 </Col>
@@ -191,7 +285,7 @@ export default function ProductManage() {
                             </Row>
                         </CardBody>
                         <CardFooter >
-                            <Button color='success' onClick={() => { }}>Thêm Sản Phẩm</Button>
+                            <Button color='success' onClick={() => { addProduct() }}>Thêm Sản Phẩm</Button>
                         </CardFooter>
                     </Card>
                 </Col>

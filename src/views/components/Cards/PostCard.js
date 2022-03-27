@@ -19,7 +19,7 @@ export default function PostCard({ props }) {
         let result = [];
         for (let attachment of listAttachment) {
             result.push(
-                <Col className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
+                <Col  key={`attachment-${result.length}`} className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
                     {/* <img className='w-100' src={process.env.REACT_APP_BASE_SERVER_URL + '/' + attachment} /> */}
                     <img className='w-100' src={imageUrl} />
                 </Col>)

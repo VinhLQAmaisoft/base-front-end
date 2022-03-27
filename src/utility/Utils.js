@@ -80,7 +80,7 @@ export const selectThemeColors = theme => ({
 
 export const convertParamsToQuery = params => {
   let result = '?';
-  for (let key in params) {
+  for (let key of params) {
     result += key + '=' + params[key] + '&'
   }
   result = result.substring(0, result.length - 2);
@@ -104,13 +104,14 @@ export const formatMoney = (str) => {
 }
 
 export const formatTimeStamp = (timestamp) => {
-  
-  console.log("Type of timestamp: ", timestamp);
-  if (typeof timestamp == "object") return timestamp?.$date
+  if (typeof timestamp == "string") {
+    let result = timestamp.split('.')[0].replace('_', '  ').replace('T', '  ')
+    return result
+  }
   var date = new Date(timestamp);
   let result = date.getDate() +
-    "/" + (date.getMonth() + 1) +
-    "/" + date.getFullYear() +
+    "-" + (date.getMonth() + 1) +
+    "-" + date.getFullYear() +
     " " + date.getHours() +
     ":" + date.getMinutes() +
     ":" + date.getSeconds()

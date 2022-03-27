@@ -1,17 +1,12 @@
 // ** React Imports
-import { Fragment, useState, forwardRef } from 'react'
-import GroupIcon from '@src/assets/custom-icon/group.png'
-import PostData from '@src/dummyData/posts.json'
+import { Fragment, useState, useEffect, forwardRef } from 'react'
+import { PostServices } from '@services'
 import PostCard from '../../components/Cards/PostCard'
 // ** Table Data & Columns
 import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
 import AddNewModal from './AddNewModal'
 
-// ** Third Party Components
-import ReactPaginate from 'react-paginate'
-import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
@@ -38,7 +33,7 @@ import {
 const PostManage = () => {
   // ** States
   const [modal, setModal] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
+  const [postData, setPostData] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
   const [filterStatus, setFilterStatus] = useState(-1)
@@ -46,6 +41,11 @@ const PostManage = () => {
     value: { createAt: 1 },
     label: "Mới nhất"
   })
+
+  useEffect(() => {
+    PostServices.getPost().then(data => setPostData(data.data.data))
+  }, [])
+
   // ** Function to handle Modal toggle
   const handleModal = () => setModal(!modal)
 
@@ -117,16 +117,21 @@ const PostManage = () => {
     }
   }
 
-
-
-
   function renderPostCard(listPost) {
+
     let result = [];
+    if (!listPost) return (
+      <Col sm='12' className='mb-1' key={`card-${result.length}`}>
+        <Card className="p-1">
+          <CardTitle className="text-center mb-0">Không tìm thấy bài viết nào</CardTitle>
+        </Card>
+      </Col>
+    )
     for (let post of listPost) {
       if ((filterStatus != -1 && post.status == filterStatus) || filterStatus == -1) {
         if (post.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
           result.push(
-            <Col sm='4' className='mb-1' key={post.fb_id}>
+            <Col sm='4' className='mb-1' key={`card-${result.length}`}>
               <PostCard props={post} />
             </Col>
           )
@@ -140,7 +145,7 @@ const PostManage = () => {
     let result = [];
     for (let option of options) {
       result.push(
-        <DropdownItem key={option.value} className='w-100' onClick={() => setSortOption(option)}>
+        <DropdownItem key={`sort-option-${result.length}`} className='w-100' onClick={() => setSortOption(option)}>
           <span className='align-middle ms-50'>{option.label}</span>
         </DropdownItem>
       )
@@ -218,7 +223,7 @@ const PostManage = () => {
         </Col>
       </Row>
       <Row>
-        {renderPostCard(PostData)}
+        {renderPostCard(postData)}
       </Row>
       <style>
 

@@ -1,22 +1,43 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter } from 'reactstrap'
-import { CommentData } from '@src/dummyData'
+import { CommentServices } from '@services';
+import { formatMoney } from '@utils'
 export default function PostDetailTab(props) {
-    console.log("PostDetailTab PROPS: ", props)
+    // console.log("PostDetailTab PROPS: ", props)
     const [post, SetPost] = useState(props?.post);
     const [comments, setComments] = useState([]);
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [commentRender, setCommentRender] = useState([])
     useEffect(() => {
-        let postComment = CommentData.filter(comment => comment.post_id === post._id.$oid);
-        setComments(postComment);
-        setCommentRender(renderComment());
+        CommentServices.getComment(`?post_id=${post._id}`)
+            .then((data) => {
+                setComments(data.data.data);
+                setCommentRender(renderComment(comments));
+                CommentServices.scanComment({
+                    postId: post._id
+                }).then(data => {
+                    if (!data.data?.data) {
+                        alert(data.data.message)
+                    }
+                    createScanInterval(120)
+                })
+            })
+            // setComments(postComment);
+            ;
     }, [])
 
-    useEffect(() => {
-        // console.log("Trigger Rerender")
-        setCommentRender(renderComment());
-    }, [comments, commentFilter])
+    const createScanInterval = (second) => {
+        return setInterval(() => {
+            CommentServices.scanComment({
+                postId: post._id
+            }).then(data => {
+                if (!data.data?.data) {
+                    alert(data.data.message)
+                }
+            })
+        }, second * 1000)
+
+    }
 
 
 
@@ -55,7 +76,7 @@ export default function PostDetailTab(props) {
         const result = [];
         for (const product of productList) {
             result.push((
-                <Badge color='info' className="m-1 fs-6" key={product._id}>{product.title} - {product.price}₫</Badge>
+                <Badge color='info' className="m-1 fs-6" key={product._id}>{product.title} - {formatMoney(product.price)}</Badge>
             ))
         }
         return result
@@ -67,15 +88,15 @@ export default function PostDetailTab(props) {
             { label: 'Spam', value: 0 },
             { label: 'Có thể là đơn', value: 1 }]
 
-        return options.map(option => (
+        return options.map((option, index) => (
             <FormGroup
                 check
                 inline
-                key={option.value}
+                key={"c-filter-" + index}
             >
                 <Input type="checkbox"
                     checked={filter.includes(option.value)}
-                    onClick={(evt) => { handleCommentFilter(evt, option.value); console.log("Update Comment Filter: " + filter); }} />
+                    onChange={(evt) => { handleCommentFilter(evt, option.value); console.log("Update Comment Filter: " + filter); }} />
                 <Label check>
                     {option.label}
                 </Label>
@@ -83,8 +104,8 @@ export default function PostDetailTab(props) {
         ))
     }
 
-    const renderComment = () => {
-        console.log("RE RENDER!!!");
+    const renderComment = (comments) => {
+        console.log("Comment Base: ", comments);
         const result = [];
         for (const comment of comments) {
             let match = 0
@@ -182,9 +203,11 @@ export default function PostDetailTab(props) {
                             <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
                         </Col >
                         <Col sm="2">
-                            <Button color="primary">
-                                Chi tiết
-                            </Button>
+                            <a target="_blank" href={`https://facebook.com/${post.fb_id}`}>
+                                <Button color="primary">
+                                    Chi tiết
+                                </Button>
+                            </a>
                         </Col>
                         {/* NỘI DUNG */}
                         <Col sm="12" className="mb-2">
@@ -237,7 +260,8 @@ export default function PostDetailTab(props) {
                 </CardTitle>
                 <hr className="bg-info" />
                 <CardBody>
-                    {commentRender}
+                    {/* {commentRender} */}
+                    {comments && renderComment(comments)}
                 </CardBody>
             </Card>
 
