@@ -8,6 +8,10 @@ const PostService = {
     uploadPost: async (params) => {
         params = params ? params : {}
         return newAxios.post('/post/create', params).catch(err => console.log("Upload Post Service Fail: ", err.message));
+    },
+    disablePost: async (params) => {
+        params = params ? params : {}
+        return newAxios.post('/post/disable', params).catch(err => console.log("Disable Post Service Fail: ", err.message));
     }
 }
 export default PostService;

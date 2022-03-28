@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter, Modal, ModalFooter } from 'reactstrap'
 import { CommentServices, UserServices, PostServices } from '@services';
 import CreateOrderModal from '../Modals/CreateOrderModal'
 import { formatMoney } from '@utils'
-export default function PostDetailTab(props) {
-    // console.log("PostDetailTab PROPS: ", props)
-    const [modal, setModal] = useState(false);
-    const [post, SetPost] = useState(props?.post);
+export default function PostDetailTab({ post, open, handleModal }) {
     const [comments, setComments] = useState([]);
-    const [replySyntax, setReplySyntax] = useState([]);
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
-    const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
-    const [cookie, setCookie] = React.useState('');
-    const [token, setToken] = React.useState('');
     useEffect(() => {
         CommentServices.getComment(`?post_id=${post._id}`)
             .then((data) => {
@@ -21,16 +14,6 @@ export default function PostDetailTab(props) {
                     setComments(sortComment(data.data.data));
                     setCommentRender(renderComment(comments));
                 }
-                CommentServices.scanComment({
-                    postId: post._id
-                }).then(data => {
-                    const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
-                    if (!data.data?.data) {
-                        alert(data.data.message)
-                    }
-                    CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
-                    createScanInterval(120)
-                })
             })
             // setComments(postComment);
             ;
@@ -57,9 +40,6 @@ export default function PostDetailTab(props) {
         }
         return result
     }
-
-    const handleModal = () => setModal(!modal)
-
 
     const createScanInterval = (second) => {
         const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
@@ -172,12 +152,6 @@ export default function PostDetailTab(props) {
         ))
     }
 
-    function renderReplyComment(commentId) {
-        return replySyntax.map(syntax => (
-            <DropdownItem className='w-100' key={commentId + "-" + syntax} onClick={() => { replyComment(commentId, syntax) }}>
-                <span className='align-middle ms-50'>{syntax}</span>
-            </DropdownItem>))
-    }
 
     const renderComment = (comments) => {
         console.log("Comment Base: ", comments);
@@ -220,27 +194,6 @@ export default function PostDetailTab(props) {
                             </Row>
                             {comment.content}
                         </CardBody>
-                        <CardFooter>
-                            {match > 0 && <Button color="success" size="sm" outline={true} onClick={() => createOrder(comment)} className="create-button me-1">
-                                Tạo Đơn
-                            </Button>}
-
-                            <UncontrolledButtonDropdown className="ml-2">
-                                <DropdownToggle size="sm" color='warning' caret outline>
-                                    <span className='align-middle ms-50'>Phản Hồi</span>
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                    {renderReplyComment(comment.fb_id)}
-                                </DropdownMenu>
-                            </UncontrolledButtonDropdown>
-
-
-                            {
-                                match == -1 && <Button color="danger" size="sm" outline={true} onClick={() => cancelOrder(comment.fb_id)} className="cancel-button me-1">
-                                    Hủy Đơn
-                                </Button>
-                            }
-                        </CardFooter>
                     </Card>
                 )
         }
@@ -248,30 +201,13 @@ export default function PostDetailTab(props) {
     }
 
     return (
-        <TabPane tabId={post.fb_id}>
-            <Card className="bg-light p-1 mb-1">
-                <CardTitle className="text-primary mb-0 fs-4">
-                    Cookie
-                </CardTitle>
-                <hr className="bg-info" />
-                <CardBody>
-                    <Row className="justify-content-center align-items-end">
-                        <Col sm="4">
-                            <Label className="text-dark fs-5">Cookie: </Label>
-                            <Input type='text' id="cookie" className='form-control' />
-                        </Col>
-                        <Col sm="4">
-                            <Label className="text-dark fs-5">Token: </Label>
-                            <Input type='text' id="token" className='form-control' />
-                        </Col>
-                        <Col sm="2">
-                            <Button color="primary" onClick={() => { addCookie() }}>
-                                Bắt Đầu
-                            </Button>
-                        </Col>
-                    </Row>
-                </CardBody>
-            </Card>
+        <Modal
+            isOpen={open}
+            toggle={handleModal}
+            size='lg'
+            // className='sidebar-sm'
+            // modalClassName='modal-slide-in'
+            contentClassName='pt-0'>
             {/* THÔNG TIN BÀI VIÉT */}
             <Card className="bg-light p-1 mb-1">
                 <CardTitle className="text-primary mb-0 fs-4">
@@ -281,11 +217,11 @@ export default function PostDetailTab(props) {
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}
-                        <Col sm="3" className="d-flex mb-1">
+                        <Col sm="8" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
                             <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
                         </Col >
-                        <Col sm="2">
+                        <Col sm="4">
                             <a target="_blank" href={`https://facebook.com/${post.fb_id}`}>
                                 <Button color="primary">
                                     Chi tiết
@@ -302,7 +238,7 @@ export default function PostDetailTab(props) {
                                 name="text"
                                 type="textarea"
                                 value={post.content}
-                                style={{minHeight:'200px'}}
+                                style={{ minHeight: '200px' }}
                                 editable="false"
                             />
                         </Col>
@@ -350,14 +286,13 @@ export default function PostDetailTab(props) {
                 </CardBody>
             </Card>
 
-            <Card>
-                <CardFooter>
-                    <Button color="primary" onClick={() => disableComment()}>
-                        Kết Thúc Buổi Bán Hàng
-                    </Button>
-                </CardFooter>
-            </Card>
-            <CreateOrderModal products={post.products} comment={JSON.parse(JSON.stringify(selectedComment))} open={modal} handleModal={handleModal} />
-        </TabPane >
+
+            <ModalFooter>
+                <Button color="primary" onClick={() => handleModal()}>
+                    Đóng
+                </Button>
+            </ModalFooter>
+
+        </Modal >
     )
 }

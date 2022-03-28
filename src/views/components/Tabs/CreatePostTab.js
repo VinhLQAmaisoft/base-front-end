@@ -79,7 +79,7 @@ export default function CreatePostTab(props) {
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
             PostServices.uploadPost({
-                content,
+                content:content+'\n #3FS',
                 group: selectedGroup,
                 products: selectedProducts,
                 attachments
@@ -90,10 +90,6 @@ export default function CreatePostTab(props) {
                 }
             })
         }
-        console.log(content)
-        console.log(attachments)
-        console.log(selectedProducts)
-        console.log(selectedGroup)
     }
 
     const uploadAttachment = () => {
@@ -184,6 +180,8 @@ export default function CreatePostTab(props) {
                                 id="content"
                                 name="text"
                                 type="textarea"
+                                style={{minHeight:'200px'}}
+
                             />
                         </Col>
                         {/* SẢN PHẨM */}

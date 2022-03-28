@@ -1,13 +1,11 @@
 // ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 import { formatMoney, formatTimeStamp } from '@utils'
-
-import { OrderData } from '@dummyData/'
+import { OrderServices, ProductServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
 import { data } from './data'
 // ** Add New Modal Component
-import AddNewModal from './AddNewModal'
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
@@ -39,25 +37,40 @@ import {
 
 const OrderManage = () => {
     // ** States
-    const [modal, setModal] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
     const [searchValue, setSearchValue] = useState('')
     const [filteredData, setFilteredData] = useState([])
     const [filterStatus, setFilterStatus] = useState(-1)
     const [activeOrder, setActiveOrder] = useState([])
+    const [selectedOrder, setSelectedOrder] = useState(null)
     const [displayOrder, setDisplayOrder] = useState([])
+    const [products, setProducts] = useState([])
     const [sortOption, setSortOption] = useState({
         value: { createAt: 1 },
         label: "Mới nhất"
     })
 
     useEffect(() => {
-        console.log("Source data: " + OrderData.length)
-        setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
-        console.log("Active Order Data: ", activeOrder.length);
-        setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
-        console.log("Table's Data: ", displayOrder.length);
+        ProductServices.getProduct('').then(data => {
+            console.log("My Products: ", data.data.data)
+            setProducts(data.data.data)
+        }).then(() => {
+            OrderServices.getOrder('').then(data => {
+                let OrderData = []
+                if (data.data.data) {
+                    OrderData = data.data.data
+                    console.log("Source data: " + OrderData.length)
+                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+                    console.log("Active Order Data: ", activeOrder.length);
+                    setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
+                    console.log("Table's Data: ", displayOrder.length);
+                }
+            })
+
+        })
+
     }, [])
+
 
 
     const sortOptions = [
@@ -140,7 +153,6 @@ const OrderManage = () => {
     }
 
     // ** Function to handle Modal toggle
-    const handleModal = () => setModal(!modal)
 
     const handlePagination = page => {
         setCurrentPage(page.selected)
@@ -242,16 +254,21 @@ const OrderManage = () => {
         />
     )
 
+    function updateOrderView(newOrder) {
+        let match = activeOrder.filter(order => order._id === newOrder._id);
+        if (match.length > 0) {
+            match[0] = JSON.parse(JSON.stringify(newOrder));
+        }
+    }
 
     function renderOrderCard() {
-
         let result = [];
         for (let order of activeOrder) {
             // if ((filterStatus != -1 && order.status == filterStatus) || filterStatus == -1) {
             //if (order.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
             result.push(
-                <Col md={4} sm={6} xs={12} key={order._id.$oid}>
-                    <OrderCard order={order} />
+                <Col lg={4} md={6} sm={12} key={order._id.$oid}>
+                    <OrderCard products={products} baseOrder={order} />
                 </Col>
             )
             // }
@@ -343,7 +360,7 @@ const OrderManage = () => {
                 </Col>
             </Row>
             <Row>
-                {renderOrderCard()}
+                {products && renderOrderCard()}
             </Row>
             <Row>
                 <Col className='react-dataTable'>
@@ -363,7 +380,7 @@ const OrderManage = () => {
                     />
                 </Col>
             </Row>
-            <AddNewModal open={modal} handleModal={handleModal} />
+
         </Fragment >
     )
 }
