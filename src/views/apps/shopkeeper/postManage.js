@@ -1,17 +1,13 @@
 // ** React Imports
-import { Fragment, useState, forwardRef } from 'react'
-import GroupIcon from '@src/assets/custom-icon/group.png'
-import PostData from '@src/dummyData/posts.json'
+import { Fragment, useState, useEffect, forwardRef } from 'react'
+import { PostServices } from '@services'
 import PostCard from '../../components/Cards/PostCard'
+import PostDetailModal from '@my-components/Modals/PostDetailModal'
 // ** Table Data & Columns
 import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
 import AddNewModal from './AddNewModal'
 
-// ** Third Party Components
-import ReactPaginate from 'react-paginate'
-import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
@@ -34,22 +30,49 @@ import {
   Dropdown
 } from 'reactstrap'
 
-// ** Bootstrap Checkbox Component
-const BootstrapCheckbox = forwardRef((props, ref) => (
-  <div className='form-check'>
-    <Input type='checkbox' ref={ref} {...props} />
-  </div>
-))
 
 const PostManage = () => {
   // ** States
   const [modal, setModal] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
+  const [postData, setPostData] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
+  const [selectedPost, setSelectedPost] = useState(null)
   const [filterStatus, setFilterStatus] = useState(-1)
+  const [sortOption, setSortOption] = useState({
+    value: { createAt: 1 },
+    label: "Mới nhất"
+  })
+
+  useEffect(() => {
+    PostServices.getPost().then(data => setPostData(data.data.data))
+  }, [])
+
   // ** Function to handle Modal toggle
   const handleModal = () => setModal(!modal)
+
+  const sortOptions = [
+    {
+      value: { createAt: 1 },
+      label: "Mới nhất"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Comment tăng dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Comment giảm dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Order tăng dần"
+    },
+    {
+      value: { createAt: 1 },
+      label: "Order giảm dần"
+    },
+  ]
 
   // ** Function to handle filter
   const handleFilter = e => {
@@ -96,70 +119,27 @@ const PostManage = () => {
     }
   }
 
-  // ** Function to handle Pagination
-  const handlePagination = page => {
-    setCurrentPage(page.selected)
-  }
-
-  // ** Custom Pagination
-  const CustomPagination = () => (
-    <ReactPaginate
-      previousLabel=''
-      nextLabel=''
-      forcePage={currentPage}
-      onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(data.length / 7) || 1}
-      breakLabel='...'
-      pageRangeDisplayed={2}
-      marginPagesDisplayed={2}
-      activeClassName='active'
-      pageClassName='page-item'
-      breakClassName='page-item'
-      nextLinkClassName='page-link'
-      pageLinkClassName='page-link'
-      breakLinkClassName='page-link'
-      previousLinkClassName='page-link'
-      nextClassName='page-item next-item'
-      previousClassName='page-item prev-item'
-      containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
-    />
-  )
-
-  // ** Converts table to CSV
-  function convertArrayOfObjectsToCSV(array) {
-    let result
-
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    const keys = Object.keys(data[0])
-
-    result = ''
-    result += keys.join(columnDelimiter)
-    result += lineDelimiter
-
-    array.forEach(item => {
-      let ctr = 0
-      keys.forEach(key => {
-        if (ctr > 0) result += columnDelimiter
-
-        result += item[key]
-
-        ctr++
-      })
-      result += lineDelimiter
-    })
-
-    return result
+  const handleSelect = post => {
+    setSelectedPost(post);
+    handleModal();
   }
 
   function renderPostCard(listPost) {
+
     let result = [];
+    if (!listPost) return (
+      <Col sm='12' className='mb-1' key={`card-${result.length}`}>
+        <Card className="p-1">
+          <CardTitle className="text-center mb-0">Không tìm thấy bài viết nào</CardTitle>
+        </Card>
+      </Col>
+    )
     for (let post of listPost) {
-      if ((filterStatus != -1 && post.status == filterStatus) || filterStatus == -1) {
+      if ((filterStatus != 0 && post.status == filterStatus) || filterStatus == 0) {
         if (post.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
           result.push(
-            <Col sm='4' className='mb-1' key={post.fb_id}>
-              <PostCard props={post} />
+            <Col sm='4' className='mb-1' key={`card-${result.length}`}>
+              <PostCard props={post} handleSelect={handleSelect} />
             </Col>
           )
         }
@@ -168,31 +148,27 @@ const PostManage = () => {
     return result
   }
 
+  function renderSortOption(options) {
+    let result = [];
+    for (let option of options) {
+      result.push(
+        <DropdownItem key={`sort-option-${result.length}`} className='w-100' onClick={() => setSortOption(option)}>
+          <span className='align-middle ms-50'>{option.label}</span>
+        </DropdownItem>
+      )
 
-  // ** Downloads CSV
-  function downloadCSV(array) {
-    const link = document.createElement('a')
-    let csv = convertArrayOfObjectsToCSV(array)
-    if (csv === null) return
-
-    const filename = 'export.csv'
-
-    if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`
     }
-
-    link.setAttribute('href', encodeURI(csv))
-    link.setAttribute('download', filename)
-    link.click()
+    return result
   }
+
 
   return (
     <Fragment>
+      {/* BỘ LỌC */}
       <Row>
         <Col sm={12}>
           <Card className="p-1">
             <CardTitle>Bộ Lọc</CardTitle>
-
             <Row>
               <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
@@ -200,24 +176,39 @@ const PostManage = () => {
                 </Label>
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color='secondary' caret outline>
-                    <span className='align-middle ms-50'>{filterStatus == -1 ? "Tất Cả" : filterStatus == 0 ? "Hoạt Động" : "Kết thúc"}</span>
+                    <span className='align-middle ms-50'>{filterStatus == 0 ? "Tất Cả" : filterStatus == 1 ? "Hoạt Động" : "Kết thúc"}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(-1)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(0)}>
 
                       <span className='align-middle ms-50'>Tất Cả</span>
                     </DropdownItem>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(0)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(1)}>
 
                       <span className='align-middle ms-50'>Hoạt Động</span>
                     </DropdownItem>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(1)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(-1)}>
 
                       <span className='align-middle ms-50'>Kết Thúc</span>
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledButtonDropdown>
               </Col>
+
+              <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                <Label style={{ fontSize: '15px', marginRight: '10px' }} >
+                  Sắp Xếp:
+                </Label>
+                <UncontrolledButtonDropdown>
+                  <DropdownToggle color='secondary' caret outline>
+                    <span className='align-middle ms-50'>{sortOption.label}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {renderSortOption(sortOptions)}
+                  </DropdownMenu>
+                </UncontrolledButtonDropdown>
+              </Col>
+
               <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
                   Search
@@ -239,12 +230,9 @@ const PostManage = () => {
         </Col>
       </Row>
       <Row>
-        {renderPostCard(PostData)}
+        {renderPostCard(postData)}
       </Row>
-      <style>
-
-      </style>
-      <AddNewModal open={modal} handleModal={handleModal} />
+      {selectedPost && <PostDetailModal post={selectedPost} open={modal} handleModal={handleModal} />}
     </Fragment >
   )
 }

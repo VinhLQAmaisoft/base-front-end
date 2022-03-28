@@ -2,63 +2,113 @@
 import Avatar from '@components/avatar'
 
 // ** Third Party Components
-import axios from 'axios'
+import { useSelector } from 'react-redux'
 import { MoreVertical, Edit, FileText, Archive, Trash } from 'react-feather'
 
 // ** Reactstrap Imports
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { UserData } from '../../../dummyData'
 
 // ** Vars
 const states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary']
 
 const status = {
-  1: { title: 'Current', color: 'light-primary' },
-  2: { title: 'Professional', color: 'light-success' },
-  3: { title: 'Rejected', color: 'light-danger' },
-  4: { title: 'Resigned', color: 'light-warning' },
-  5: { title: 'Applied', color: 'light-info' }
+  1: { title: 'Hoạt động', color: 'light-danger' },
+  0: { title: 'Ngừng hoạt động', color: 'light-success' },
 }
 
-export let data = [{full_name: 'Duc Anh', email: 'anhtd123@yomail.com', post: 'xasas', city: 'Dong Anh', start_date: '05/11/2000', salary: '25000'}]
+export let allDataUser = () => {
+  const { allUser } = useSelector(state => state.adminReducer);
+  return allUser
+}
 
-export const advSearchColumns = [
+
+// console.log(allUser)
+
+export let userdata = UserData.map(item => {
+  const status = item.isActive === undefined ? 0 : Number(item.isActive)
+  return {full_name: item.fullname, phone: item.phone, role: item.type, salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: item.createAt, post_total: item.post.length, product_total: item.product.length}
+})
+
+export const userManageColumns = [
   {
-    name: 'Name',
+    name: 'Người dùng',
     sortable: true,
     minWidth: '200px',
     selector: row => row.full_name
   },
   {
-    name: 'Email',
+    name: 'Số điện thoại',
     sortable: true,
     minWidth: '250px',
-    selector: row => row.email
+    selector: row => row.phone
   },
   {
-    name: 'Post',
+    name: 'Vai trò',
     sortable: true,
     minWidth: '250px',
-    selector: row => row.post
+    selector: row => row.role
   },
   {
-    name: 'City',
-    sortable: true,
-    minWidth: '150px',
-    selector: row => row.city
-  },
-  {
-    name: 'Date',
-    sortable: true,
-    minWidth: '150px',
-    selector: row => row.start_date
-  },
-
-  {
-    name: 'Salary',
+    name: 'Doanh thu',
     sortable: true,
     minWidth: '100px',
     selector: row => row.salary
-  }
+  },
+  {
+    name: 'Trạng thái',
+    sortable: true,
+    minWidth: '150px',
+    selector: row => row.status,
+    cell: row => {
+      return (
+        <Badge color={status[row.status].color} pill>
+          {status[row.status].title}
+        </Badge>
+      )
+    }
+  },
+]
+
+export const cookieManageColumns = [
+  {
+    name: 'Người dùng',
+    sortable: true,
+    minWidth: '200px',
+    selector: row => row.full_name
+  },
+  {
+    name: 'Số điện thoại',
+    sortable: true,
+    minWidth: '250px',
+    selector: row => row.phone
+  },
+  {
+    name: 'Vai trò',
+    sortable: true,
+    minWidth: '250px',
+    selector: row => row.role
+  },
+  {
+    name: 'Doanh thu',
+    sortable: true,
+    minWidth: '100px',
+    selector: row => row.salary
+  },
+  {
+    name: 'Trạng thái',
+    sortable: true,
+    minWidth: '150px',
+    selector: row => row.status,
+    cell: row => {
+      console.log(row)
+      return (
+        <Badge color={status[row.status].color} pill>
+          {status[row.status].title}
+        </Badge>
+      )
+    }
+  },
 ]
 
 // ** Get initial Data

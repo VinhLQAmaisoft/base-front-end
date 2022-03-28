@@ -1,58 +1,60 @@
-import { User, Globe, Users } from 'react-feather'
+import { User, Globe, Users, DollarSign, Aperture, Truck } from 'react-feather'
+// import Post from '@src/assets/custom-icons/post.png'
+
 
 export const adminNavigation = [
   {
     id: 'usermanage',
-    title: 'User Management',
+    title: 'Quản lý người dùng',
     icon: <User size={20} />,
     navLink: '/home'
   },
   {
     id: 'cookiemanage',
-    title: 'Cookie Management',
+    title: 'Quản lý Cookie',
     icon: <Globe size={20} />,
-    navLink: '/second-page'
+    navLink: '/admin/cookie-management'
   },
   {
     id: 'customermanage',
-    title: 'Customer Management',
+    title: 'Quản lý khách hàng',
     icon: <Users size={20} />,
     navLink: '/third-page'
   },
-  {
-    id: 'postmanage',
-    title: 'Quản Lý Bài Đăng',
-    icon: <Users size={20} />,
-    navLink: '/shopkeeper/post-manage'
-  }
 ]
 
 export const shipperNavigation = [
   {
-    id: 'usermanage',
-    title: 'User Management',
+    id: 'shipperOrdermanage',
+    title: 'Quản lý đơn hàng',
     icon: <User size={20} />,
     navLink: '/home'
-  },
-  {
-    id: 'cookiemanage',
-    title: 'Cookie Management',
-    icon: <Globe size={20} />,
-    navLink: '/second-page'
   },
 ]
 
 export const shopkeeperNavigation = [
   {
-    id: 'usermanage',
-    title: 'User Management',
-    icon: <User size={20} />,
-    navLink: '/home'
+    id: 'sellcampaign',
+    title: 'Bán Hàng',
+    icon: <Aperture size={20} />,
+    navLink: '/shopkeeper/sell-campaign'
   },
   {
-    id: 'customermanage',
-    title: 'Customer Management',
-    icon: <Users size={20} />,
-    navLink: '/third-page'
+    id: 'postmanage',
+    title: 'Quản Lý Bài Đăng',
+    icon: <DollarSign size={20} />,
+    navLink: '/shopkeeper/post-manage'
+  },
+  {
+    id: 'ordermanage',
+    title: 'Quản Lý Đơn Hàng',
+    icon: <Truck size={20} />,
+    navLink: '/shopkeeper/order-manage'
+  },
+  {
+    id: 'productmanage',
+    title: 'Quản Lý Sản Phẩm',
+    icon: <Truck size={20} />,
+    navLink: '/shopkeeper/product-manage'
   }
 ]

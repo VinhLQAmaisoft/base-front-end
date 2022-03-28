@@ -1,11 +1,16 @@
+// ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
-import { userdata, userManageColumns, allDataUser } from '../admin/data'
+
+// ** Table Data & Columns
+import {userdata ,userManageColumns } from '../admin/data'
+
+// ** Add New Modal Component
+
+// ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
 import { UserData } from '../../../dummyData'
-import { getAllUser } from '../../../services/admin'
-import { useDispatch } from 'react-redux'
 
 // ** Reactstrap Imports
 import {
@@ -32,16 +37,18 @@ const BootstrapCheckbox = forwardRef((props, ref) => (
   </div>
 ))
 
-const UserManagement = () => {
+const CookieManagement = () => {
   const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
   // ** States
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
-  const [userData, setUserData] = useState()
+  const [userData, setUserData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
-  const dispatch = useDispatch()
+
+  // ** Function to handle Modal toggle
+  const handleModal = () => setModal(!modal)
 
   // ** Function to handle filter
   const handleFilter = e => {
@@ -115,48 +122,48 @@ const UserManagement = () => {
   )
 
   // ** Converts table to CSV
-  // function convertArrayOfObjectsToCSV(array) {
-  //   let result
+  function convertArrayOfObjectsToCSV(array) {
+    let result
 
-  //   const columnDelimiter = ','
-  //   const lineDelimiter = '\n'
-  //   const keys = Object.keys(data[0])
+    const columnDelimiter = ','
+    const lineDelimiter = '\n'
+    const keys = Object.keys(data[0])
 
-  //   result = ''
-  //   result += keys.join(columnDelimiter)
-  //   result += lineDelimiter
+    result = ''
+    result += keys.join(columnDelimiter)
+    result += lineDelimiter
 
-  //   array.forEach(item => {
-  //     let ctr = 0
-  //     keys.forEach(key => {
-  //       if (ctr > 0) result += columnDelimiter
+    array.forEach(item => {
+      let ctr = 0
+      keys.forEach(key => {
+        if (ctr > 0) result += columnDelimiter
 
-  //       result += item[key]
+        result += item[key]
 
-  //       ctr++
-  //     })
-  //     result += lineDelimiter
-  //   })
+        ctr++
+      })
+      result += lineDelimiter
+    })
 
-  //   return result
-  // }
+    return result
+  }
 
-  // // ** Downloads CSV
-  // function downloadCSV(array) {
-  //   const link = document.createElement('a')
-  //   let csv = convertArrayOfObjectsToCSV(array)
-  //   if (csv === null) return
+  // ** Downloads CSV
+  function downloadCSV(array) {
+    const link = document.createElement('a')
+    let csv = convertArrayOfObjectsToCSV(array)
+    if (csv === null) return
 
-  //   const filename = 'export.csv'
+    const filename = 'export.csv'
 
-  //   if (!csv.match(/^data:text\/csv/i)) {
-  //     csv = `data:text/csv;charset=utf-8,${csv}`
-  //   }
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = `data:text/csv;charset=utf-8,${csv}`
+    }
 
-  //   link.setAttribute('href', encodeURI(csv))
-  //   link.setAttribute('download', filename)
-  //   link.click()
-  // }
+    link.setAttribute('href', encodeURI(csv))
+    link.setAttribute('download', filename)
+    link.click()
+  }
 
   const handleRowClicked = row => {
     console.log(row)
@@ -164,18 +171,13 @@ const UserManagement = () => {
   };
 
   useEffect(() => {
-    console.log(UserData)
-    dispatch(getAllUser())
     const data = UserData.map(item => {
       return { full_name: item.fullname, phone: item.phone, role: item.type, salary: '100', status: Number(item.isActive), password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: item.createAt, post_total: item.post.length, product_total: item.product.length }
     })
+    console.log(data)
     setUserData(data)
   }, [])
 
-  useEffect(() => {
-    console.log(allDataUser)
-    console.log(userData)
-  }, [userData])
 
   return (
     <Fragment>
@@ -245,97 +247,8 @@ const UserManagement = () => {
           />
         </div>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>Chi tiết</CardTitle>
-        </CardHeader>
-
-        <CardBody>
-          <Form>
-            <Row>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='nameMulti'>
-                  Tên tài khoản
-                </Label>
-                <Input type='text' name='name' id='nameMulti' placeholder='Tran Van A' value={selectedData.full_name} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='passwordMulti'>
-                  Mật khẩu
-                </Label>
-                <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='phoneMulti'>
-                  Số điện thoại
-                </Label>
-                <Input type='text' name='phone' id='phoneMulti' placeholder='phone' value={selectedData.phone} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='emailMulti'>
-                  Email
-                </Label>
-                <Input type='email' name='email' id='emailMulti' placeholder='email' value={selectedData.email} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='birthdateMulti'>
-                  Ngày sinh
-                </Label>
-                <Input type='text' name='birthdate' id='birthdateMulti' placeholder='birthdate' value={selectedData.birthdate} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='ownerMulti'>
-                  Người chủ
-                </Label>
-                <Input type='text' name='owner' id='ownerMulti' placeholder='owner' value={selectedData.owner} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='postMulti'>
-                  Tổng bài
-                </Label>
-                <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData.post_total} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='joiningDateMulti'>
-                  Ngày tham gia
-                </Label>
-                <Input type='text' name='joiningdate' id='joiningDateMulti' placeholder='00/00/0000' value={selectedData.joiningdate} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='productMulti'>
-                  Tổng sản phẩm
-                </Label>
-                <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData.product_total} />
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='salaryMulti'>
-                  Tổng doanh thu
-                </Label>
-                <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={selectedData.salary} />
-              </Col>
-              <Col sm='12'>
-                <div className='d-flex'>
-                  <Button className='me-1' color='primary' type='submit' onClick={e => e.preventDefault()}>
-                    Cập nhật
-                  </Button>
-                  <Button className='me-1' outline color='secondary' type='reset'>
-                    Đổi mật khẩu
-                  </Button>
-                  <Button className='me-1' outline color='secondary' type='reset'>
-                    Thông tin cá nhân
-                  </Button>
-                  <Button outline color='' type='reset'>
-                    <Facebook size={15} className='align-middle me-sm-25 me-0'/>
-                    Facebook
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </CardBody>
-      </Card>
     </Fragment>
   )
 }
 
-export default UserManagement
+export default CookieManagement

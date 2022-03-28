@@ -13,8 +13,8 @@ const Routes = [
     component: lazy(() => import('../../views/apps/admin/UserManagement'))
   },
   {
-    path: '/second-page',
-    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
+    path: '/admin/cookie-management',
+    component: lazy(() => import('../../views/apps/admin/CookieManagement'))
   },
   {
     path: '/account-settings',
@@ -38,7 +38,21 @@ const Routes = [
   },
   {
     path: '/shopkeeper/post-manage',
-    component: lazy(() => import('../../views/apps/shopkeeper/postManage')),
+    component: lazy(() => import('../../views/apps/shopkeeper/PostManage')),
+    layout: 'VerticalLayout'
+  }, {
+    path: '/shopkeeper/sell-campaign',
+    component: lazy(() => import('../../views/apps/shopkeeper/SellCampaign')),
+    layout: 'VerticalLayout'
+  },
+  , {
+    path: '/shopkeeper/order-manage',
+    component: lazy(() => import('../../views/apps/shopkeeper/OrderManage')),
+    layout: 'VerticalLayout'
+  },
+  {
+    path: '/shopkeeper/product-manage',
+    component: lazy(() => import('../../views/apps/shopkeeper/ProductManage')),
     layout: 'VerticalLayout'
   },
   {

@@ -1,0 +1,116 @@
+[{
+  "_id": {
+    "$oid": "62233d2a51ab6741f93a128b"
+  },
+  "title": "Cơm 1",
+  "price": 3000,
+  "username": "user1",
+  "keyword": [
+    "Cơm 1",
+    "C1",
+    "C 1"
+  ],
+  "createAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62233d3051ab6741f93a128e"
+  },
+  "title": "Cơm 2",
+  "price": 3000,
+  "username": "user1",
+  "keyword": [
+    "Cơm 2",
+    "C2",
+    "C 2"
+  ],
+  "createAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62233d3451ab6741f93a1291"
+  },
+  "title": "Cơm 3",
+  "price": 3000,
+  "username": "user1",
+  "keyword": [
+    "Cơm 3",
+    "C3",
+    "C 3"
+  ],
+  "createAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62233d3b51ab6741f93a1294"
+  },
+  "title": "Cơm 4",
+  "price": 3000,
+  "username": "user1",
+  "keyword": [
+    "Cơm 4",
+    "C4",
+    "C 4"
+  ],
+  "createAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-05T10:35:38.067Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "622a10121a051df95bb66792"
+  },
+  "title": "abc",
+  "price": 134000,
+  "username": "thang1",
+  "keyword": [
+    "abc",
+    "a",
+    " abc"
+  ],
+  "createAt": {
+    "$date": "2022-03-10T14:47:47.075Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-10T14:47:47.075Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "62372bcf555e514e1169d05f"
+  },
+  "title": "banh ga",
+  "price": 120000,
+  "username": "admin1",
+  "keyword": [
+    "banh ga",
+    "bg",
+    "b ga",
+    "bga"
+  ],
+  "createAt": {
+    "$date": "2022-03-20T11:59:29.756Z"
+  },
+  "updateAt": {
+    "$date": "2022-03-20T11:59:29.756Z"
+  },
+  "__v": 0
+}]
