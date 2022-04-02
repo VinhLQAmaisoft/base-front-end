@@ -24,7 +24,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
 
     function sortComment(rawList) {
         let parent = rawList.filter(comment => comment.parentId == null);
-        console.log("Parrent: ", parent.length)
+        // console.log("Parrent: ", parent.length)
         let children = rawList.filter(comment => comment.parentId != null);
         let result = JSON.parse(JSON.stringify(parent))
         for (const child of children) {

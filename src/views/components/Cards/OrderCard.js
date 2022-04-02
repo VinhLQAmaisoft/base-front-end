@@ -29,8 +29,8 @@ export default function OrderCard({ baseOrder, products }) {
     const [orderStatus, setOrderStatus] = useState(baseOrder?.status)
     const [order, setOrder] = useState(baseOrder)
     const [total, setTotal] = useState('');
-    console.log("Order status: ", order)
-    console.log("Products status: ", products)
+    // console.log("Order status: ", order)
+    // console.log("Products status: ", products)
     function renderHeader() {
         // status = parseInt(status)
         let label = '';

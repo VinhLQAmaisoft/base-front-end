@@ -41,7 +41,7 @@ export default function PostDetailTab(props) {
 
     function sortComment(rawList) {
         let parent = rawList.filter(comment => comment.parentId == null);
-        console.log("Parrent: ", parent.length)
+        // console.log("Parrent: ", parent.length)
         let children = rawList.filter(comment => comment.parentId != null);
         let result = JSON.parse(JSON.stringify(parent))
         for (const child of children) {
@@ -221,8 +221,12 @@ export default function PostDetailTab(props) {
                             {comment.content}
                         </CardBody>
                         <CardFooter>
-                            {match > 0 && <Button color="success" size="sm" outline={true} onClick={() => createOrder(comment)} className="create-button me-1">
+                            {match > 0 && comment.type == 0 && <Button color="success" size="sm" outline={true} onClick={() => createOrder(comment)} className="create-button me-1">
                                 Tạo Đơn
+                            </Button>}
+
+                            {match > 0 && comment.type == 1 && <Button color="success" size="sm" outline={false} onClick={() => { }} className="create-button me-1">
+                                Đã Tạo Đơn
                             </Button>}
 
                             <UncontrolledButtonDropdown className="ml-2">
@@ -302,7 +306,7 @@ export default function PostDetailTab(props) {
                                 name="text"
                                 type="textarea"
                                 value={post.content}
-                                style={{minHeight:'200px'}}
+                                style={{ minHeight: '200px' }}
                                 editable="false"
                             />
                         </Col>
@@ -357,7 +361,7 @@ export default function PostDetailTab(props) {
                     </Button>
                 </CardFooter>
             </Card>
-            <CreateOrderModal products={post.products} comment={JSON.parse(JSON.stringify(selectedComment))} open={modal} handleModal={handleModal} />
+            <CreateOrderModal products={post.products} comment={selectedComment} setSelectedComment={setSelectedComment} open={modal} handleModal={handleModal} />
         </TabPane >
     )
 }

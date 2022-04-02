@@ -42,6 +42,7 @@ const OrderManage = () => {
     const [filteredData, setFilteredData] = useState([])
     const [filterStatus, setFilterStatus] = useState(-1)
     const [activeOrder, setActiveOrder] = useState([])
+    const [deactivateOrder, setDeactivateOrder] = useState([])
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [displayOrder, setDisplayOrder] = useState([])
     const [products, setProducts] = useState([])
@@ -52,23 +53,20 @@ const OrderManage = () => {
 
     useEffect(() => {
         ProductServices.getProduct('').then(data => {
-            console.log("My Products: ", data.data.data)
+            // console.log("My Products: ", data.data.data)
             setProducts(data.data.data)
-        }).then(() => {
-            OrderServices.getOrder('').then(data => {
-                let OrderData = []
-                if (data.data.data) {
-                    OrderData = data.data.data
-                    console.log("Source data: " + OrderData.length)
-                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
-                    console.log("Active Order Data: ", activeOrder.length);
-                    setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
-                    console.log("Table's Data: ", displayOrder.length);
-                }
-            })
-
         })
-
+        OrderServices.getOrder('').then(data => {
+            let OrderData = []
+            if (data.data.data) {
+                OrderData = data.data.data
+                let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+                console.log("Source data: " + OrderData.length)
+                setDeactivateOrder(doneOrder)
+                setDisplayOrder(getCurrentTableData(doneOrder, currentPage, pageSize))
+                setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+            }
+        })
     }, [])
 
 
@@ -146,17 +144,19 @@ const OrderManage = () => {
 
 
     const getCurrentTableData = (source, currentPage, pageSize) => {
-        let target = [...source]
+        console.log("Table's Input: ", source, currentPage, pageSize);
         let start = currentPage * pageSize;
         let end = start + pageSize;
-        return target.slice(start, end)
+        console.log("Table's Data: ", source.slice(start, end));
+
+        return source.slice(start, end)
     }
 
     // ** Function to handle Modal toggle
 
     const handlePagination = page => {
         setCurrentPage(page.selected)
-        setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
+        setDisplayOrder(getCurrentTableData(deactivateOrder, currentPage, pageSize))
     }
 
 
@@ -274,7 +274,7 @@ const OrderManage = () => {
             // }
             // }
         }
-        console.log(`Có ${result.length}`)
+        // console.log(`Có ${result.length}`)
         return result
     }
 
@@ -360,15 +360,23 @@ const OrderManage = () => {
                 </Col>
             </Row>
             <Row>
-                {products && renderOrderCard()}
+                {activeOrder && renderOrderCard()}
+                {(activeOrder.length == 0 || !activeOrder) && (
+                    <Col>
+                        <Card>
+                            <CardBody>
+                                Không còn đơn hàng nào cần xử lý
+                            </CardBody>
+                        </Card>
+                    </Col>
+                )}
             </Row>
             <Row>
                 <Col className='react-dataTable'>
-                    {console.log("Final Table's Data: ", displayOrder.length)}
+                    {/* {console.log("Final Table's Data: ", displayOrder.length)} */}
                     <DataTable
                         noHeader
                         pagination
-                        selectableRows
                         columns={tableColumns}
                         paginationPerPage={pageSize}
                         className='react-dataTable'
@@ -376,7 +384,6 @@ const OrderManage = () => {
                         paginationDefaultPage={currentPage + 1 + 0}
                         paginationComponent={CustomPagination}
                         data={displayOrder}
-                        selectableRowsComponent={BootstrapCheckbox}
                     />
                 </Col>
             </Row>
