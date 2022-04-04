@@ -1,53 +1,75 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import CustomTable from '@my-components/DataTable/CustomTable'
-import { ProductServices } from '@services'
+import { ProductServices, ShipperServices } from '@services'
 import { formatMoney, formatTimeStamp } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, Input, Label, Row } from 'reactstrap'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
+import AddShipperModal from '@my-components/Modals/AddShipperModal'
 // import { isNum } from 'react-toastify/dist/utils'
 export default function ProductManage() {
+    const [modal, setModal] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
-    const [product, setProduct] = useState([])
+    const [shippers, setShippers] = useState([])
     const [activeProduct, setActiveProduct] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null)
+    const [selectedShipper, setSelectedShipper] = useState(null)
     const [tempProduct, setTempProduct] = useState(null)
     useEffect(() => {
-        ProductServices.getProduct().then(data => {
+        ShipperServices.getShipper().then(data => {
             if (data.data.data) {
-                setProduct(data.data.data)
-                getCurrentObject(product)
+                setShippers(data.data.data)
+                getCurrentObject(shippers)
             }
         })
     }, [])
+
+    useEffect(() => {
+        if (selectedShipper) {
+            let fullname = document.getElementById("d-fullname");
+            let email = document.getElementById("d-email");
+            let phone = document.getElementById("d-phone");
+            let createAt = document.getElementById("d-jobs-createAt");
+            let orderCount = document.getElementById("d-order-count");
+            let salary = document.getElementById("d-salary");
+            fullname.value = selectedShipper.fullname
+            email.value = selectedShipper.email
+            phone.value = selectedShipper.phone
+            createAt.value = formatTimeStamp(selectedShipper.jobs.createAt)
+            ShipperServices.getShipperDetail({ id: selectedShipper._id }).then((data) => {
+                if (data.data.data) {
+                    orderCount.value = data.data.data.orderCount;
+                    salary.value = data.data.data.totalSalary;
+                }
+            })
+        }
+    }, [selectedShipper])
     const pageSize = 10;
     const tableColumns = [{
         name: 'Họ Tên',
         sortable: true,
         minWidth: '100px',
-        selector: row => row.title
+        selector: row => row.fullname
 
     }, {
         name: 'SĐT',
         sortable: true,
         minWidth: '50px',
-        selector: row => row.price,
-        format: row => formatMoney(row.price)
+        selector: row => row.phone,
+        // format: row => formatMoney(row.price)
 
     }, {
         name: 'Email',
         sortable: true,
         minWidth: '200px',
-        selector: row => row.keyword.length,
-        format: row => renderKeywords(row.keyword)
+        selector: row => row.email,
+        // format: row => renderKeywords(row.keyword)
 
     }, {
-        name: 'Tổng số đơn',
+        name: 'Ngày tham gia',
         sortable: true,
         minWidth: '50px',
-        selector: row => row.keyword.length,
-        // format: row => renderKeywords(row.keyword)
+        selector: row => row.jobs.createAt,
+        format: row => formatTimeStamp(row.jobs.createAt)
 
     }, {
         name: 'Hành Động',
@@ -56,8 +78,8 @@ export default function ProductManage() {
         selector: row => {
             return (
                 <Fragment>
-                    <Button color="primary" size="sm" onClick={() => { selectProduct(row._id) }} className='me-1'>Chi Tiết</Button>
-                    <Button color="danger" size="sm" onClick={() => { deleteProduct(row._id) }} >Xóa</Button>
+                    <Button color="primary" size="sm" onClick={() => { selectShipper(row._id) }} className='me-1'>Chi Tiết</Button>
+                    <Button color="danger" size="sm" onClick={() => { deleteShipper(row._id) }} >Xóa</Button>
                 </Fragment>
             )
         }
@@ -70,31 +92,27 @@ export default function ProductManage() {
         return target.slice(start, end)
     }
 
+    const handleModal = () => {
+        setModal(!modal)
+    }
 
-
-    const selectProduct = (id) => {
-        let selected = product.filter(p => p._id === id)
+    const selectShipper = (id) => {
+        let selected = shippers.filter(p => p._id === id)
         if (selected) {
             let prd = JSON.stringify(selected[0])
-            setSelectedProduct(JSON.parse(prd))
-            let title = document.getElementById("d-title");
-            let price = document.getElementById("d-price");
-            let createAt = document.getElementById("d-createAt");
-            title.value = selectedProduct.title
-            price.value = selectedProduct.price
-            createAt.value = formatTimeStamp(selectedProduct.createAt)
-            // renderKeywords(selected[0].keyword)
+            setSelectedShipper(JSON.parse(prd))
+
         }
     }
 
     const updateProduct = () => {
-        console.log("Sản phẩm cũ: ", selectedProduct)
+        console.log("Sản phẩm cũ: ", selectedShipper)
         let title = document.getElementById("d-title").value;
         let price = document.getElementById("d-price").value;
         console.log("New Title: " + title)
         console.log(`New Price ${price} -> Invalid: ` + /\D/g.test(price))
 
-        let oldKeyWord = [...selectedProduct.keyword];
+        let oldKeyWord = [...selectedShipper.keyword];
         console.log("Old Keyword: ", oldKeyWord)
         let newKeyWord = document.getElementById("d-newKeyWord").value;
         newKeyWord = newKeyWord != '' ? newKeyWord.split(',') : []
@@ -110,7 +128,7 @@ export default function ProductManage() {
         if (title == "" || /\D/.test(price)) {
             return alert("Tên hoặc giá không phù hợp");
         }
-        let newProduct = JSON.parse(JSON.stringify(selectedProduct));
+        let newProduct = JSON.parse(JSON.stringify(selectedShipper));
         newProduct.title = title;
         newProduct.price = parseFloat(price);
         newProduct.keyword = [...oldKeyWord, ...newKeyWord];
@@ -118,8 +136,8 @@ export default function ProductManage() {
             alert(data.data.message);
             ProductServices.getProduct().then(data => {
                 if (data.data.data) {
-                    setProduct(data.data.data)
-                    getCurrentObject(product)
+                    setShippers(data.data.data)
+                    getCurrentObject(shippers)
                 }
             })
         })
@@ -132,38 +150,38 @@ export default function ProductManage() {
         if (!/\D/.test(price) && !title == "") {
             ProductServices.createProduct({ title, price }).then(data => {
                 alert(data.data.message);
-                setProduct([...product, data.data.data])
-                getCurrentObject(product)
+                setShippers([...shippers, data.data.data])
+                getCurrentObject(shippers)
 
             })
         } else alert("Giá tiền hoặc tên sản phẩm không phù hợp")
     }
 
-    const deleteProduct = (id) => {
-        ProductServices.deleteProduct({ _id: id }).then(data => {
+    const deleteShipper = (id) => {
+        ShipperServices.deleteShipper({ id }).then(data => {
             alert(data.data.message);
-            ProductServices.getProduct().then(data => {
-                if (data.data.data) {
-                    setProduct(data.data.data)
-                    getCurrentObject(product)
+            // ProductServices.getProduct().then(data => {
+            //     if (data.data.data) {
+            //         setShippers(data.data.data)
+            //         getCurrentObject(shippers)
 
-                }
-            })
+            //     }
+            // })
         })
     }
 
     const deleteKeyword = (keyword) => {
-        let temp = { ...selectedProduct };
+        let temp = { ...selectedShipper };
         let index = temp.keyword.indexOf(keyword)
         if (index > -1) {
             temp.keyword.splice(temp.keyword.indexOf(keyword), 1)
-            setSelectedProduct({ ...temp })
+            setSelectedShipper({ ...temp })
         }
     }
 
     const handlePagination = page => {
         setCurrentPage(page.selected)
-        setActiveProduct(getCurrentObject(product))
+        setActiveProduct(getCurrentObject(shippers))
     }
 
 
@@ -173,7 +191,7 @@ export default function ProductManage() {
             nextLabel='Tiếp'
             forcePage={currentPage}
             onPageChange={page => handlePagination(page)}
-            pageCount={Math.ceil(product.length / pageSize)}
+            pageCount={Math.ceil(shippers.length / pageSize)}
             breakLabel='...'
             pageRangeDisplayed={2}
             marginPagesDisplayed={2}
@@ -215,14 +233,14 @@ export default function ProductManage() {
     //tableColumns, pageSize, currentPage, handlePagination, data
     return (
         <Fragment>
-            {/* Bảng Sản Phẩm */}
+            {/* Danh Sách Shipper */}
             <Row>
                 <Col className='react-dataTable'>
-                    {console.log("Final Table's Data: ", product.length)}
+                    {console.log("Final Table's Data: ", shippers.length)}
                     <Card className="p-1">
                         <CardTitle style={{ display: "flex", justifyContent: 'space-between' }}>
                             Danh Sách Shipper Của Bạn
-                            <Button color="success" onClick={() => { addProduct() }}>
+                            <Button color="success" onClick={() => { handleModal() }}>
                                 Thêm Shipper
                             </Button>
                         </CardTitle>
@@ -235,8 +253,8 @@ export default function ProductManage() {
                             sortIcon={<ChevronDown size={10} />}
                             paginationDefaultPage={currentPage + 1 + 0}
                             paginationComponent={CustomPagination}
-                            data={product}
-
+                            data={shippers}
+                            noDataComponent="Bạn không có shipper nào"
                         />
                     </Card>
                 </Col>
@@ -251,36 +269,40 @@ export default function ProductManage() {
                         <CardBody>
                             <Row>
                                 <Col>
-                                    <Label className="text-primary">Tên Sản Phẩm</Label>
-                                    <Input id="d-title" type='text' placeholder="Mời Chọn Sản Phẩm" disabled={selectedProduct == null} defaultValue={selectedProduct?.title} />
+                                    <Label className="text-primary">Tên Shipper</Label>
+                                    <Input id="d-fullname" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper?.fullname} />
                                 </Col>
                                 <Col>
-                                    <Label className="text-primary">Giá</Label>
-                                    <Input id="d-price" type='text' placeholder="Mời Chọn Sản Phẩm" disabled={selectedProduct == null} defaultValue={selectedProduct?.price} />
+                                    <Label className="text-primary">Email</Label>
+                                    <Input id="d-email" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper?.email} />
                                 </Col>
                                 <Col>
-                                    <Label className="text-primary">Ngày tạo</Label>
-                                    <Input id="d-createAt" type='text' placeholder="Mời Chọn Sản Phẩm" disabled={true} plaintext={selectedProduct?.createAt && formatTimeStamp(selectedProduct?.createAt)} />
+                                    <Label className="text-primary">SĐT</Label>
+                                    <Input id="d-phone" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper?.phone} />
                                 </Col>
                             </Row>
-                            <Row className="mt-1">
+                            <Row>
                                 <Col>
-                                    <Label className="text-primary">Từ Khóa</Label>
-                                    <div id="d-keyword">
-                                        {renderDetailKeywords(selectedProduct?.keyword)}
-                                    </div>
-                                    <Label className="text-primary mt-1">Thêm Từ Khóa</Label>
-                                    <Input id="d-newKeyWord" type='text' placeholder="Từ khóa 1, Từ khóa 2, từ khóa 3,..." />
+                                    <Label className="text-primary">Số Đơn Đã Ship</Label>
+                                    <Input id="d-order-count" type='text' placeholder="Mời Chọn Shipper" disabled={true} />
+                                </Col>
+                                <Col>
+                                    <Label className="text-primary">Thu Nhập</Label>
+                                    <Input id="d-salary" type='text' placeholder="Mời Chọn Shipper" disabled={true} />
+                                </Col>
+                                <Col>
+                                    <Label className="text-primary">Ngày Tham Gia</Label>
+                                    <Input id="d-jobs-createAt" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper?.jobs && formatTimeStamp(selectedShipper?.jobs.createAt)} />
                                 </Col>
                             </Row>
                         </CardBody>
                         <CardFooter >
-                            <Button color='primary' onClick={() => { updateProduct() }}>Cập Nhật</Button>
+                            <Button color='primary' disabled={selectedShipper == null} onClick={() => { deleteShipper() }}>Xóa Shipper</Button>
                         </CardFooter>
                     </Card>
                 </Col>
             </Row>
-
+            <AddShipperModal open={modal} handleModal={handleModal} />
         </Fragment>
     )
 }

@@ -273,13 +273,13 @@ const Register = () => {
                 {errors.role ? <FormFeedback>{errors.role.message}</FormFeedback> : null}
               </div>
               <Button type='submit' block color='primary'>
-                Sign up
+                Đăng Ký
               </Button>
             </Form>
             <p className='text-center mt-2'>
-              <span className='me-25'>Already have an account?</span>
+              <span className='me-25'>Đã có tài khoản?</span>
               <Link to='/login'>
-                <span>Sign in instead</span>
+                <span>Đăng nhập ngay</span>
               </Link>
             </p>
           </Col>

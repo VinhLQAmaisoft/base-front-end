@@ -56,26 +56,11 @@ export default function PostDetailTab({ post, open, handleModal }) {
                         setComments(sortComment(data.data.data));
                         setCommentRender(renderComment(comments));
                     })
+                console.log("Tạo Comment Mới!!!!!!")
                 CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
             })
         }, second * 1000)
         return x
-    }
-
-    const addCookie = () => {
-        let fbToken = document.getElementById('token').value;
-        let fbCookie = document.getElementById('cookie').value;
-        if (fbCookie === "" || fbToken === "")
-            return alert("Không được bỏ trống Token hoặc Cookie")
-        // KHỞI TẠO COOKIE & TOKEN
-        UserServices.addCookie({ fbCookie, fbToken })
-            .then(data => {
-                alert(data.data.message)
-                if (data.data.data) {
-                    setCookie(fbCookie);
-                    setToken(fbToken);
-                }
-            })
     }
 
     //------------------------------------------------------------------------------ LOGIC FUNCTION ------------------------------------------------------------------------------

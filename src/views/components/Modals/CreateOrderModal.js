@@ -91,6 +91,7 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
             phone: document.getElementById('phone').value,
             customerId: comment.author.id,
             postId: comment.post_id,
+            createAt: Date.now(),
         }).then(data => {
             alert(data.data.message);
             if (data.data.data) {

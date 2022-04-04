@@ -1,8 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import CustomTable from '@my-components/DataTable/CustomTable'
 import { ProductServices } from '@services'
 import { formatMoney, formatTimeStamp } from '@utils'
-import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, Input, Label, Row } from 'reactstrap'
+import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row, UncontrolledButtonDropdown } from 'reactstrap'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
@@ -13,6 +12,16 @@ export default function ProductManage() {
     const [activeProduct, setActiveProduct] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null)
     const [tempProduct, setTempProduct] = useState(null)
+
+    const [filterStatus, setFilterStatus] = useState(-1)
+    const [sortOption, setSortOption] = useState({
+        value: { createAt: 1 },
+        label: "Mới nhất"
+    })
+    const [searchValue, setSearchValue] = useState('')
+    const [filteredData, setFilteredData] = useState([])
+
+
     useEffect(() => {
         ProductServices.getProduct().then(data => {
             if (data.data.data) {
@@ -21,6 +30,43 @@ export default function ProductManage() {
             }
         })
     }, [])
+
+    // Update Selected Product Data
+    useEffect(() => {
+        let title = document.getElementById("d-title");
+        let price = document.getElementById("d-price");
+        let createAt = document.getElementById("d-createAt");
+        console.log("Selected Product: ", selectedProduct)
+        if (selectedProduct) {
+            title.value = selectedProduct?.title
+            price.value = selectedProduct?.price
+            createAt.value = formatTimeStamp(selectedProduct?.createAt)
+        } else {
+            title.value = ""
+            price.value = ""
+            createAt.value = ""
+        }
+    }, [selectedProduct])
+
+    const sortOptions = [
+        {
+            value: { createAt: 1 },
+            label: "Mới nhất"
+        },
+        {
+            value: { createAt: -1 },
+            label: "Cũ nhất"
+        }, {
+            value: { price: 1 },
+            label: "Rẻ nhất"
+        }, {
+            value: { price: -1 },
+            label: "Đắt nhất"
+        }, {
+            value: { createAt: 1 },
+            label: "Mới nhất"
+        },
+    ]
     const pageSize = 10;
     const tableColumns = [{
         name: 'Sản Phẩm',
@@ -63,36 +109,50 @@ export default function ProductManage() {
         return target.slice(start, end)
     }
 
+    // ** Function to handle filter
+    const handleFilter = e => {
+
+        const value = e.target.value
+        let updatedData = []
+        setSearchValue(value)
+        if (value.length) {
+            updatedData = product.filter(product => {
+                const startsWith =
+                    product.title.toLowerCase().startsWith(value.toLowerCase())
+
+                const includes =
+                    product.title.toLowerCase().includes(value.toLowerCase())
+
+
+                if (startsWith) {
+                    return startsWith
+                } else if (!startsWith && includes) {
+                    return includes
+                } else return null
+            })
+            setFilteredData(updatedData)
+            setSearchValue(value)
+        }
+    }
 
 
     const selectProduct = (id) => {
         let selected = product.filter(p => p._id === id)
         if (selected) {
-            let prd = JSON.stringify(selected[0])
-            setSelectedProduct(JSON.parse(prd))
-            let title = document.getElementById("d-title");
-            let price = document.getElementById("d-price");
-            let createAt = document.getElementById("d-createAt");
-            title.value = selectedProduct.title
-            price.value = selectedProduct.price
-            createAt.value = formatTimeStamp(selectedProduct.createAt)
+            let prd = JSON.parse(JSON.stringify(selected[0]));
+            setSelectedProduct(prd)
+
             // renderKeywords(selected[0].keyword)
         }
     }
 
     const updateProduct = () => {
-        console.log("Sản phẩm cũ: ", selectedProduct)
         let title = document.getElementById("d-title").value;
         let price = document.getElementById("d-price").value;
-        console.log("New Title: " + title)
-        console.log(`New Price ${price} -> Invalid: ` + /\D/g.test(price))
-
         let oldKeyWord = [...selectedProduct.keyword];
-        console.log("Old Keyword: ", oldKeyWord)
         let newKeyWord = document.getElementById("d-newKeyWord").value;
         newKeyWord = newKeyWord != '' ? newKeyWord.split(',') : []
         newKeyWord = newKeyWord.length > 0 ? newKeyWord.filter(keyword => keyword.trim()) : [];
-        console.log("New Keyword: ", newKeyWord)
 
         if (newKeyWord && newKeyWord.length > 0) {
             for (const keyword of newKeyWord) {
@@ -142,7 +202,12 @@ export default function ProductManage() {
 
                 }
             })
+            if (selectedProduct._id == id) {
+
+                setSelectedProduct(null)
+            }
         })
+
     }
 
     const deleteKeyword = (keyword) => {
@@ -205,15 +270,51 @@ export default function ProductManage() {
         }
     }
 
+    function renderSortOption(options) {
+        let result = [];
+        for (let option of options) {
+            result.push(
+                <DropdownItem key={`Option-${result.length}`} className='w-100' onClick={() => setSortOption(option)}>
+                    <span className='align-middle ms-50'>{option.label}</span>
+                </DropdownItem>
+            )
+
+        }
+        return result
+    }
     //tableColumns, pageSize, currentPage, handlePagination, data
     return (
         <Fragment>
+            {/* BỘ LỌC */}
+
             {/* Bảng Sản Phẩm */}
             <Row>
                 <Col className='react-dataTable'>
                     {console.log("Final Table's Data: ", product.length)}
                     <Card className="p-1">
-                        <CardTitle>Các Sản Phẩm</CardTitle>
+                        <CardTitle>
+                            <Row>
+                                <Col>
+                                    Các Sản Phẩm
+                                </Col>
+                                <Col className='d-flex align-items-center justify-content-end' sm={6}>
+                                    <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
+                                        Tìm kiếm
+                                    </Label>
+                                    <Input
+                                        className='dataTable-filter mb-50'
+                                        style={{ padding: '0.78rem 1.5rem' }}
+                                        placeholder="Nội dung muốn tìm"
+                                        type='text'
+                                        bsSize='sm'
+                                        id='search-input'
+                                        value={searchValue}
+                                        onChange={handleFilter}
+                                    />
+                                </Col>
+                            </Row>
+
+                        </CardTitle>
                         <DataTable
                             noHeader
                             pagination
@@ -224,7 +325,7 @@ export default function ProductManage() {
                             sortIcon={<ChevronDown size={10} />}
                             paginationDefaultPage={currentPage + 1 + 0}
                             paginationComponent={CustomPagination}
-                            data={product}
+                            data={searchValue != "" ? filteredData : product}
 
                         />
                     </Card>
