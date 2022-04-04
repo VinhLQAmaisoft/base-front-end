@@ -1,7 +1,7 @@
 // ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 import { formatMoney, formatTimeStamp } from '@utils'
-import { OrderServices, ProductServices } from '@services'
+import { OrderServices, ProductServices, UserServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
 import { data } from './data'
@@ -42,57 +42,100 @@ const OrderManage = () => {
     const [filteredData, setFilteredData] = useState([])
     const [filterStatus, setFilterStatus] = useState(-1)
     const [activeOrder, setActiveOrder] = useState([])
+    const [deactivateOrder, setDeactivateOrder] = useState([])
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [displayOrder, setDisplayOrder] = useState([])
     const [products, setProducts] = useState([])
+    const [shipperOptions, setShipperOptions] = useState([])
     const [sortOption, setSortOption] = useState({
-        value: { createAt: 1 },
+        key: "createAt",
+        value: 1,
         label: "Mới nhất"
     })
 
     useEffect(() => {
+        UserServices.getProfile().then(data => {
+            if (data.data.data) {
+                let rawShipper = data.data.data.shippers;
+                let shippers = rawShipper.map(shipper => {
+                    let data = shipper.split('---');
+                    return {
+                        fullName: data[0],
+                        username: data[1],
+                    }
+                })
+                setShipperOptions(shippers)
+                console.log("My Shipper: ", shippers)
+            }
+        })
+
         ProductServices.getProduct('').then(data => {
-            console.log("My Products: ", data.data.data)
+            // console.log("My Products: ", data.data.data)
             setProducts(data.data.data)
-        }).then(() => {
-            OrderServices.getOrder('').then(data => {
+        })
+        OrderServices.getOrder('').then(data => {
+            let OrderData = []
+            if (data.data.data) {
+                OrderData = data.data.data
+                let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+                console.log("Source data: " + OrderData.length)
+                setDeactivateOrder(doneOrder)
+                setDisplayOrder(getCurrentTableData(doneOrder, currentPage, pageSize))
+                setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        console.log(`Sort by - ${sortOption.key} -  - ${sortOption.value} `,)
+        if (sortOption) {
+            ProductServices.getProduct('').then(data => {
+                setProducts(data.data.data)
+            })
+            OrderServices.getOrder(`?sort=${sortOption.key}&direction=${sortOption.value}`).then(data => {
                 let OrderData = []
                 if (data.data.data) {
                     OrderData = data.data.data
-                    console.log("Source data: " + OrderData.length)
-                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
-                    console.log("Active Order Data: ", activeOrder.length);
-                    setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
-                    console.log("Table's Data: ", displayOrder.length);
+                    let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+                    setDeactivateOrder(doneOrder)
+                    setDisplayOrder(getCurrentTableData(doneOrder, currentPage, pageSize))
+                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"]
+                        .includes(order.status))
+                    )
                 }
             })
-
-        })
-
-    }, [])
-
-
+        }
+    }, [sortOption])
 
     const sortOptions = [
         {
-            value: { createAt: 1 },
+            key: "createAt",
+            value: -1,
             label: "Mới nhất"
         },
         {
-            value: { createAt: 1 },
-            label: "Comment tăng dần"
+            key: "createAt",
+            value: 1,
+            label: "Cũ nhất"
         },
         {
-            value: { createAt: 1 },
-            label: "Comment giảm dần"
+            key: "updateAt",
+            value: -1,
+            label: "Mới cập nhật"
         },
         {
-            value: { createAt: 1 },
-            label: "Order tăng dần"
+            key: "updateAt",
+            value: 1,
+            label: "Chưa cập nhật"
         },
         {
-            value: { createAt: 1 },
-            label: "Order giảm dần"
+            key: "product.length",
+            value: -1,
+            label: "Nhiều sản phẩm "
+        }, {
+            key: "product.length",
+            value: 1,
+            label: "Ít sản phẩm"
         },
     ]
 
@@ -146,17 +189,19 @@ const OrderManage = () => {
 
 
     const getCurrentTableData = (source, currentPage, pageSize) => {
-        let target = [...source]
+        console.log("Table's Input: ", source, currentPage, pageSize);
         let start = currentPage * pageSize;
         let end = start + pageSize;
-        return target.slice(start, end)
+        console.log("Table's Data: ", source.slice(start, end));
+
+        return source.slice(start, end)
     }
 
     // ** Function to handle Modal toggle
 
     const handlePagination = page => {
         setCurrentPage(page.selected)
-        setDisplayOrder(getCurrentTableData(activeOrder, currentPage, pageSize))
+        setDisplayOrder(getCurrentTableData(deactivateOrder, currentPage, pageSize))
     }
 
 
@@ -264,17 +309,14 @@ const OrderManage = () => {
     function renderOrderCard() {
         let result = [];
         for (let order of activeOrder) {
-            // if ((filterStatus != -1 && order.status == filterStatus) || filterStatus == -1) {
-            //if (order.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+            console.log(order[sortOption.key])
             result.push(
                 <Col lg={4} md={6} sm={12} key={order._id.$oid}>
-                    <OrderCard products={products} baseOrder={order} />
+                    <OrderCard shipperOptions={shipperOptions} products={products} baseOrder={order} />
                 </Col>
             )
-            // }
-            // }
+
         }
-        console.log(`Có ${result.length}`)
         return result
     }
 
@@ -360,15 +402,23 @@ const OrderManage = () => {
                 </Col>
             </Row>
             <Row>
-                {products && renderOrderCard()}
+                {activeOrder && renderOrderCard()}
+                {(activeOrder.length == 0 || !activeOrder) && (
+                    <Col>
+                        <Card>
+                            <CardBody>
+                                Không còn đơn hàng nào cần xử lý
+                            </CardBody>
+                        </Card>
+                    </Col>
+                )}
             </Row>
             <Row>
                 <Col className='react-dataTable'>
-                    {console.log("Final Table's Data: ", displayOrder.length)}
+                    {/* {console.log("Final Table's Data: ", displayOrder.length)} */}
                     <DataTable
                         noHeader
                         pagination
-                        selectableRows
                         columns={tableColumns}
                         paginationPerPage={pageSize}
                         className='react-dataTable'
@@ -376,7 +426,6 @@ const OrderManage = () => {
                         paginationDefaultPage={currentPage + 1 + 0}
                         paginationComponent={CustomPagination}
                         data={displayOrder}
-                        selectableRowsComponent={BootstrapCheckbox}
                     />
                 </Col>
             </Row>

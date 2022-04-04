@@ -18,10 +18,10 @@ const AddNewModal = ({ open, updateOrderView, handleModal, order, products }) =>
     const [selectedProduct, setSelectedProduct] = useState({})
     const [productOptions, setProductOptions] = useState([])
     const [tempListProduct, setTempListProduct] = useState([])
-    console.log("UPDATE ORDER ID: ", order._id)
+    // console.log("UPDATE ORDER ID: ", order._id)
     useEffect(() => {
         setTempListProduct(order.product)
-        console.log("trigger update order model");
+        // console.log("trigger update order model");
         let option = [];
         for (let i = 0; i < products.length; i++) {
             let isExist = false;
@@ -37,7 +37,7 @@ const AddNewModal = ({ open, updateOrderView, handleModal, order, products }) =>
         }
 
         setProductOptions(option)
-        console.log("Product's Options: ", productOptions.length)
+        // console.log("Product's Options: ", pParrent:roductOptions.length)
     }, [])
 
     // ** Custom close btn

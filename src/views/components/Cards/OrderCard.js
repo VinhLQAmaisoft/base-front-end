@@ -24,13 +24,13 @@ import { User, Phone, Home } from 'react-feather'
 import { formatMoney } from '@utils'
 import UpdateOrderModal from '@my-components/Modals/UpdateOrderModal'
 import { OrderServices } from '@services'
-export default function OrderCard({ baseOrder, products }) {
+export default function OrderCard({ baseOrder, products, shipperOptions }) {
     const [modal, setModal] = useState(false)
     const [orderStatus, setOrderStatus] = useState(baseOrder?.status)
     const [order, setOrder] = useState(baseOrder)
     const [total, setTotal] = useState('');
-    console.log("Order status: ", order)
-    console.log("Products status: ", products)
+    console.log("Shipper Option status: ", shipperOptions)
+    // console.log("Products status: ", products)
     function renderHeader() {
         // status = parseInt(status)
         let label = '';
@@ -45,12 +45,12 @@ export default function OrderCard({ baseOrder, products }) {
         }
         let currentTime = Date.now();
         let delay = currentTime - order.updateAt
-        console.log("Delay: ", delay)
         if (delay < 60000) {
             delay = 0
             delayLabel = 'Vài giây trước'
         } else if (delay > 60000) {
             delay = Math.floor(delay / 60000);
+            console.log("Delay: ", delay)
             delayLabel = `${delay} phút trước`
         }
         return (<CardTitle className={delay < 5 ? 'text-success' : delay < 15 ? 'text-warning' : 'text-danger'} tag='h4'>
@@ -96,6 +96,14 @@ export default function OrderCard({ baseOrder, products }) {
                 <span className='align-middle ms-50'>{s.label}</span>
             </DropdownItem>
         ))
+    }
+
+    const renderShipperOptions = () => {
+        return shipperOptions.map(s =>
+            <DropdownItem className='w-100' onClick={() => { }}>
+                <span className='align-middle ms-50'>{s.fullName}</span>
+            </DropdownItem>
+        )
     }
 
     function renderProduct() {
@@ -183,21 +191,13 @@ export default function OrderCard({ baseOrder, products }) {
                             </UncontrolledButtonDropdown>
                         </Col>
                         <Col sm={12}>
-                            <Label className='me-1'>Shipper: </Label>
+                            <Label className='me-1'>Người ship: </Label>
                             <UncontrolledButtonDropdown>
                                 <DropdownToggle color='secondary' caret outline>
-                                    <span className='align-middle ms-50'>{orderStatus == -1 ? "Tất Cả" : orderStatus == 0 ? "Hoạt Động" : "Kết thúc"}</span>
+                                    <span className='align-middle ms-50'>Người ship:</span>
                                 </DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem className='w-100' onClick={() => setOrderStatus(-1)}>
-                                        <span className='align-middle ms-50'>Tất Cả</span>
-                                    </DropdownItem>
-                                    <DropdownItem className='w-100' onClick={() => setOrderStatus(0)}>
-                                        <span className='align-middle ms-50'>Hoạt Động</span>
-                                    </DropdownItem>
-                                    <DropdownItem className='w-100' onClick={() => setOrderStatus(1)}>
-                                        <span className='align-middle ms-50'>Kết Thúc</span>
-                                    </DropdownItem>
+                                    {renderShipperOptions()}
                                 </DropdownMenu>
                             </UncontrolledButtonDropdown>
                         </Col>

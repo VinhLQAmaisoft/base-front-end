@@ -13,7 +13,7 @@ import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputG
 // ** Styles
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
-const AddNewModal = ({ open, handleModal, comment, products }) => {
+const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products }) => {
     // ** State
     const [selectedProduct, setSelectedProduct] = useState({})
     const [productOptions, setProductOptions] = useState(products ? products : [])
@@ -22,6 +22,11 @@ const AddNewModal = ({ open, handleModal, comment, products }) => {
     // ** Custom close btn
     const CloseBtn = <X className='cursor-pointer' size={15} onClick={handleModal} />
 
+    useEffect(() => {
+        if (comment?.data?.products && comment?.data?.products.length > 0) {
+            setTempListProduct(comment?.data?.products);
+        }
+    })
 
     useEffect(() => {
         let option = [];
@@ -40,22 +45,39 @@ const AddNewModal = ({ open, handleModal, comment, products }) => {
         setProductOptions(option)
     }, [])
 
+    useEffect(() => {
+        let option = [];
+        for (let i = 0; i < products.length; i++) {
+            let isExist = false;
+            for (const product of tempListProduct) {
+                if (product.product.title === products[i].title) {
+                    isExist = true;
+                    break;
+                }
+            }
+            if (!isExist) {
+                option.push(products[i]);
+            }
+        }
+        setProductOptions(option)
+    }, [selectedProduct, tempListProduct])
 
 
     const addProduct = () => {
-        let quantity = document.getElementById("p-price").value;
-        if (/\D/.test(quantity)) {
-            return alert("Số Lượng Không Phù hợp");
+        let quantity = document.getElementById("p-price").value.trim();
+        console.log(`Add  ${selectedProduct} * ${quantity} `)
+
+        if (!selectedProduct || /\D/.test(quantity) || quantity == "") {
+            return alert("Thông tin không phù hợp");
         }
         else {
-            if (tempListProduct) {
+            if (tempListProduct.length > 0) {
                 setTempListProduct([...tempListProduct, { product: selectedProduct, quantity }])
 
             } else {
                 setTempListProduct([{ product: selectedProduct, quantity }])
             }
-            let newOption = productOptions.filter(product => product.title != selectedProduct.title)
-            setProductOptions(newOption)
+
             setSelectedProduct(null)
         }
     }
@@ -69,26 +91,42 @@ const AddNewModal = ({ open, handleModal, comment, products }) => {
             phone: document.getElementById('phone').value,
             customerId: comment.author.id,
             postId: comment.post_id,
+            createAt: Date.now(),
         }).then(data => {
             alert(data.data.message);
+            if (data.data.data) {
+                let tempComment = { ...comment };
+                tempComment.type = 1;
+                setSelectedComment(tempComment)
+            }
             handleModal()
         })
 
     }
 
+    const removeTempProduct = (index) => {
+        let temp = JSON.parse(JSON.stringify(tempListProduct));
+        temp.splice(index, 1);
+        setTempListProduct(temp)
+
+    }
+
     const renderProduct = () => {
-        return tempListProduct.map(product => (
+        return tempListProduct.map((product, index) => (
             <Row style={{ marginBottom: '5px' }}>
-                <Col>
+                <Col sm="5">
                     <Input type="text" disabled={true} defaultValue={product.product.title} />
                 </Col>
-                -
-                <Col>
+                <Col sm="4">
                     <Input type="number" defaultValue={product.quantity} onChange={(evt) => {
                         console.log(evt.target.value)
                     }} />
                 </Col>
-            </Row>
+                <Col sm="2">
+                    <Button color="warning" size="sm" onClick={() => { removeTempProduct(index) }} >x</Button>
+
+                </Col>
+            </Row >
         ))
     }
 

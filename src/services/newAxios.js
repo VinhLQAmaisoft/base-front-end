@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import Cookies from 'universal-cookie';
 export const BASE_URL = process.env.REACT_APP_BASE_SERVER_URL;
 
 const instance = axios.create({
@@ -10,6 +10,7 @@ const getCookie = (cname) => {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
   let ca = decodedCookie.split(';');
+  console.log("Base Cookie:")
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
     while (c.charAt(0) == ' ') {
@@ -23,8 +24,9 @@ const getCookie = (cname) => {
 }
 
 instance.interceptors.request.use(config => {
-  const token = getCookie('token')
-  console.log(token)
+  const cookies = new Cookies();
+  const token = cookies.get("token")
+  console.log("Token: ", cookies.getAll())
   config.headers.Authorization = token ? `${token}` : '';
   return config;
 }, err => {

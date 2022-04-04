@@ -59,7 +59,7 @@ export default function PostCard({ props, handleSelect }) {
                 {/* CONTENT */}
                 <Row className="mb-1">
                     <Col sm='12'>
-                        <textarea class="form-control" rows="10" defaultValue={props.content}>
+                        <textarea className="form-control" rows="10" defaultValue={props.content}>
 
                         </textarea>
                     </Col>

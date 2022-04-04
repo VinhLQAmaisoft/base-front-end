@@ -1,4 +1,4 @@
-import { User, Globe, Users, DollarSign, Aperture, Truck } from 'react-feather'
+import { User, Globe, Users, DollarSign, Aperture, Truck, Inbox } from 'react-feather'
 // import Post from '@src/assets/custom-icons/post.png'
 
 
@@ -54,7 +54,14 @@ export const shopkeeperNavigation = [
   {
     id: 'productmanage',
     title: 'Quản Lý Sản Phẩm',
-    icon: <Truck size={20} />,
+    icon: <Inbox size={20} />,
     navLink: '/shopkeeper/product-manage'
+  },
+  {
+    id: 'shippermanage',
+    title: 'Quản Lý Shipper',
+    icon: <Users size={20} />,
+    navLink: '/shopkeeper/shipper-manage'
   }
+
 ]

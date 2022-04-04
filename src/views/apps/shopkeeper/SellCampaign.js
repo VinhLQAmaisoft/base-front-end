@@ -46,9 +46,10 @@ export default ({ props }) => {
 
     function renderTabItem() {
         return postList.map(post =>
-            (<PostDetailTab post={post} />)
+            (<PostDetailTab post={post} key={post.fb_id} />)
         )
     }
+
 
     return (
         <Card className="p-1">
