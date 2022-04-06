@@ -80,7 +80,21 @@ const Login = () => {
         type: currentUser.type
       }
       localStorage.setItem('userData', JSON.stringify(userData))
-      history.push('/')
+      if (userData && userData.type) {
+        switch (userData.type) {
+          case 0:
+            history.push('/shopkeeper/order-manage')
+            break;
+          case 1:
+            history.push('/shopkeeper/post-manage')
+            break;
+          case 2:
+            history.push('/home')
+            break;
+          default: history.push('/login')
+            break;
+        }
+      }
       toast.success(
         <ToastContent name={currentUser.fullname} role={getRoleByType(currentUser.type)} />,
         { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }

@@ -20,8 +20,9 @@ export default function CreatePostTab(props) {
     };
 
     const addCookie = async () => {
-        let fbToken = document.getElementById('token').value;
-        let fbCookie = document.getElementById('cookie').value;
+        let fbToken = document.getElementById('c-token').value;
+        let fbCookie = document.getElementById('c-cookie').value;
+        console.log("Token - Cookie: ", fbToken, fbCookie);
         if (fbCookie === "" || fbToken === "")
             return alert("Không được bỏ trống Token hoặc Cookie")
         // KHỞI TẠO COOKIE & TOKEN
@@ -79,7 +80,7 @@ export default function CreatePostTab(props) {
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
             PostServices.uploadPost({
-                content,
+                content: content + '\n #3FS',
                 group: selectedGroup,
                 products: selectedProducts,
                 attachments
@@ -90,10 +91,6 @@ export default function CreatePostTab(props) {
                 }
             })
         }
-        console.log(content)
-        console.log(attachments)
-        console.log(selectedProducts)
-        console.log(selectedGroup)
     }
 
     const uploadAttachment = () => {
@@ -115,10 +112,10 @@ export default function CreatePostTab(props) {
 
     function renderProduct() {
         return productList.map(product => (<FormGroup check inline >
-            <Input type="checkbox" key={product._id} onChange={(event) => {
+            <Input type="checkbox" id={`product-${product._id}`} key={product._id} onChange={(event) => {
                 handleCheckProduct(event.target.checked, product)
             }} />
-            <Label check>
+            <Label check for={`product-${product._id}`} >
                 {product.title}
             </Label>
         </FormGroup>))
@@ -135,14 +132,14 @@ export default function CreatePostTab(props) {
                     <Row className="justify-content-center align-items-end">
                         <Col sm="4">
                             <Label className="text-dark fs-5">Cookie: </Label>
-                            <Input id="cookie" type='text' className='form-control' />
+                            <Input id="c-cookie" type='text' className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
                                 Lấy cookie & token Facebook tại đây
                             </a>
                         </Col>
                         <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
-                            <Input id="token" type='text' className='form-control' />
+                            <Input id="c-token" type='text' className='form-control' />
                             <a target="_blank"
                                 href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
                                 Lấy token facebook tại đây
@@ -170,7 +167,7 @@ export default function CreatePostTab(props) {
                                 <DropdownToggle color='secondary' caret outline>
                                     <span className='align-middle ms-50'>{selectedGroup.name ? selectedGroup.name : "Group"}</span>
                                 </DropdownToggle>
-                                <DropdownMenu>
+                                <DropdownMenu style={{ maxHeight: "200px", overflowY: "scroll" }}>
                                     {renderGroupList()}
                                 </DropdownMenu>
                             </UncontrolledButtonDropdown>
@@ -184,6 +181,8 @@ export default function CreatePostTab(props) {
                                 id="content"
                                 name="text"
                                 type="textarea"
+                                style={{ minHeight: '200px' }}
+
                             />
                         </Col>
                         {/* SẢN PHẨM */}

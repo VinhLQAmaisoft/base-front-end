@@ -2,6 +2,7 @@
 import { Fragment, useState, useEffect, forwardRef } from 'react'
 import { PostServices } from '@services'
 import PostCard from '../../components/Cards/PostCard'
+import PostDetailModal from '@my-components/Modals/PostDetailModal'
 // ** Table Data & Columns
 import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
@@ -36,6 +37,7 @@ const PostManage = () => {
   const [postData, setPostData] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
+  const [selectedPost, setSelectedPost] = useState(null)
   const [filterStatus, setFilterStatus] = useState(-1)
   const [sortOption, setSortOption] = useState({
     value: { createAt: 1 },
@@ -117,6 +119,11 @@ const PostManage = () => {
     }
   }
 
+  const handleSelect = post => {
+    setSelectedPost(post);
+    handleModal();
+  }
+
   function renderPostCard(listPost) {
 
     let result = [];
@@ -128,11 +135,11 @@ const PostManage = () => {
       </Col>
     )
     for (let post of listPost) {
-      if ((filterStatus != -1 && post.status == filterStatus) || filterStatus == -1) {
+      if ((filterStatus != 0 && post.status == filterStatus) || filterStatus == 0) {
         if (post.content.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
           result.push(
             <Col sm='4' className='mb-1' key={`card-${result.length}`}>
-              <PostCard props={post} />
+              <PostCard props={post} handleSelect={handleSelect} />
             </Col>
           )
         }
@@ -169,18 +176,18 @@ const PostManage = () => {
                 </Label>
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color='secondary' caret outline>
-                    <span className='align-middle ms-50'>{filterStatus == -1 ? "Tất Cả" : filterStatus == 0 ? "Hoạt Động" : "Kết thúc"}</span>
+                    <span className='align-middle ms-50'>{filterStatus == 0 ? "Tất Cả" : filterStatus == 1 ? "Hoạt Động" : "Kết thúc"}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(-1)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(0)}>
 
                       <span className='align-middle ms-50'>Tất Cả</span>
                     </DropdownItem>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(0)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(1)}>
 
                       <span className='align-middle ms-50'>Hoạt Động</span>
                     </DropdownItem>
-                    <DropdownItem className='w-100' onClick={() => setFilterStatus(1)}>
+                    <DropdownItem className='w-100' onClick={() => setFilterStatus(-1)}>
 
                       <span className='align-middle ms-50'>Kết Thúc</span>
                     </DropdownItem>
@@ -225,10 +232,7 @@ const PostManage = () => {
       <Row>
         {renderPostCard(postData)}
       </Row>
-      <style>
-
-      </style>
-      <AddNewModal open={modal} handleModal={handleModal} />
+      {selectedPost && <PostDetailModal post={selectedPost} open={modal} handleModal={handleModal} />}
     </Fragment >
   )
 }
