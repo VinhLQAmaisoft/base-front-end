@@ -8,6 +8,7 @@ import { Row, Col, CardTitle, CardText, Form, Label, Input, Button } from 'react
 import '@styles/react/pages/page-authentication.scss'
 import { sendUserLogin } from '../../../services/auth/index'
 import { toast, Slide } from 'react-toastify'
+import { getRoleByType } from '../../../utility/Utils'
 
 const ToastContent = ({ name, role }) => (
   <Fragment>
@@ -21,12 +22,6 @@ const ToastContent = ({ name, role }) => (
     </div>
   </Fragment>
 )
-
-const GetRoleByType = (type) => {
-  if (type === 2) {
-    return 'admin'
-  }
-}
 
 const setCookie = (cname, cvalue, exdays) => {
   const d = new Date();
@@ -57,7 +52,7 @@ const Login = () => {
 
   const onSubmit = data => {
     if (Object.values(data).every(field => field.length > 0)) {
-      // console.log({ username: data.loginUsername, password: data.loginPassword })
+      console.log({ username: data.loginUsername, password: data.loginPassword })
       dispatch(sendUserLogin({ username: data.loginUsername, password: data.loginPassword }))
       console.log(currentUser)
     } else {
@@ -87,7 +82,7 @@ const Login = () => {
       localStorage.setItem('userData', JSON.stringify(userData))
       history.push('/')
       toast.success(
-        <ToastContent name={currentUser.fullname} role={GetRoleByType(currentUser.type)} />,
+        <ToastContent name={currentUser.fullname} role={getRoleByType(currentUser.type)} />,
         { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
       )
     }

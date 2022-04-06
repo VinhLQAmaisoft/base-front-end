@@ -19,7 +19,7 @@ export const adminNavigation = [
     id: 'customermanage',
     title: 'Quản lý khách hàng',
     icon: <Users size={20} />,
-    navLink: '/third-page'
+    navLink: '/admin/customer-management'
   },
 ]
 

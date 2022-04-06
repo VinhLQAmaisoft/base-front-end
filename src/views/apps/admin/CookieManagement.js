@@ -2,7 +2,7 @@
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 
 // ** Table Data & Columns
-import {userdata ,userManageColumns } from '../admin/data'
+// import { userdata, cookieManageColumns } from '../admin/data'
 
 // ** Add New Modal Component
 
@@ -10,7 +10,7 @@ import {userdata ,userManageColumns } from '../admin/data'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
-import { UserData } from '../../../dummyData'
+import { CookieData } from '../../../dummyData'
 
 // ** Reactstrap Imports
 import {
@@ -27,7 +27,8 @@ import {
   DropdownToggle,
   UncontrolledButtonDropdown,
   CardBody,
-  Form
+  Form,
+  Badge
 } from 'reactstrap'
 
 // ** Bootstrap Checkbox Component
@@ -38,28 +39,78 @@ const BootstrapCheckbox = forwardRef((props, ref) => (
 ))
 
 const CookieManagement = () => {
-  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
+  const defaultSelectedData = { data: '', dtsg: '', uid: '', token: '', status: ''}
   // ** States
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
-  const [userData, setUserData] = useState([])
+  const [cookieData, setCookieData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
 
   // ** Function to handle Modal toggle
   const handleModal = () => setModal(!modal)
+
+  console.log(CookieData)
+
+  const status = {
+    1: { title: 'Hoạt động', color: 'light-success' },
+    0: { title: 'Ngừng hoạt động', color: 'light-danger' },
+  }
+
+  const cookieManageColumns = [
+    {
+      name: 'Cookie',
+      sortable: true,
+      minWidth: '200px',
+      selector: row => row.data.slice(0,10)
+    },
+    {
+      name: 'FB UID',
+      sortable: true,
+      minWidth: '50px',
+      selector: row => row.uid
+    },
+    {
+      name: 'DTSG',
+      sortable: true,
+      minWidth: '100px',
+      selector: row => row.dtsg
+    },
+    {
+      name: 'Token',
+      sortable: true,
+      minWidth: '100px',
+      selector: row => row.token
+    },
+    // {
+    //   name: 'Ngày tạo',
+    //   sortable: true,
+    //   minWidth: '250px',
+    //   selector: row => row.salary
+    // },
+    {
+      name: 'Trạng thái',
+      sortable: true,
+      minWidth: '150px',
+      selector: row => row.status,
+      cell: row => {
+        return (
+          <Badge color={status[row.status].color} pill>
+            {status[row.status].title}
+          </Badge>
+        )
+      }
+    },
+  ]
+
+  
 
   // ** Function to handle filter
   const handleFilter = e => {
     const value = e.target.value
     let updatedData = []
     setSearchValue(value)
-
-    const status = {
-      1: { title: 'Hoạt động', color: 'light-danger' },
-      0: { title: 'Ngừng hoạt động', color: 'light-success' },
-    }
 
     if (value.length) {
       updatedData = data.filter(item => {
@@ -104,7 +155,7 @@ const CookieManagement = () => {
       nextLabel=''
       forcePage={currentPage}
       onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(userdata.length / 7) || 1}
+      pageCount={searchValue.length ? Math.ceil(cookieData.length / 7) : Math.ceil(cookieData.length / 7) || 1}
       breakLabel='...'
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}
@@ -171,11 +222,11 @@ const CookieManagement = () => {
   };
 
   useEffect(() => {
-    const data = UserData.map(item => {
-      return { full_name: item.fullname, phone: item.phone, role: item.type, salary: '100', status: Number(item.isActive), password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: item.createAt, post_total: item.post.length, product_total: item.product.length }
+    const data = CookieData.map(item => {
+      return { data: item.data, dtsg: item.dtsg, uid: item.uid, token: item.token, status: item.status}
     })
     console.log(data)
-    setUserData(data)
+    setCookieData(data)
   }, [])
 
 
@@ -233,19 +284,65 @@ const CookieManagement = () => {
           <DataTable
             noHeader
             pagination
-            selectableRows
-            columns={userManageColumns}
+            columns={cookieManageColumns}
             paginationPerPage={7}
             className='react-dataTable'
             sortIcon={<ChevronDown size={10} />}
             paginationDefaultPage={currentPage + 1}
             paginationComponent={CustomPagination}
-            data={searchValue.length ? filteredData : userdata}
+            data={searchValue.length ? filteredData : cookieData}
             onRowClicked={handleRowClicked}
-            selectableRowsComponent={BootstrapCheckbox}
           // onSelectedRowsChange={handleChange}
           />
         </div>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle tag='h4'>Sửa Cookie</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Form>
+            <Row>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='cookieMulti'>
+                  Cookie
+                </Label>
+                <Input type='text' name='cookie' id='cookieMulti' placeholder='Cookie' value={selectedData.data } />
+              </Col>
+              <Col sm='12'>
+                <div className='d-flex'>
+                  <Button className='me-1' color='primary' type='submit'>
+                    Cập nhật
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle tag='h4'>Thêm Cookie</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Form>
+            <Row>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='newPasswordMulti'>
+                  Cookie
+                </Label>
+                <Input type='text' name='newPassword' id='newPasswordMulti' placeholder='Cookie' />
+              </Col>
+              <Col sm='12'>
+                <div className='d-flex'>
+                  <Button className='me-1' color='primary' type='submit'>
+                    Thêm
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </CardBody>
       </Card>
     </Fragment>
   )

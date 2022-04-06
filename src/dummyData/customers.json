@@ -1,0 +1,55 @@
+[{
+  "_id": {
+    "$oid": "622f228ef187e15ef6ccb010"
+  },
+  "fullname": [
+    "Quang Vinh"
+  ],
+  "phone": [
+    "0987654321",
+    "0966592831"
+  ],
+  "address": [
+    " a301l ",
+    "1 trọ a",
+    "1 trọ long dương",
+    " a302l ",
+    "1 a303r",
+    " trọ long an ",
+    "a301r"
+  ],
+  "order": [
+    {
+      "$oid": "62320ed1d9ea1ba2d080ca4c"
+    },
+    {
+      "$oid": "6232b671b4caaabbb39c67f3"
+    }
+  ],
+  "facebook_id": "100004337133436",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6236f66ea39f0bf5eb751033"
+  },
+  "fullname": [
+    "Lê Sỹ Thanh Long"
+  ],
+  "phone": [
+    "0987654321",
+    "0889684875",
+    "0347911038"
+  ],
+  "address": [
+    " a301l ",
+    " f406r ",
+    " f101r "
+  ],
+  "order": [
+    {
+      "$oid": "6236f66da39f0bf5eb75102e"
+    }
+  ],
+  "facebook_id": "100004603997082",
+  "__v": 0
+}]

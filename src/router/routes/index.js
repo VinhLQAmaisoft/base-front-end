@@ -17,6 +17,10 @@ const Routes = [
     component: lazy(() => import('../../views/apps/admin/CookieManagement'))
   },
   {
+    path: '/admin/customer-management',
+    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
+  },
+  {
     path: '/account-settings',
     component: lazy(() => import('../../views/pages/account-settings'))
   },
