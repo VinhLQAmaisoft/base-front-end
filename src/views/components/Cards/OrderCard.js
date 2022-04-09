@@ -28,8 +28,9 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
     const [modal, setModal] = useState(false)
     const [orderStatus, setOrderStatus] = useState(baseOrder?.status)
     const [order, setOrder] = useState(baseOrder)
+    const [shipper, setShipper] = useState(baseOrder?.shipper||"Chưa có người nhân")
     const [total, setTotal] = useState('');
-    console.log("Shipper Option status: ", shipperOptions)
+    // console.log("Shipper Option status: ", shipperOptions)
     // console.log("Products status: ", products)
     function renderHeader() {
         // status = parseInt(status)
@@ -50,7 +51,7 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
             delayLabel = 'Vài giây trước'
         } else if (delay > 60000) {
             delay = Math.floor(delay / 60000);
-            console.log("Delay: ", delay)
+            // console.log("Delay: ", delay)
             delayLabel = `${delay} phút trước`
         }
         return (<CardTitle className={delay < 5 ? 'text-success' : delay < 15 ? 'text-warning' : 'text-danger'} tag='h4'>
@@ -69,6 +70,15 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
     function handleUpdateStatus(id, status) {
         setOrderStatus(status.label)
         OrderServices.updateStatus(`?id=${id}&status=${status.value}`).then(data => {
+            alert(data.data.message)
+            OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
+        })
+    }
+
+    function handleUpdateShipper(s) {
+
+        setShipper(s.username)
+        OrderServices.editOrder({ _id: order._id, shipper: s.username }).then(data => {
             alert(data.data.message)
             OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
         })
@@ -100,8 +110,8 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
 
     const renderShipperOptions = () => {
         return shipperOptions.map(s =>
-            <DropdownItem className='w-100' onClick={() => { }}>
-                <span className='align-middle ms-50'>{s.fullName}</span>
+            <DropdownItem className='w-100' onClick={() => { handleUpdateShipper(s) }}>
+                <span className='align-middle ms-50'>{s.username}</span>
             </DropdownItem>
         )
     }
@@ -194,7 +204,7 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
                             <Label className='me-1'>Người ship: </Label>
                             <UncontrolledButtonDropdown>
                                 <DropdownToggle color='secondary' caret outline>
-                                    <span className='align-middle ms-50'>Người ship:</span>
+                                    <span className='align-middle ms-50'>{shipper}</span>
                                 </DropdownToggle>
                                 <DropdownMenu>
                                     {renderShipperOptions()}

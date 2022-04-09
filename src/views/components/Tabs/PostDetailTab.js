@@ -7,18 +7,18 @@ export default function PostDetailTab(props) {
     // console.log("PostDetailTab PROPS: ", props)
     const [modal, setModal] = useState(false);
     const [post, SetPost] = useState(props?.post);
+    const [scanJob, setScanJob] = useState(null);
+    const [counterJob, setCounterJob] = useState(null)
     const [comments, setComments] = useState([]);
     const [replySyntax, setReplySyntax] = useState([]);
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
     const [timer, setTimer] = useState(120);
-    const [intervalTask, setIntervalTask] = useState([]);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
     useEffect(() => {
-        let taskId = setCounter();
-        setInterval([...intervalTask, taskId])
+
         CommentServices.getComment(`?post_id=${post._id}`)
             .then((data) => {
                 if (data.data.data) {
@@ -33,9 +33,13 @@ export default function PostDetailTab(props) {
                     if (!data.data?.data) {
                         alert(data.data.message)
                     }
+                    let taskId = setCounter();
+                    setCounterJob(taskId)
                     CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
                     let task = createScanInterval(120)
-                    setIntervalTask([...intervalTask, task])
+                    setScanJob(task)
+
+
                 })
             })
             // setComments(postComment);
@@ -47,21 +51,34 @@ export default function PostDetailTab(props) {
 
     //Clear Interval Task!!!
     useEffect(() => {
-
         return () => {
-            window.clearInterval(intervalTask);
+            console.log("Leave Page!!!!!!!!!!!!!!!!!!!")
+            // if (scanJob) {
+                console.log("hủy job scan")
+                clearInterval(scanJob)
+            // }
+            // if (counterJob) {
+                console.log("hủy job counter")
+                clearInterval(counterJob)
+            // }
         };
     }, []);
 
     function setCounter() {
         console.log("START TIMER")
         return setInterval(() => {
-            if (timer > 0) {
-                // console.log('Count down before: ' + timer)
-                let tempTimer = timer
-                setTimer((old) => --old)
-                // console.log('Count down after: ' + timer)
-            }
+
+            // console.log('Count down before: ' + timer)
+            // let tempTimer = timer
+            setTimer((old) => {
+                if (old > 0)
+                    return --old
+                else {
+                    return 0
+                }
+            })
+            // console.log('Count down after: ' + timer)
+
         }, 1000)
     }
 
@@ -92,12 +109,17 @@ export default function PostDetailTab(props) {
     const createScanInterval = (second) => {
         const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
         let x = setInterval(() => {
+            let now = new Date()
+            console.log(`${now.toLocaleString()} Bắt Đầu Quét`)
             CommentServices.scanComment({
                 postId: post._id
             }).then(data => {
                 if (!data.data?.data) {
                     alert(data.data.message)
-                    clearInterval(x)
+                } else {
+                    let now2 = new Date()
+                    console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài`)
+                    CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
                 }
                 CommentServices.getComment(`?post_id=${post._id}`)
                     .then((data) => {
@@ -105,7 +127,6 @@ export default function PostDetailTab(props) {
                         setCommentRender(renderComment(comments));
                         setTimer(second)
                     })
-                CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
             })
         }, second * 1000)
         return x
@@ -306,7 +327,7 @@ export default function PostDetailTab(props) {
                         </Col>
                         <Col sm="2">
                             <Button color="primary" onClick={() => { addCookie() }}>
-                               Cập Nhật
+                                Cập Nhật
                             </Button>
                         </Col>
                     </Row>
