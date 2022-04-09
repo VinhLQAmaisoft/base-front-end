@@ -1,6 +1,6 @@
 import React from 'react'
 import ImageUploading from 'react-images-uploading';
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form } from 'reactstrap'
 import { UserServices, PostServices, ProductServices, AttachmentServices } from '@services';
 export default function CreatePostTab(props) {
     const [images, setImages] = React.useState([]);
@@ -77,6 +77,10 @@ export default function CreatePostTab(props) {
     const uploadPost = async () => {
         let attachments = await uploadAttachment().then(data => data.data.data).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
         let content = document.getElementById("content").value
+        let shipCost = parseInt(document.getElementById("shipCost").value);
+        if (!shipCost || isNaN(shipCost) || shipCost < 1000) {
+            return alert("Phí ship không hợp lệ")
+        }
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
             PostServices.uploadPost({
@@ -183,6 +187,20 @@ export default function CreatePostTab(props) {
                                 type="textarea"
                                 style={{ minHeight: '200px' }}
 
+                            />
+                        </Col>
+                        <Col sm="12" className="mb-2 d-flex align-items-center">
+                            <Label className="text-dark fs-5 me-1" for="exampleText">
+                                Phí Ship / Đơn (₫)
+                            </Label>
+                            <Input
+                                id="shipCost"
+                                name="number"
+                                placeholder="Phí ship"
+                                type="number"
+                                min={1000}
+                                step={500}
+                                style={{ maxWidth: '200px' }}
                             />
                         </Col>
                         {/* SẢN PHẨM */}

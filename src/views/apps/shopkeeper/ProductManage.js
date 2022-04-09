@@ -318,13 +318,12 @@ export default function ProductManage() {
                         <DataTable
                             noHeader
                             pagination
-
                             columns={tableColumns}
-                            paginationPerPage={pageSize}
+                            // paginationPerPage={pageSize}
                             className='react-dataTable'
                             sortIcon={<ChevronDown size={10} />}
-                            paginationDefaultPage={currentPage + 1 + 0}
-                            paginationComponent={CustomPagination}
+                            // paginationDefaultPage={currentPage + 1 + 0}
+                            // paginationComponent={CustomPagination}
                             data={searchValue != "" ? filteredData : product}
 
                         />
