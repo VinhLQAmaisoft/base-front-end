@@ -87,6 +87,16 @@ export const convertParamsToQuery = params => {
   return result
 }
 
+export const getRoleByType = (type) => {
+  if (type === 0) {
+    return 'Người giao hàng'
+  } else if (type === 1) {
+    return 'Chủ cửa hàng'
+  } else if (type === 2) {
+    return 'Admin'
+  }
+}
+
 export const formatMoney = (str) => {
   try {
     // console.log("Trigger");

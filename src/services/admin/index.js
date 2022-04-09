@@ -10,3 +10,69 @@ export const getAllUser = createAsyncThunk(`${BASE_URL}/account/user`, async (bo
         return thunkAPI.rejectWithValue(error.response.data);
     }
 });
+
+export const getAllCookie = createAsyncThunk(`${BASE_URL}/cookie/getAll`, async (body, thunkAPI) => {
+    try {
+        const param=''
+        const result = await newAxios.post('/cookie/getAll?keyword=' + param);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const getAllCustomer = createAsyncThunk(`${BASE_URL}/customer/get-customer`, async (body, thunkAPI) => {
+    try {
+        const param=''
+        const result = await newAxios.post('/customer/get-customer?keyword=' + param);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const getAllCustomerOrderDetail = createAsyncThunk(`${BASE_URL}/customer/get-order`, async (body, thunkAPI) => {
+    try {
+        console.log(body)
+        const result = await newAxios.post('/customer/get-order', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const createNewCookie = createAsyncThunk(`${BASE_URL}/cookie/create`, async (body, thunkAPI) => {
+    try {
+        console.log(body)
+        const result = await newAxios.post('/cookie/create', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const updateCookie = createAsyncThunk(`${BASE_URL}/cookie/update`, async (body, thunkAPI) => {
+    try {
+        console.log(body)
+        const result = await newAxios.put('/cookie/update', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
+
+export const updateUser = createAsyncThunk(`${BASE_URL}/account/admin-update-profile`, async (body, thunkAPI) => {
+    try {
+        console.log(body)
+        const result = await newAxios.put('/account/admin-update-profile', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});

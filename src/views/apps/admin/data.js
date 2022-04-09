@@ -17,10 +17,10 @@ const status = {
   0: { title: 'Ngừng hoạt động', color: 'light-success' },
 }
 
-export let allDataUser = () => {
-  const { allUser } = useSelector(state => state.adminReducer);
-  return allUser
-}
+// export let allDataUser = () => {
+  
+//   return allUser
+// }
 
 
 // console.log(allUser)

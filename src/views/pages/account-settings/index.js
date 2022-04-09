@@ -10,8 +10,8 @@ import { Row, Col, TabContent, TabPane } from 'reactstrap'
 // ** Demo Components
 import Tabs from './Tabs'
 import Breadcrumbs from '@components/breadcrumbs'
-import AccountTab from './AccountTab'
-import SecurityTab from './SecurityTab'
+import AccountTabContent from './AccountTab'
+import SecurityTabContent from './SecurityTab'
 
 // ** Styles
 import '@styles/react/libs/flatpickr/flatpickr.scss'
@@ -20,15 +20,12 @@ import '@styles/react/pages/page-account-settings.scss'
 const AccountSettings = () => {
   // ** States
   const [activeTab, setActiveTab] = useState('1')
-  const [data, setData] = useState(null)
+  // const [data, setData] = useState(null)
+  const data = JSON.parse(localStorage.getItem('userData'))
 
   const toggleTab = tab => {
     setActiveTab(tab)
   }
-
-//   useEffect(() => {
-//     axios.get('/account-setting/data').then(response => setData(response.data))
-//   }, [])
 
   return (
     <Fragment>
@@ -40,10 +37,10 @@ const AccountSettings = () => {
 
             <TabContent activeTab={activeTab}>
               <TabPane tabId='1'>
-                <AccountTab data={data.general} />
+                <AccountTabContent data={data} />
               </TabPane>
               <TabPane tabId='2'>
-                <SecurityTab />
+                <SecurityTabContent />
               </TabPane>
             </TabContent>
           </Col>

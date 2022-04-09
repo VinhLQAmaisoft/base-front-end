@@ -26,7 +26,9 @@ const getCookie = (cname) => {
 instance.interceptors.request.use(config => {
   const cookies = new Cookies();
   const token = cookies.get("token")
+  const newToken = getCookie('token')
   console.log("Token: ", cookies.getAll())
+  console.log(newToken)
   config.headers.Authorization = token ? `${token}` : '';
   return config;
 }, err => {

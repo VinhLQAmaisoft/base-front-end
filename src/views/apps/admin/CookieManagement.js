@@ -1,18 +1,11 @@
-// ** React Imports
-import { Fragment, useState, forwardRef, useEffect } from 'react'
-
-// ** Table Data & Columns
-import {userdata ,userManageColumns } from '../admin/data'
-
-// ** Add New Modal Component
-
-// ** Third Party Components
+import { Fragment, useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
+import { getAllCookie, createNewCookie, updateCookie } from '../../../services/admin/index'
+import { useDispatch, useSelector } from 'react-redux'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
-import { UserData } from '../../../dummyData'
+import { toast, Slide } from 'react-toastify'
 
-// ** Reactstrap Imports
 import {
   Row,
   Col,
@@ -27,39 +20,95 @@ import {
   DropdownToggle,
   UncontrolledButtonDropdown,
   CardBody,
-  Form
+  Form,
+  Badge
 } from 'reactstrap'
 
-// ** Bootstrap Checkbox Component
-const BootstrapCheckbox = forwardRef((props, ref) => (
-  <div className='form-check'>
-    <Input type='checkbox' ref={ref} {...props} />
-  </div>
-))
+const ToastContent = ({ name, message }) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>{message}</span>
+    </div>
+  </Fragment>
+)
+
 
 const CookieManagement = () => {
-  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
-  // ** States
-  const [modal, setModal] = useState(false)
+  const defaultSelectedData = { data: '', dtsg: '', uid: '', token: '', status: '' }
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
-  const [userData, setUserData] = useState([])
+  const [cookieData, setCookieData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
+  const { allCookie, getResult, cookieResult, createCookieResult, cookieUpdated, updatedCookieResult } = useSelector(state => state.adminReducer);
+  const [newCookie, setNewCookie] = useState('')
+  const [updatedCookie, setUpdatedCookie] = useState('')
 
-  // ** Function to handle Modal toggle
-  const handleModal = () => setModal(!modal)
+  const dispatch = useDispatch()
+
+  const status = {
+    1: { title: 'Hoạt động', color: 'light-success' },
+    0: { title: 'Ngừng hoạt động', color: 'light-danger' },
+  }
+
+  const cookieManageColumns = [
+    {
+      name: 'Cookie',
+      sortable: true,
+      minWidth: '200px',
+      selector: row => row.data.slice(0, 10)
+    },
+    {
+      name: 'FB UID',
+      sortable: true,
+      minWidth: '50px',
+      selector: row => row.uid
+    },
+    {
+      name: 'DTSG',
+      sortable: true,
+      minWidth: '100px',
+      selector: row => row.dtsg
+    },
+    {
+      name: 'Token',
+      sortable: true,
+      minWidth: '100px',
+      selector: row => row.token
+    },
+    // {
+    //   name: 'Ngày tạo',
+    //   sortable: true,
+    //   minWidth: '250px',
+    //   selector: row => row.salary
+    // },
+    {
+      name: 'Trạng thái',
+      sortable: true,
+      minWidth: '150px',
+      selector: row => row.status,
+      cell: row => {
+        return (
+          <Badge color={status[row.status].color} pill>
+            {status[row.status].title}
+          </Badge>
+        )
+      }
+    },
+  ]
+
+
 
   // ** Function to handle filter
   const handleFilter = e => {
     const value = e.target.value
     let updatedData = []
     setSearchValue(value)
-
-    const status = {
-      1: { title: 'Hoạt động', color: 'light-danger' },
-      0: { title: 'Ngừng hoạt động', color: 'light-success' },
-    }
 
     if (value.length) {
       updatedData = data.filter(item => {
@@ -104,7 +153,7 @@ const CookieManagement = () => {
       nextLabel=''
       forcePage={currentPage}
       onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(userdata.length / 7) || 1}
+      pageCount={searchValue.length ? Math.ceil(cookieData.length / 7) : Math.ceil(cookieData.length / 7) || 1}
       breakLabel='...'
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}
@@ -170,14 +219,84 @@ const CookieManagement = () => {
     setSelectedData(row)
   };
 
+  const onUpdateSubmit = e => {
+    console.log(updatedCookie)
+    if (updatedCookie != '') {
+      dispatch(updateCookie({cookie: updatedCookie, uid: selectedData.uid}))
+    } else {
+      toast.info(
+        <ToastContent name={'mới'} message={'Cookie không có gì thay dổi'} />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    }
+    e.preventDefault()
+  }
+
+  const onAddSubmit = e => {
+    console.log(newCookie)
+    if (newCookie != '') {
+      dispatch(createNewCookie({ cookie: newCookie }))
+    } else {
+      console.log('Rong')
+    }
+    e.preventDefault()
+  }
+
   useEffect(() => {
-    const data = UserData.map(item => {
-      return { full_name: item.fullname, phone: item.phone, role: item.type, salary: '100', status: Number(item.isActive), password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: item.createAt, post_total: item.post.length, product_total: item.product.length }
-    })
-    console.log(data)
-    setUserData(data)
+    if (cookieUpdated == null && updatedCookieResult == false) {
+      console.log('csadcsd')
+    } else {
+      if (cookieUpdated.data == null && updatedCookieResult == true) {
+        toast.error(
+          <ToastContent name={'lỗi'} message={cookieUpdated.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (cookieUpdated.data != null && updatedCookieResult == true) {
+        toast.success(
+          <ToastContent name={'mới'} message={cookieUpdated.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        dispatch(getAllCookie())
+      }
+    }
+    console.log(cookieResult)
+  }, [cookieUpdated, updatedCookieResult])
+
+
+  useEffect(() => {
+    if (cookieResult == null && createCookieResult == false) {
+      console.log('csadcsd')
+    } else {
+      if (cookieResult.data == null && createCookieResult == true) {
+        toast.error(
+          <ToastContent name={'lỗi'} message={cookieResult.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (cookieResult.data != null && createCookieResult == true) {
+        toast.success(
+          <ToastContent name={'mới'} message={cookieResult.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        dispatch(getAllCookie())
+      }
+    }
+    console.log(cookieResult)
+  }, [cookieResult, createCookieResult])
+
+  useEffect(() => {
+    dispatch(getAllCookie())
   }, [])
 
+  useEffect(() => {
+    if (getResult == true && allCookie !== null) {
+      const data = allCookie.map(item => {
+        // const status = item.sta === undefined ? 0 : Number(item.isActive)
+        return { data: item.data, dtsg: item.dtsg, uid: item.uid, token: item.token, status: item.status }
+      })
+      setCookieData(data)
+      console.log(allCookie)
+    }
+  }, [getResult, allCookie])
 
   return (
     <Fragment>
@@ -233,19 +352,65 @@ const CookieManagement = () => {
           <DataTable
             noHeader
             pagination
-            selectableRows
-            columns={userManageColumns}
+            columns={cookieManageColumns}
             paginationPerPage={7}
             className='react-dataTable'
             sortIcon={<ChevronDown size={10} />}
             paginationDefaultPage={currentPage + 1}
             paginationComponent={CustomPagination}
-            data={searchValue.length ? filteredData : userdata}
+            data={searchValue.length ? filteredData : cookieData}
             onRowClicked={handleRowClicked}
-            selectableRowsComponent={BootstrapCheckbox}
           // onSelectedRowsChange={handleChange}
           />
         </div>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle tag='h4'>Sửa Cookie</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Form onSubmit={onUpdateSubmit}>
+            <Row>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='updateCookie'>
+                  Cookie
+                </Label>
+                <Input type='text' name='updateCookie' id='updateCookieMulti' placeholder='Cookie' defaultValue={selectedData.data} onChange={e => setUpdatedCookie(e.target.value)} />
+              </Col>
+              <Col sm='12'>
+                <div className='d-flex'>
+                  <Button className='me-1' color='primary' type='submit'>
+                    Cập nhật
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle tag='h4'>Thêm Cookie</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <Form onSubmit={onAddSubmit}>
+            <Row>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='newCookieMulti'>
+                  Cookie
+                </Label>
+                <Input type='text' name='newCookie' id='newCookieMulti' placeholder='Cookie' onChange={e => setNewCookie(e.target.value)} />
+              </Col>
+              <Col sm='12'>
+                <div className='d-flex'>
+                  <Button className='me-1' color='primary' type='submit'>
+                    Thêm
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </CardBody>
       </Card>
     </Fragment>
   )
