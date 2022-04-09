@@ -1,5 +1,4 @@
 import { Fragment, useState, forwardRef, useEffect } from 'react'
-import { userdata, userManageColumns, allDataUser } from '../admin/data'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
@@ -8,9 +7,8 @@ import { getAllUser } from '../../../services/admin'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatTimeStamp, getRoleByType } from '../../../utility/Utils'
 import Flatpickr from 'react-flatpickr'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-
+import { toast, Slide } from 'react-toastify'
+import { updateUser } from '../../../services/admin'
 
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -33,17 +31,22 @@ import {
   CardBody,
   Form,
   Badge,
-  FormFeedback
+  FormFeedback,
+  FormGroup
 } from 'reactstrap'
 
-// ** Bootstrap Checkbox Component
-// const BootstrapCheckbox = forwardRef((props, ref) => (
-//   <div className='form-check'>
-//     <Input type='checkbox' ref={ref} {...props} />
-//   </div>
-// ))
-
-
+const ToastContent = ({ name, message }) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>{message}</span>
+    </div>
+  </Fragment>
+)
 
 const UserManagement = () => {
   const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
@@ -52,20 +55,18 @@ const UserManagement = () => {
   const [filteredData, setFilteredData] = useState([{}])
   const [userData, setUserData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
-  const { allUser, getResult } = useSelector(state => state.adminReducer);
+  const { allUser, getResult, userUpdated, updatedUserResult} = useSelector(state => state.adminReducer);
   const dispatch = useDispatch()
 
+  const [email, setEmail] = useState('')
   const [fullname, setFullname] = useState('')
   const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [dob, setDob] = useState('')
+  const [birthDate, setBirthDate] = useState('')
 
-  const onSubmit = e => {
-    e.preventDefault();
-    console.log(fullname, phone, email, dob)
-  }
-
-
+  const [emailError, setEmailError] = useState(false)
+  const [fullnameError, setFullnamError] = useState(false)
+  const [phoneError, setPhoneError] = useState(false)
+  const [birthDateError, setBirthDateError] = useState(false)
 
   const status = {
     1: { title: 'Hoạt động', color: 'light-success' },
@@ -228,25 +229,97 @@ const UserManagement = () => {
     setSelectedData(row)
   };
 
-  // const handleSubmit = e => {
-  //   e.preventDefault();
-  //   console.log(data)
-  //   // setSelectedData(row)
-  // };
+  const validateFullname = (e) => {
+    const fullnameRegex = /^([\w]{2,})+\s+([\w\s]{2,})+$/i
+    if (fullnameRegex.test(e.target.value)) {
+      setFullnamError(false)
+    } else {
+      setFullnamError(true)
+    }
+  }
+
+  const validateEmail = (e) => {
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    if (emailRegex.test(e.target.value)) {
+      setEmailError(false)
+    } else {
+      setEmailError(true)
+    }
+  }
+
+  const validatePhone = (e) => {
+    const phoneRegex = /^[0-9]{10}$/
+    if (phoneRegex.test(e.target.value)) {
+      setPhoneError(false)
+    } else {
+      setPhoneError(true)
+    }
+  }
+  // const validateEmail = (e) => {
+
+  // }
+
+  const onSubmit = e => {
+    e.preventDefault();
+    console.log(email)
+    console.log(fullname)
+    console.log(phone)
+    console.log(birthDate)
+    const submitFullname = fullname == '' ? selectedData.full_name : fullname
+    const submitEmail = email == '' ? selectedData.email : email
+    const submitPhone = phone == '' ? selectedData.phone : phone
+    const submitBirthdate = birthDate == '' ? selectedData.birthdate : birthDate
+    if (fullname == '' && email == '' && phone == '' && birthDate == '') {
+      toast.info(
+        <ToastContent name={'mới'} message={'Cookie không có gì thay dổi'} />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    } else {
+      dispatch(updateUser({
+        _id: selectedData.id,
+        username: selectedData.username,
+        fullname: submitFullname,
+        phone: submitPhone,
+        email: submitEmail,
+        birthdate: submitBirthdate,
+        replySyntaxs: selectedData.replySyntaxs
+      }))
+    }
+  }
+
+  useEffect(() => {
+    if (userUpdated == null && updatedUserResult == false) {
+      console.log('csadcsd')
+    } else {
+      if (userUpdated.data == null && updatedUserResult == true) {
+        toast.error(
+          <ToastContent name={'lỗi'} message={userUpdated.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (userUpdated.data != null && updatedUserResult == true) {
+        toast.success(
+          <ToastContent name={'mới'} message={userUpdated.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        dispatch(getAllUser())
+      }
+    }
+    console.log(userUpdated)
+  }, [userUpdated, updatedUserResult])
 
   useEffect(() => {
     dispatch(getAllUser())
   }, [])
 
   useEffect(() => {
-    if (getResult === true) {
+    if (getResult == true && allUser !== null) {
       const data = allUser.map(item => {
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
-        return { full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length }
+        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length }
       })
       setUserData(data)
     }
-  }, [getResult])
+  }, [getResult, allUser])
 
   return (
     <Fragment>
@@ -310,8 +383,7 @@ const UserManagement = () => {
             paginationComponent={CustomPagination}
             data={searchValue.length ? filteredData : userData}
             onRowClicked={handleRowClicked}
-          // selectableRowsComponent={BootstrapCheckbox}
-          // onSelectedRowsChange={handleChange}
+
           />
         </div>
       </Card>
@@ -320,92 +392,102 @@ const UserManagement = () => {
           <CardTitle tag='h4'>Chi tiết</CardTitle>
         </CardHeader>
 
-        <CardBody>
+        <Form onSubmit={onSubmit}>
+          <CardBody>
 
-          <Row>
-            <Form onSubmit={(e) => onSubmit(e)}>
-              <Row>
-                <Col md='6' sm='12' className='mb-1'>
-                  <Label className='form-label' for='nameMulti'>
-                    Tên tài khoản
-                  </Label>
-                  <Input type='text' name='name' id='nameMulti' placeholder='Tran Van A' value={selectedData.full_name} onChange={(e) => console.log(e.target.value)} />
-                </Col>
-                <Col md='6' sm='12' className='mb-1'>
-                  <Label className='form-label' for='phoneMulti'>
-                    Số điện thoại
-                  </Label>
-                  <Input type='text' name='phone' id='phoneMulti' placeholder='phone' value={selectedData.phone} onChange={(e) => console.log(e.target.value)} />
-                </Col>
-                <Col md='6' sm='12' className='mb-1'>
-                  <Label className='form-label' for='emailMulti'>
-                    Email
-                  </Label>
-                  <Input type='email' name='email' id='emailMulti' placeholder='email' value={selectedData.email} onChange={(e) => console.log(e.target.value)} />
-                </Col>
-                <Col md='6' sm='12' className='mb-1'>
-                  <Label className='form-label' for='birthdateMulti'>
-                    Ngày sinh
-                  </Label>
-                  <Flatpickr id='date-time-picker' className='form-control' value={selectedData.birthdate} onChange={(date) => field.onChange(date)} />
-                </Col>
-              </Row>
-            </Form>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='passwordMulti'>
-                Mật khẩu
-              </Label>
-              <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} />
-            </Col>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='ownerMulti'>
-                Người chủ
-              </Label>
-              <Input type='text' name='owner' id='ownerMulti' placeholder='owner' value={selectedData.owner} disabled />
-            </Col>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='postMulti'>
-                Tổng bài
-              </Label>
-              <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData.post_total} disabled />
-            </Col>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='joiningDateMulti'>
-                Ngày tham gia
-              </Label>
-              <Input type='text' name='joiningdate' id='joiningDateMulti' placeholder='00/00/0000' value={selectedData.joiningdate} disabled />
-            </Col>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='productMulti'>
-                Tổng sản phẩm
-              </Label>
-              <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData.product_total} disabled />
-            </Col>
-            <Col md='6' sm='12' className='mb-1'>
-              <Label className='form-label' for='salaryMulti'>
-                Tổng doanh thu
-              </Label>
-              <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={selectedData.salary} disabled />
-            </Col>
-            <Col sm='12'>
-              <div className='d-flex'>
-                <Button className='me-1' color='primary' type='submit'>
-                  Cập nhật
-                </Button>
-                <Button className='me-1' outline color='secondary' type='reset'>
-                  Đổi mật khẩu
-                </Button>
-                <Button className='me-1' outline color='secondary' type='reset'>
-                  Thông tin cá nhân
-                </Button>
-                <Button outline color='' type='reset'>
-                  <Facebook size={15} className='align-middle me-sm-25 me-0' />
-                  Facebook
-                </Button>
-              </div>
-            </Col>
-          </Row>
-        </CardBody>
+            <Row>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='fullnameMulti'>
+                  Tên chủ tài khoản
+                </Label>
+                <Input type='text' name='fullname' id='fullnameMulti' placeholder='fullname' defaultValue={selectedData.full_name} invalid={fullnameError} onChange={(e) => {
+                  validateFullname(e)
+                  setFullname(e.target.value)
+                }} />
+                {fullnameError ? <FormFeedback>Tên không phù hợp</FormFeedback> : null}
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='phoneMulti'>
+                  Số điện thoại
+                </Label>
+                <Input type='text' name='phone' id='phoneMulti' placeholder='phone' defaultValue={selectedData.phone} invalid={phoneError} onChange={(e) => {
+                  validatePhone(e)
+                  setPhone(e.target.value)
+                }} />
+                {phoneError ? <FormFeedback>Số điện thoại không phù hợp</FormFeedback> : null}
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='emailMulti'>
+                  Email
+                </Label>
+                <Input type='text' name='email' id='emailMulti' placeholder='email' defaultValue={selectedData.email} invalid={emailError} onChange={(e) => {
+                  validateEmail(e)
+                  setEmail(e.target.value)
+                }} />
+                {emailError ? <FormFeedback>Email không phù hợp</FormFeedback> : null}
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='birthdateMulti'>
+                  Ngày sinh
+                </Label>
+                <Flatpickr id='date-time-picker' className='form-control' defaultValue={selectedData.birthdate} onChange={(date) => setBirthDate(date)} />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='passwordMulti'>
+                  Mật khẩu
+                </Label>
+                <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='ownerMulti'>
+                  Người chủ
+                </Label>
+                <Input type='text' name='owner' id='ownerMulti' placeholder='owner' value={selectedData.owner} disabled />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='postMulti'>
+                  Tổng bài
+                </Label>
+                <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData.post_total} disabled />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='joiningDateMulti'>
+                  Ngày tham gia
+                </Label>
+                <Input type='text' name='joiningdate' id='joiningDateMulti' placeholder='00/00/0000' value={selectedData.joiningdate} disabled />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='productMulti'>
+                  Tổng sản phẩm
+                </Label>
+                <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData.product_total} disabled />
+              </Col>
+              <Col md='6' sm='12' className='mb-1'>
+                <Label className='form-label' for='salaryMulti'>
+                  Tổng doanh thu
+                </Label>
+                <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={selectedData.salary} disabled />
+              </Col>
+              <Col sm='12'>
+                <div className='d-flex'>
+                  <Button type='submit' className='me-1' color='primary'>
+                    Cập nhật
+                  </Button>
+                  <Button className='me-1' outline color='secondary'>
+                    Đổi mật khẩu
+                  </Button>
+                  <Button className='me-1' outline color='secondary'>
+                    Thông tin cá nhân
+                  </Button>
+                  <Button outline color=''>
+                    <Facebook size={15} className='align-middle me-sm-25 me-0' />
+                    Facebook
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </CardBody>
+        </Form>
       </Card>
     </Fragment>
   )

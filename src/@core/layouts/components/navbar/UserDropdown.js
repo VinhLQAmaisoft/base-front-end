@@ -20,24 +20,28 @@ import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
 
 const UserDropdown = () => {
   // ** State
-  const [userData] = useState(null)
   const dispatch = useDispatch()
-  //** ComponentDidMount
-  // useEffect(() => {
-  //   if (isUserLoggedIn() !== null) {
-  //     setUserData(JSON.parse(localStorage.getItem('userData')))
-  //   }
-  // }, [])
+  const userData = JSON.parse(localStorage.getItem('userData'))
+  let role
+  if (userData.type === 0) {
+    role = 'Shipper'
+  } else if (userData.type === 1) {
+    role = 'Shopkeeper'
+  } else if (userData.type === 2) {
+    role = 'Admin'
+  } else {
 
-  //** Vars
-  const userAvatar = (userData && userData.avatar) || defaultAvatar
+  }
+
+
+  const userAvatar =  defaultAvatar
 
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name fw-bold'>{(userData && userData['username']) || 'John Doe'}</span>
-          <span className='user-status'>{(userData && userData.role) || 'Admin'}</span>
+          <span className='user-name fw-bold'>{userData.fullname}</span>
+          <span className='user-status'>{role}</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
