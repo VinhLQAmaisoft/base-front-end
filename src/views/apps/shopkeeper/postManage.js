@@ -4,9 +4,7 @@ import { PostServices } from '@services'
 import PostCard from '../../components/Cards/PostCard'
 import PostDetailModal from '@my-components/Modals/PostDetailModal'
 // ** Table Data & Columns
-import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
-import AddNewModal from './AddNewModal'
 
 
 // ** Reactstrap Imports

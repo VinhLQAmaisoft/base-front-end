@@ -279,7 +279,7 @@ export default function ProductManage() {
                         if (isExist.length > 0) {
                             isExist[0].saleCount += parseInt(data.quantity)
                         } else {
-                            newProducts.push({ saleCount: data.quantity, ...data.product })
+                            newProducts.push({ saleCount: parseInt(data.quantity), ...data.product })
                         }
                     }
                 }

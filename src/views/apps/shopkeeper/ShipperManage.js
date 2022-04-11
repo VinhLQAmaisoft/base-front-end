@@ -105,68 +105,11 @@ export default function ProductManage() {
         }
     }
 
-    const updateProduct = () => {
-        console.log("Sản phẩm cũ: ", selectedShipper)
-        let title = document.getElementById("d-title").value;
-        let price = document.getElementById("d-price").value;
-        console.log("New Title: " + title)
-        console.log(`New Price ${price} -> Invalid: ` + /\D/g.test(price))
-
-        let oldKeyWord = [...selectedShipper.keyword];
-        console.log("Old Keyword: ", oldKeyWord)
-        let newKeyWord = document.getElementById("d-newKeyWord").value;
-        newKeyWord = newKeyWord != '' ? newKeyWord.split(',') : []
-        newKeyWord = newKeyWord.length > 0 ? newKeyWord.filter(keyword => keyword.trim()) : [];
-        console.log("New Keyword: ", newKeyWord)
-
-        if (newKeyWord && newKeyWord.length > 0) {
-            for (const keyword of newKeyWord) {
-                if (oldKeyWord.indexOf(keyword) > -1)
-                    return alert(`Trùng từ khóa "${keyword}"`)
-            }
-        }
-        if (title == "" || /\D/.test(price)) {
-            return alert("Tên hoặc giá không phù hợp");
-        }
-        let newProduct = JSON.parse(JSON.stringify(selectedShipper));
-        newProduct.title = title;
-        newProduct.price = parseFloat(price);
-        newProduct.keyword = [...oldKeyWord, ...newKeyWord];
-        ProductServices.updateProduct(newProduct).then(data => {
-            alert(data.data.message);
-            ProductServices.getProduct().then(data => {
-                if (data.data.data) {
-                    setShippers(data.data.data)
-                    getCurrentObject(shippers)
-                }
-            })
-        })
-
-    }
-
-    const addProduct = () => {
-        let title = document.getElementById("a-title").value;
-        let price = document.getElementById("a-price").value;
-        if (!/\D/.test(price) && !title == "") {
-            ProductServices.createProduct({ title, price }).then(data => {
-                alert(data.data.message);
-                setShippers([...shippers, data.data.data])
-                getCurrentObject(shippers)
-
-            })
-        } else alert("Giá tiền hoặc tên sản phẩm không phù hợp")
-    }
-
     const deleteShipper = (id) => {
         ShipperServices.deleteShipper({ id }).then(data => {
             alert(data.data.message);
-            // ProductServices.getProduct().then(data => {
-            //     if (data.data.data) {
-            //         setShippers(data.data.data)
-            //         getCurrentObject(shippers)
-
-            //     }
-            // })
+            let newShipper = shippers.find(shipper => shipper.id != id)
+            setShippers(newShipper)
         })
     }
 

@@ -54,12 +54,12 @@ export default function PostDetailTab(props) {
         return () => {
             console.log("Leave Page!!!!!!!!!!!!!!!!!!!")
             // if (scanJob) {
-                console.log("hủy job scan")
-                clearInterval(scanJob)
+            console.log("hủy job scan")
+            clearInterval(scanJob)
             // }
             // if (counterJob) {
-                console.log("hủy job counter")
-                clearInterval(counterJob)
+            console.log("hủy job counter")
+            clearInterval(counterJob)
             // }
         };
     }, []);
@@ -161,7 +161,7 @@ export default function PostDetailTab(props) {
     }
 
     const disableComment = () => {
-        PostServices.disablePost({ postId: post.fb_id }).then(data => alert(data.data.message))
+        PostServices.disablePost({ postId: post.fb_id }).then(data => alert(data.data.message)).then(() => window.location.reload())
     }
 
     const replyComment = (commentId, syntax) => {

@@ -71,6 +71,7 @@ const Login = () => {
     if (currentUser === null) {
       console.log('hahaha')
     } else {
+      
       setCookie('token', currentUser.token, 99)
       const userData = {
         fullname: currentUser.fullname,
@@ -83,7 +84,7 @@ const Login = () => {
       if (userData && userData.type) {
         switch (userData.type) {
           case 0:
-            history.push('/shopkeeper/order-manage')
+            history.push('/shipper/order-manage')
             break;
           case 1:
             history.push('/shopkeeper/post-manage')
@@ -171,12 +172,7 @@ const Login = () => {
                   )}
                 />
               </div>
-              <div className='form-check mb-1'>
-                <Input type='checkbox' id='remember-me' />
-                <Label className='form-check-label' for='remember-me'>
-                  Duy trì đăng nhập
-                </Label>
-              </div>
+
               <Button color='primary' block>
                 Đăng nhập
               </Button>

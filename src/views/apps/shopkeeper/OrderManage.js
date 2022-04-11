@@ -4,7 +4,6 @@ import { formatMoney, formatTimeStamp } from '@utils'
 import { OrderServices, ProductServices, UserServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
-import { data } from './data'
 // ** Add New Modal Component
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
