@@ -10,6 +10,10 @@ const DefaultRoute = '/home'
 const Routes = [
   {
     path: '/home',
+    component: lazy(() => import('../../views/pages/Home'))
+  },
+  {
+    path: '/admin/user-management',
     component: lazy(() => import('../../views/apps/admin/UserManagement'))
   },
   {
@@ -72,7 +76,7 @@ const Routes = [
   },
   {
     path: '/shipper/order-manage',
-    component: lazy(() => import('../../views/apps/shipper/OrderManage')),
+    component: lazy(() => import('../../views/apps/shipper/ShipperOrderManagement')),
     layout: 'VerticalLayout'
   },
   {
