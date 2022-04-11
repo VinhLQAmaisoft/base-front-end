@@ -7,7 +7,7 @@ export const adminNavigation = [
     id: 'usermanage',
     title: 'Quản lý người dùng',
     icon: <User size={20} />,
-    navLink: '/home'
+    navLink: '/admin/user-management'
   },
   {
     id: 'cookiemanage',
@@ -28,7 +28,7 @@ export const shipperNavigation = [
     id: 'shipperOrdermanage',
     title: 'Quản lý đơn hàng',
     icon: <User size={20} />,
-    navLink: '/home'
+    navLink: '/shipper/order-manage'
   },
 ]
 

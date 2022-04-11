@@ -10,6 +10,10 @@ const DefaultRoute = '/home'
 const Routes = [
   {
     path: '/home',
+    component: lazy(() => import('../../views/pages/Home'))
+  },
+  {
+    path: '/admin/user-management',
     component: lazy(() => import('../../views/apps/admin/UserManagement'))
   },
   {
@@ -58,9 +62,15 @@ const Routes = [
     path: '/shopkeeper/product-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/ProductManage')),
     layout: 'VerticalLayout'
-  }, {
+  }, 
+  {
     path: '/shopkeeper/shipper-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/ShipperManage')),
+    layout: 'VerticalLayout'
+  },
+  {
+    path: '/shipper/order-manage',
+    component: lazy(() => import('../../views/apps/shipper/ShipperOrderManagement')),
     layout: 'VerticalLayout'
   },
   {
