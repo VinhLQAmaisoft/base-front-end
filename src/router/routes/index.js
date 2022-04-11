@@ -1,7 +1,7 @@
 import { lazy } from 'react'
 
 // ** Document title
-const TemplateTitle = '%s - Vuexy React Admin Template'
+const TemplateTitle = '3SF'
 
 // ** Default Route
 const DefaultRoute = '/home'

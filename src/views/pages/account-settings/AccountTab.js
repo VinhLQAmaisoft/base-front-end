@@ -13,14 +13,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getUserProfile } from '../../../services/user'
 // ** Utils
 import { selectThemeColors } from '@utils'
-
+import Flatpickr from 'react-flatpickr'
+import '@styles/react/libs/flatpickr/flatpickr.scss'
 // ** Demo Components
 // import DeleteAccount from './DeleteAccount'
 
-const AccountTab = ({ data }) => {
+
+const AccountTab = ({data}) => {
   // ** Hooks
   const dispatch = useDispatch()
-  const { userProfile, getUserProfileResult } = useSelector(state => state.adminReducer);
+  const { userProfile, getUserProfileResult } = useSelector(state => state.userReducer);
+  // const [data, setData] = useState()
   const defaultValues = {
     lastName: '',
     // firstName: data.fullName.split(' ')[0]
@@ -64,9 +67,13 @@ const AccountTab = ({ data }) => {
   }, [])
 
   useEffect(() => {
-    console.log(userProfile)
-  }, [])
-  
+    if (getUserProfileResult == true && userProfile != undefined ) {
+      console.log(userProfile.fullname)
+      // setData(userProfile)
+    }
+  }, [getUserProfileResult])
+
+  console.log(getUserProfileResult)
 
   const handleImgReset = () => {
     setAvatar(require('@src/assets/images/avatars/avatar-blank.png').default)
@@ -106,15 +113,23 @@ const AccountTab = ({ data }) => {
                   name='fullName'
                   control={control}
                   render={({ field }) => (
-                    <Input id='fullName' placeholder='Fullname' defaultValue={data.fullname} invalid={errors.firstName && true} {...field} />
+                    <Input id='fullName' placeholder='Fullname' defaultValue={data.fullname} invalid={errors.fullname && true} {...field} />
                   )}
                 />
                 {errors && errors.fullName && <FormFeedback>Please enter a valid First Name</FormFeedback>}
               </Col>
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='emailInput'>
+                <Label className='form-label' for='email'>
                   E-mail
                 </Label>
+                <Controller
+                  name='email'
+                  control={control}
+                  render={({ field }) => (
+                    <Input id='email' placeholder='email' defaultValue={data.email} invalid={errors.email && true} {...field} />
+                  )}
+                />
+                {errors && errors.email && <FormFeedback>Please enter a valid First Name</FormFeedback>}
                 <Input id='emailInput' type='email' name='email' placeholder='Email' defaultValue={data.email} />
               </Col>
               {/* <Col sm='6' className='mb-1'>
@@ -136,18 +151,18 @@ const AccountTab = ({ data }) => {
                 />
               </Col>
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='address'>
-                  Address
+                <Label className='form-label' for='updateDob'>
+                  Ngày sinh
                 </Label>
-                <Input id='address' name='address' placeholder='12, Business Park' />
+                <Flatpickr id='date-time-picker' className='form-control'  /*onChange={(date) => setBirthDate(date)}*/ />
               </Col>
               <Col className='mt-2' sm='12'>
                 <Button type='submit' className='me-1' color='primary'>
                   Save changes
                 </Button>
-                <Button color='secondary' outline>
+                {/* <Button color='secondary' outline>
                   Discard
-                </Button>
+                </Button> */}
               </Col>
             </Row>
           </Form>
