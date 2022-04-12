@@ -34,7 +34,7 @@ const slice = createSlice({
       state.isAuth = true;
       // state.loading = true;
       // state.updatingSuccess = false;
-      state.currentUser = action.payload.data
+      state.currentUser = action.payload
       console.log(state, action)
     });
     builder.addCase(sendUserLogin.rejected, (state, action) => {

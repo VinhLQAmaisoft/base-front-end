@@ -23,6 +23,19 @@ const ToastContent = ({ name, role }) => (
   </Fragment>
 )
 
+const ToastErrorContent = ({ name, content }) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>{content}</span>
+    </div>
+  </Fragment>
+)
+
 const setCookie = (cname, cvalue, exdays) => {
   const d = new Date();
   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -68,40 +81,45 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (currentUser === null) {
-      console.log('hahaha')
-    } else {
-      setCookie('token', currentUser.token, 99)
-      const userData = {
-        fullname: currentUser.fullname,
-        birthdate: currentUser.birthdate,
-        email: currentUser.email,
-        phone: currentUser.phone,
-        type: currentUser.type
-      }
-      localStorage.setItem('userData', JSON.stringify(userData))
-      console.log(userData.type)
-      if (userData) {
-        switch (userData.type) {
-          case 0:
-            history.push('/home')
-            break;
-          case 1:
-            history.push('/shopkeeper/post-manage')
-            break;
-          case 2:
-            history.push('/home')
-            break;
-          default: history.push('/login')
-            break;
+    if (currentUser !== null && isAuth == true) {
+      if (currentUser.data == null) {
+        toast.error(
+          <ToastErrorContent name='lỗi' content={currentUser.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else {
+        setCookie('token', currentUser.data.token, 99)
+        const userData = {
+          fullname: currentUser.data.fullname,
+          birthdate: currentUser.data.birthdate,
+          email: currentUser.data.email,
+          phone: currentUser.data.phone,
+          type: currentUser.data.type
         }
+        localStorage.setItem('userData', JSON.stringify(userData))
+        console.log(userData.type)
+        if (userData) {
+          switch (userData.type) {
+            case 0:
+              history.push('/home')
+              break;
+            case 1:
+              history.push('/shopkeeper/post-manage')
+              break;
+            case 2:
+              history.push('/home')
+              break;
+            default: history.push('/login')
+              break;
+          }
+        }
+        toast.success(
+          <ToastContent name={currentUser.data.fullname} role={getRoleByType(currentUser.data.type)} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
       }
-      toast.success(
-        <ToastContent name={currentUser.fullname} role={getRoleByType(currentUser.type)} />,
-        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-      )
     }
-  }, [currentUser])
+  }, [currentUser, isAuth])
 
 
   return (
