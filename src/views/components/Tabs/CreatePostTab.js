@@ -138,7 +138,7 @@ export default function CreatePostTab(props) {
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input id="c-cookie" type='text' className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
-                                Lấy cookie & token Facebook tại đây
+                                Lấy cookie facebook tại đây
                             </a>
                         </Col>
                         <Col sm="4">
@@ -167,14 +167,23 @@ export default function CreatePostTab(props) {
                         {/* NHÓM CHỈ ĐỊNH */}
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
-                            <UncontrolledButtonDropdown className="ml-2">
+                            {groupList.length > 0 && <UncontrolledButtonDropdown className="ml-2">
                                 <DropdownToggle color='secondary' caret outline>
                                     <span className='align-middle ms-50'>{selectedGroup.name ? selectedGroup.name : "Group"}</span>
                                 </DropdownToggle>
                                 <DropdownMenu style={{ maxHeight: "200px", overflowY: "scroll" }}>
                                     {renderGroupList()}
                                 </DropdownMenu>
-                            </UncontrolledButtonDropdown>
+                            </UncontrolledButtonDropdown>}
+                            {groupList.length == 0 &&
+                                <Input
+                                    id="selected-group"
+                                    name="text"//setSelectedGroup(group)
+                                    onChange={(evt) => { setSelectedGroup({ name: evt.target.value, groupId: evt.target.value }) }}
+                                    placeholder="Facebook ID của nhóm được chọn"
+                                    style={{ maxWidth: '200px' }}
+                                />
+                            }
                         </Col>
                         {/* NỘI DUNG */}
                         <Col sm="12" className="mb-2">

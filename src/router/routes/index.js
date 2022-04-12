@@ -76,7 +76,7 @@ const Routes = [
   },
   {
     path: '/shipper/order-manage',
-    component: lazy(() => import('../../views/apps/shipper/ShipperOrderManagement')),
+    component: lazy(() => import('../../views/apps/shipper/OrderManage')),
     layout: 'VerticalLayout'
   },
   {

@@ -10,6 +10,7 @@ import {
     CardBody,
     CardFooter
 } from 'reactstrap'
+import { formatTimeStamp } from '../../../utility/Utils'
 export default function PostCard({ props, handleSelect }) {
     const [imageUrl, setImageUrl] = useState('https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg')
 
@@ -47,7 +48,7 @@ export default function PostCard({ props, handleSelect }) {
                     className="mb-0 text-secondary"
                     tag="h6"
                 >
-                    Nhóm: {props.group.name} (26/11/2021 - 10:20:00)
+                    Nhóm: {props.group.name} ({formatTimeStamp(props.createAt)})
                 </CardSubtitle>
             </CardHeader>
 
@@ -59,7 +60,7 @@ export default function PostCard({ props, handleSelect }) {
                 {/* CONTENT */}
                 <Row className="mb-1">
                     <Col sm='12'>
-                        <textarea className="form-control" rows="10" defaultValue={props.content}>
+                        <textarea className="form-control" rows="10" disabled={true} defaultValue={props.content}>
 
                         </textarea>
                     </Col>

@@ -14,17 +14,17 @@ export default function PostDetailTab(props) {
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
+    const [isScan, setIsScan] = useState(true)
+    const [isComment, setIsComment] = useState(true)
     const [timer, setTimer] = useState(120);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
     useEffect(() => {
-
         CommentServices.getComment(`?post_id=${post._id}`)
             .then((data) => {
                 if (data.data.data) {
                     setComments(sortComment(data.data.data));
                     setCommentRender(renderComment(comments));
-
                 }
                 CommentServices.scanComment({
                     postId: post._id
@@ -67,9 +67,6 @@ export default function PostDetailTab(props) {
     function setCounter() {
         console.log("START TIMER")
         return setInterval(() => {
-
-            // console.log('Count down before: ' + timer)
-            // let tempTimer = timer
             setTimer((old) => {
                 if (old > 0)
                     return --old
@@ -77,8 +74,6 @@ export default function PostDetailTab(props) {
                     return 0
                 }
             })
-            // console.log('Count down after: ' + timer)
-
         }, 1000)
     }
 
@@ -111,15 +106,19 @@ export default function PostDetailTab(props) {
         let x = setInterval(() => {
             let now = new Date()
             console.log(`${now.toLocaleString()} Bắt Đầu Quét`)
-            CommentServices.scanComment({
+            isScan && CommentServices.scanComment({
                 postId: post._id
             }).then(data => {
                 if (!data.data?.data) {
                     alert(data.data.message)
+                    setIsScan = false;
+                    setIsComment = false;
                 } else {
                     let now2 = new Date()
                     console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài`)
-                    CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+                    if (isComment) {
+                        CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+                    }
                 }
                 CommentServices.getComment(`?post_id=${post._id}`)
                     .then((data) => {
@@ -292,6 +291,7 @@ export default function PostDetailTab(props) {
                             </UncontrolledButtonDropdown>
 
 
+
                             {
                                 match == -1 && <Button color="danger" size="sm" outline={true} onClick={() => cancelOrder(comment.fb_id)} className="cancel-button me-1">
                                     Hủy Đơn
@@ -305,7 +305,7 @@ export default function PostDetailTab(props) {
     }
 
     const counter = () => {
-        return <Badge color="success">Quét comment sau: {timer}s</Badge>
+        return <Badge color="success">Cập nhật sau: {timer}s</Badge>
     }
 
     return (
@@ -342,17 +342,35 @@ export default function PostDetailTab(props) {
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}
-                        <Col sm="3" className="d-flex mb-1">
+                        <Col sm="6" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
                             <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
                         </Col >
-                        <Col sm="2">
+                        <Col sm="3">
                             <a target="_blank" href={`https://facebook.com/${post.fb_id}`}>
                                 <Button color="primary">
                                     Chi tiết
                                 </Button>
                             </a>
                         </Col>
+                        <Col sm="12" className="d-flex mb-1">
+                            <Label className="text-dark fs-5 me-1">Tự động quét comment: </Label>
+                            <Input
+                                type="checkbox"
+                                checked={isScan}
+                                onChange={(e) => setIsScan(e.target.checked)} />
+                        </Col >
+                        <Col sm="12" className="d-flex mb-1">
+                            <Label className="text-dark fs-5 me-1">Tự động chấm bài: </Label>
+                            <Input
+                                type="checkbox"
+                                checked={isComment}
+                                onChange={(e) => setIsComment(e.target.checked)} />
+                        </Col >
+                        <Col sm="12" className="d-flex mb-1">
+                            <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
+                            <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
+                        </Col >
                         {/* NỘI DUNG */}
                         <Col sm="12" className="mb-2">
                             <Label className="text-dark fs-5" for="exampleText">
@@ -367,6 +385,7 @@ export default function PostDetailTab(props) {
                                 editable="false"
                             />
                         </Col>
+
                         {/* SẢN PHẨM */}
                         <Col sm="12" className="mb-2">
                             <Label className="text-dark fs-5" for="exampleText">

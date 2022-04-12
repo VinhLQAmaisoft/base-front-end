@@ -111,7 +111,6 @@ const OrderManage = () => {
     }, [pageSize])
 
 
-
     const sortOptions = [
         {
             key: "createAt",
@@ -148,7 +147,7 @@ const OrderManage = () => {
         {
             name: 'Khách Hàng',
             sortable: true,
-            minWidth: '200px',
+            minWidth: '150px',
             selector: row => row.customerName,
             format: row => renderCustomerName(row.customerName, row.customerId)
         },
@@ -179,7 +178,7 @@ const OrderManage = () => {
         {
             name: 'Kết Quả',
             sortable: true,
-            minWidth: '100px',
+            minWidth: '130px',
             selector: row => row.status,
             format: row => (<Badge color={row.status == "done" ? "success" : row.status == "cancel" ? "danger" : "warning"}>
                 {row.status == "done" ? "Hoàn Thành" : row.status == "cancel" ? "Hủy Đơn" : "Khác"}
@@ -351,7 +350,7 @@ const OrderManage = () => {
                     <Card className="p-1">
                         <CardTitle>Bộ Lọc</CardTitle>
                         <Row>
-                            <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                            <Col sm={6} className="d-flex pt-1 pb-1 align-items-center" >
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
                                     Trạng Thái:
                                 </Label>
@@ -376,7 +375,7 @@ const OrderManage = () => {
                                 </UncontrolledButtonDropdown>
                             </Col>
 
-                            <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                            <Col sm={6} className="d-flex pt-1 pb-1 align-items-center" >
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
                                     Sắp Xếp:
                                 </Label>
@@ -390,7 +389,7 @@ const OrderManage = () => {
                                 </UncontrolledButtonDropdown>
                             </Col>
 
-                          
+
 
                             {/* <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
@@ -439,7 +438,7 @@ const OrderManage = () => {
                             sortIcon={<ChevronDown size={10} />}
                             data={deactivateOrder}
                             paginationComponentOptions={
-                                {rowsPerPageText:"Số Bản Ghi / Trang"}
+                                { rowsPerPageText: "Số Bản Ghi / Trang" }
                             }
                         // paginationPerPage={pageSize}
                         // pagination

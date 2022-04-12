@@ -71,13 +71,13 @@ export default function ProductManage() {
     const tableColumns = [{
         name: 'Sản Phẩm',
         sortable: true,
-        minWidth: '100px',
+        maxWidth: '200px',
         selector: row => row.title
 
     }, {
         name: 'Giá Tiền',
         sortable: true,
-        minWidth: '50px',
+        maxWidth: '150px',
         selector: row => row.price,
         format: row => formatMoney(row.price)
 
