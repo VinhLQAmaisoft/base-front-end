@@ -80,10 +80,11 @@ const Login = () => {
         type: currentUser.type
       }
       localStorage.setItem('userData', JSON.stringify(userData))
-      if (userData && userData.type) {
+      console.log(userData.type)
+      if (userData) {
         switch (userData.type) {
           case 0:
-            history.push('/shopkeeper/order-manage')
+            history.push('/home')
             break;
           case 1:
             history.push('/shopkeeper/post-manage')
