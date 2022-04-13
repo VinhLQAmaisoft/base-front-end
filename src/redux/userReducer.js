@@ -1,9 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getUserProfile } from '../services/user/index'
+import { getUserProfile, updateUserProfile, changeUserPassword } from '../services/user/index'
 
 const initialState = {
   userProfile: null,
-  getUserProfileResult: false
+  getUserProfileResult: false,
+  userProfileUpdated: null,
+  updateUserProfileResult: false,
+  userPasswordUpdated: null,
+  updateUserPasswordResult: false,
 }
 
 const slice = createSlice({
@@ -34,16 +38,27 @@ const slice = createSlice({
       console.log('err:', action.error);
     });
 
-    // builder.addCase(getAllCookie.fulfilled, (state, action) => {
-    //   state.allCookie = action.payload.data;
-    //   state.getResult = true
-    //   console.log(state, action)
-    // });
+    builder.addCase(updateUserProfile.fulfilled, (state, action) => {
+      state.userProfileUpdated = action.payload;
+      state.updateUserProfileResult = true
+      console.log(state, action)
+    });
 
-    // builder.addCase(getAllCookie.rejected, (state, action) => {
-    //   state.getResult = false;
-    //   console.log('err:', action.error);
-    // });
+    builder.addCase(updateUserProfile.rejected, (state, action) => {
+      state.updateUserProfileResult = false;
+      console.log('err:', action.error);
+    });
+
+    builder.addCase(changeUserPassword.fulfilled, (state, action) => {
+      state.userPasswordUpdated = action.payload;
+      state.updateUserPasswordResult = true
+      console.log(state, action)
+    });
+
+    builder.addCase(changeUserPassword.rejected, (state, action) => {
+      state.updateUserPasswordResult = false;
+      console.log('err:', action.error);
+    });
   }
 });
 
