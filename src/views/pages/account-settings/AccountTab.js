@@ -3,7 +3,8 @@ import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { Row, Col, Form, Card, Input, Label, Button, CardBody, CardTitle, CardHeader, FormFeedback } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { getUserProfile } from '../../../services/user'
+import { toast, Slide } from 'react-toastify'
+import { updateUserProfile } from '../../../services/user'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Flatpickr from 'react-flatpickr'
 import { toast, Slide } from 'react-toastify'
@@ -32,12 +33,12 @@ const AccountTab = ({ data }) => {
   })
 
   const dispatch = useDispatch()
-  const { userProfile, getUserProfileResult } = useSelector(state => state.userReducer);
+  const { userProfileUpdated, updateUserProfileResult } = useSelector(state => state.userReducer);
 
   // console.log(data.birthdate)
 
   const defaultValues = {
-    fullName: data.fullname,
+    fullname: data.fullname,
     email: data.email,
     phone: data.phone,
     birthdate: new Date(data.birthdate)
@@ -50,7 +51,7 @@ const AccountTab = ({ data }) => {
   } = useForm({ defaultValues, mode: 'onChange', resolver: yupResolver(updateSchema) })
 
   // ** States
-  const [avatar, setAvatar] = useState('')
+  // const [avatar, setAvatar] = useState('')
 
   const onSubmit = data => {
     console.log(Object.values(data).every(field => {
@@ -71,13 +72,11 @@ const AccountTab = ({ data }) => {
   }
 
   useEffect(() => {
-    dispatch(getUserProfile())
-  }, [])
-
-  useEffect(() => {
-    if (getUserProfileResult == true && userProfile != undefined) {
-      console.log(userProfile.fullname)
-      // setData(userProfile)
+    if (userProfileUpdated != null && updateUserProfileResult == true) {
+      toast.success(
+        <ToastContent name='thành công' message={userProfileUpdated.message}/>,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
     }
   }, [getUserProfileResult])
 
@@ -112,11 +111,11 @@ const AccountTab = ({ data }) => {
           <Form className='mt-2 pt-50' onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='fullName'>
+                <Label className='form-label' for='fullname'>
                   Họ và tên
                 </Label>
                 <Controller
-                  name='fullName'
+                  name='fullname'
                   control={control}
                   render={({ field }) => (
                     <Input id='fullName' placeholder='Fullname' invalid={errors.fullname && true} {...field} />
