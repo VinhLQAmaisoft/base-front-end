@@ -1,79 +1,88 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
-
-// ** Third Party Components
-import Select from 'react-select'
-import Cleave from 'cleave.js/react'
 import { useForm, Controller } from 'react-hook-form'
-import 'cleave.js/dist/addons/cleave-phone.us'
-
-// ** Reactstrap Imports
+import * as yup from 'yup'
 import { Row, Col, Form, Card, Input, Label, Button, CardBody, CardTitle, CardHeader, FormFeedback } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { getUserProfile } from '../../../services/user'
-// ** Utils
-import { selectThemeColors } from '@utils'
+import { toast, Slide } from 'react-toastify'
+import { updateUserProfile } from '../../../services/user'
+import { yupResolver } from '@hookform/resolvers/yup'
 import Flatpickr from 'react-flatpickr'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
-// ** Demo Components
-// import DeleteAccount from './DeleteAccount'
 
+const ToastContent = ({name, message}) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>{message}</span>
+    </div>
+  </Fragment>
+)
 
-const AccountTab = ({data}) => {
-  // ** Hooks
+const AccountTab = ({ data }) => {
+  
+  const updateSchema = yup.object().shape({
+    fullname: yup.string().matches(/^([\w]{2,})+\s+([\w\s]{2,})+$/i, 'Tên không phù hợp').required('Bạn cần nhập tên'),
+    email: yup.string().email().required('Bạn cần nhập email'),
+    birthdate: yup.date().required('Bạn cần nhập ngày sinh'),
+    phone: yup.string().matches(/^[0-9]{10}$/, 'Bạn cần nhập số, không nhập chữ hoặc kí tự đặc biệt').required('Bạn cần nhập số điện thoại'),
+  })
+
   const dispatch = useDispatch()
-  const { userProfile, getUserProfileResult } = useSelector(state => state.userReducer);
-  // const [data, setData] = useState()
+  const { userProfileUpdated, updateUserProfileResult } = useSelector(state => state.userReducer);
+
+  // console.log(data)
+
   const defaultValues = {
-    lastName: '',
-    // firstName: data.fullName.split(' ')[0]
-    firstName: ''
+    fullname: data.fullname,
+    email: data.email,
+    phone: data.phone,
+    birthdate: new Date(data.birthdate)
   }
   const {
     control,
     setError,
     handleSubmit,
     formState: { errors }
-  } = useForm({ defaultValues })
+  } = useForm({ defaultValues, mode: 'onChange', resolver: yupResolver(updateSchema) })
 
   // ** States
-  const [avatar, setAvatar] = useState('')
+  // const [avatar, setAvatar] = useState('')
 
-  const onChange = e => {
-    const reader = new FileReader(),
-      files = e.target.files
-    reader.onload = function () {
-      setAvatar(reader.result)
-    }
-    reader.readAsDataURL(files[0])
-  }
+  // const onChange = e => {
+  //   const reader = new FileReader(),
+  //     files = e.target.files
+  //   reader.onload = function () {
+  //     setAvatar(reader.result)
+  //   }
+  //   reader.readAsDataURL(files[0])
+  // }
 
-  const onSubmit = data => {
-    if (Object.values(data).every(field => field.length > 0)) {
-      return null
-    } else {
-      for (const key in data) {
-        if (data[key].length === 0) {
-          setError(key, {
-            type: 'manual'
-          })
-        }
-      }
-    }
+  const onSubmit = submitData => {
+    dispatch(updateUserProfile({
+      username: data.username,
+      fullname: submitData.fullname,
+      birthdate: submitData.birthdate,
+      phone: submitData.phone,
+      email: submitData.email,
+      replySyntaxs: data.replySyntaxs
+     }))
   }
 
   useEffect(() => {
-    dispatch(getUserProfile())
-  }, [])
-
-  useEffect(() => {
-    if (getUserProfileResult == true && userProfile != undefined ) {
-      console.log(userProfile.fullname)
-      // setData(userProfile)
+    if (userProfileUpdated != null && updateUserProfileResult == true) {
+      toast.success(
+        <ToastContent name='thành công' message={userProfileUpdated.message}/>,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
     }
-  }, [getUserProfileResult])
-
-  console.log(getUserProfileResult)
+  }, [userProfileUpdated, updateUserProfileResult])
+  
+  console.log(userProfileUpdated)
 
   const handleImgReset = () => {
     setAvatar(require('@src/assets/images/avatars/avatar-blank.png').default)
@@ -106,17 +115,17 @@ const AccountTab = ({data}) => {
           <Form className='mt-2 pt-50' onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='fullName'>
-                  Fullname
+                <Label className='form-label' for='fullname'>
+                  Họ và tên
                 </Label>
                 <Controller
-                  name='fullName'
+                  name='fullname'
                   control={control}
                   render={({ field }) => (
-                    <Input id='fullName' placeholder='Fullname' defaultValue={data.fullname} invalid={errors.fullname && true} {...field} />
+                    <Input id='fullname' placeholder='Họ và tên' invalid={errors.fullname && true} {...field} />
                   )}
                 />
-                {errors && errors.fullName && <FormFeedback>Please enter a valid First Name</FormFeedback>}
+                {errors && errors.fullname && <FormFeedback>{errors.fullname.message}</FormFeedback>}
               </Col>
               <Col sm='6' className='mb-1'>
                 <Label className='form-label' for='email'>
@@ -126,35 +135,42 @@ const AccountTab = ({data}) => {
                   name='email'
                   control={control}
                   render={({ field }) => (
-                    <Input id='email' placeholder='email' defaultValue={data.email} invalid={errors.email && true} {...field} />
+                    <Input id='email' placeholder='Email' type='email' name='email' invalid={errors.email && true} {...field} />
                   )}
                 />
-                {errors && errors.email && <FormFeedback>Please enter a valid First Name</FormFeedback>}
-                <Input id='emailInput' type='email' name='email' placeholder='Email' defaultValue={data.email} />
+                {errors && errors.email && <FormFeedback>{errors.email.message}</FormFeedback>}
               </Col>
-              {/* <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='company'>
-                  Company
-                </Label>
-                <Input defaultValue={data.company} id='company' name='company' placeholder='Company Name' />
-              </Col> */}
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='phNumber'>
-                  Phone Number
+                <Label className='form-label' for='phone'>
+                  Số điện thoại
                 </Label>
-                <Cleave
-                  id='phNumber'
-                  name='phNumber'
-                  className='form-control'
-                  placeholder='1 234 567 8900'
-                  options={{ phone: true, phoneRegionCode: 'US' }}
+                <Controller
+                  name='phone'
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      id='phone'
+                      name='phone'
+                      className='form-control'
+                      placeholder='Số điện thoại'
+                      invalid={errors.phone && true} {...field}
+                    />
+                  )}
                 />
+                {errors && errors.phone && <FormFeedback>{errors.phone.message}</FormFeedback>}
               </Col>
               <Col sm='6' className='mb-1'>
                 <Label className='form-label' for='updateDob'>
                   Ngày sinh
                 </Label>
-                <Flatpickr id='date-time-picker' className='form-control'  /*onChange={(date) => setBirthDate(date)}*/ />
+                <Controller
+                  name='birthdate'
+                  control={control}
+                  render={({ field }) => (
+                    <Flatpickr id='date-time-picker' className='form-control' name='birthdate'/*onChange={(date) => setBirthDate(date)}*/ invalid={errors.birthdate && true} {...field}/>
+                  )}
+                />
+                {errors && errors.birthdate && <FormFeedback>{errors.birthdate.message}</FormFeedback>}              
               </Col>
               <Col className='mt-2' sm='12'>
                 <Button type='submit' className='me-1' color='primary'>

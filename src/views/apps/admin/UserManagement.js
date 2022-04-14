@@ -4,8 +4,9 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
 import { getAllUser } from '../../../services/admin'
+import { UserServices } from '../../../services'
 import { useDispatch, useSelector } from 'react-redux'
-import { formatTimeStamp, getRoleByType } from '../../../utility/Utils'
+import { formatMoney, formatTimeStamp, getRoleByType } from '../../../utility/Utils'
 import Flatpickr from 'react-flatpickr'
 import { toast, Slide } from 'react-toastify'
 import { updateUser } from '../../../services/admin'
@@ -55,7 +56,7 @@ const UserManagement = () => {
   const [filteredData, setFilteredData] = useState([{}])
   const [userData, setUserData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
-  const { allUser, getResult, userUpdated, updatedUserResult} = useSelector(state => state.adminReducer);
+  const { allUser, getResult, userUpdated, updatedUserResult } = useSelector(state => state.adminReducer);
   const dispatch = useDispatch()
 
   const [email, setEmail] = useState('')
@@ -226,7 +227,7 @@ const UserManagement = () => {
 
   const handleRowClicked = row => {
     console.log(row)
-    setSelectedData(row)
+    UserServices.getUserDetail('?id=' + row.id).then(data => setSelectedData(data.data.data))
   };
 
   const validateFullname = (e) => {
@@ -321,6 +322,26 @@ const UserManagement = () => {
     }
   }, [getResult, allUser])
 
+
+  const calTotal = (type, orders) => {
+    let total = 0;
+    switch (type) {
+      case 0:
+        orders.forEach(order => total += order.shipCost)
+        break;
+      case 1:
+        orders.forEach(order => {
+          order.product.forEach(prd => {
+            total += parseInt(prd.quantity) * prd.product.price
+          })
+        })
+        break;
+      default:
+        break;
+    }
+    return total
+  }
+
   return (
     <Fragment>
       <Card>
@@ -400,7 +421,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='fullnameMulti'>
                   Tên chủ tài khoản
                 </Label>
-                <Input type='text' name='fullname' id='fullnameMulti' placeholder='fullname' defaultValue={selectedData.full_name} invalid={fullnameError} onChange={(e) => {
+                <Input type='text' name='fullname' id='fullnameMulti' placeholder='fullname' defaultValue={selectedData.fullname || selectedData.full_name} invalid={fullnameError} onChange={(e) => {
                   validateFullname(e)
                   setFullname(e.target.value)
                 }} />
@@ -420,7 +441,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='emailMulti'>
                   Email
                 </Label>
-                <Input type='text' name='email' id='emailMulti' placeholder='email' defaultValue={selectedData.email} invalid={emailError} onChange={(e) => {
+                <Input type='text' name='email' id='emailMulti' placeholder='email' defaultValue={selectedData?.email} invalid={emailError} onChange={(e) => {
                   validateEmail(e)
                   setEmail(e.target.value)
                 }} />
@@ -448,25 +469,27 @@ const UserManagement = () => {
                 <Label className='form-label' for='postMulti'>
                   Tổng bài
                 </Label>
-                <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData.post_total} disabled />
+                <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData?.post?.length || 0} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='joiningDateMulti'>
                   Ngày tham gia
                 </Label>
-                <Input type='text' name='joiningdate' id='joiningDateMulti' placeholder='00/00/0000' value={selectedData.joiningdate} disabled />
+                <Input type='text' name='joiningdate' id='joiningDateMulti' placeholder='00/00/0000'
+                  value={selectedData?.createAt ? formatTimeStamp(selectedData.createAt) : formatTimeStamp(Date.now())}
+                  disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='productMulti'>
                   Tổng sản phẩm
                 </Label>
-                <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData.product_total} disabled />
+                <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData?.product?.length || 0} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='salaryMulti'>
                   Tổng doanh thu
                 </Label>
-                <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={selectedData.salary} disabled />
+                <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={formatMoney(calTotal(selectedData.type, selectedData.order))} disabled />
               </Col>
               <Col sm='12'>
                 <div className='d-flex'>
