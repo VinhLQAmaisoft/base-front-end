@@ -1,6 +1,6 @@
 import React from 'react'
 import ImageUploading from 'react-images-uploading';
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form } from 'reactstrap'
 import { UserServices, PostServices, ProductServices, AttachmentServices } from '@services';
 export default function CreatePostTab(props) {
     const [images, setImages] = React.useState([]);
@@ -77,6 +77,10 @@ export default function CreatePostTab(props) {
     const uploadPost = async () => {
         let attachments = await uploadAttachment().then(data => data.data.data).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
         let content = document.getElementById("content").value
+        let shipCost = parseInt(document.getElementById("shipCost").value);
+        if (!shipCost || isNaN(shipCost) || shipCost < 1000) {
+            return alert("Phí ship không hợp lệ")
+        }
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
             PostServices.uploadPost({
@@ -134,7 +138,7 @@ export default function CreatePostTab(props) {
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input id="c-cookie" type='text' className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
-                                Lấy cookie & token Facebook tại đây
+                                Lấy cookie facebook tại đây
                             </a>
                         </Col>
                         <Col sm="4">
@@ -163,14 +167,23 @@ export default function CreatePostTab(props) {
                         {/* NHÓM CHỈ ĐỊNH */}
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
-                            <UncontrolledButtonDropdown className="ml-2">
+                            {groupList.length > 0 && <UncontrolledButtonDropdown className="ml-2">
                                 <DropdownToggle color='secondary' caret outline>
                                     <span className='align-middle ms-50'>{selectedGroup.name ? selectedGroup.name : "Group"}</span>
                                 </DropdownToggle>
                                 <DropdownMenu style={{ maxHeight: "200px", overflowY: "scroll" }}>
                                     {renderGroupList()}
                                 </DropdownMenu>
-                            </UncontrolledButtonDropdown>
+                            </UncontrolledButtonDropdown>}
+                            {groupList.length == 0 &&
+                                <Input
+                                    id="selected-group"
+                                    name="text"//setSelectedGroup(group)
+                                    onChange={(evt) => { setSelectedGroup({ name: evt.target.value, groupId: evt.target.value }) }}
+                                    placeholder="Facebook ID của nhóm được chọn"
+                                    style={{ maxWidth: '200px' }}
+                                />
+                            }
                         </Col>
                         {/* NỘI DUNG */}
                         <Col sm="12" className="mb-2">
@@ -183,6 +196,20 @@ export default function CreatePostTab(props) {
                                 type="textarea"
                                 style={{ minHeight: '200px' }}
 
+                            />
+                        </Col>
+                        <Col sm="12" className="mb-2 d-flex align-items-center">
+                            <Label className="text-dark fs-5 me-1" for="exampleText">
+                                Phí Ship / Đơn (₫)
+                            </Label>
+                            <Input
+                                id="shipCost"
+                                name="number"
+                                placeholder="Phí ship"
+                                type="number"
+                                min={1000}
+                                step={500}
+                                style={{ maxWidth: '200px' }}
                             />
                         </Col>
                         {/* SẢN PHẨM */}

@@ -6,6 +6,7 @@ import { Row, Col, TabContent, TabPane } from 'reactstrap'
 import Tabs from './Tabs'
 import Breadcrumbs from '@components/breadcrumbs'
 import AccountTabContent from './AccountTab'
+import DetailTabContent from './DetailTab'
 import SecurityTabContent from './SecurityTab'
 import { getUserProfile } from '../../../services/user'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,7 +28,7 @@ const AccountSettings = () => {
     if (getUserProfileResult == true && userProfile != undefined) {
       setData(userProfile)
     } else if (getUserProfileResult == true && userProfile == undefined) {
-      setData({fullname: '', email: '', phone: '', birthdate: new Date()})
+      setData({ fullname: '', email: '', phone: '', birthdate: new Date() })
     }
   }, [getUserProfileResult])
 
@@ -37,7 +38,7 @@ const AccountSettings = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs breadCrumbTitle='Cài đặt thông tin' breadCrumbParent='Pages' breadCrumbActive='Account Settings' />
+      <Breadcrumbs breadCrumbTitle='Cài đặt thông tin'   />
       {data !== null ? (
         <Row>
           <Col xs={12}>
@@ -49,6 +50,9 @@ const AccountSettings = () => {
               </TabPane>
               <TabPane tabId='2'>
                 <SecurityTabContent data={data} />
+              </TabPane>
+              <TabPane tabId='3'>
+                <DetailTabContent data={data} />
               </TabPane>
             </TabContent>
           </Col>

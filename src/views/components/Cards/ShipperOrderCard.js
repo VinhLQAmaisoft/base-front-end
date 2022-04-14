@@ -22,13 +22,11 @@ import {
 } from 'reactstrap'
 import { User, Phone, Home } from 'react-feather'
 import { formatMoney } from '@utils'
-import UpdateOrderModal from '@my-components/Modals/UpdateOrderModal'
 import { OrderServices } from '@services'
-export default function OrderCard({ baseOrder, products, shipperOptions }) {
+export default function OrderCard({ baseOrder, shipper, shipperOptions }) {
     const [modal, setModal] = useState(false)
     const [orderStatus, setOrderStatus] = useState(baseOrder?.status)
     const [order, setOrder] = useState(baseOrder)
-    const [shipper, setShipper] = useState(baseOrder?.shipper || "Chưa có người nhân")
     const [total, setTotal] = useState('');
     // console.log("Shipper Option status: ", shipperOptions)
     // console.log("Products status: ", products)
@@ -75,61 +73,15 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
     }
 
 
-    const handleModal = () => setModal(!modal)
 
-    const handleEdit = () => {
-        handleModal();
-    }
-
-
-    function handleUpdateStatus(id, status) {
+    function handleUpdateStatus(id, status, shipper) {
         setOrderStatus(status.label)
-        OrderServices.updateStatus(`?id=${id}&status=${status.value}`).then(data => {
+        OrderServices.shipperUpdateStatus({ orderId: id, status, shipper }).then(data => {
             alert(data.data.message)
-            OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
+            OrderServices.getOrderDetail(`?id=${order._id}`).then(data => setOrder(data.data.data))
         })
     }
 
-    function handleUpdateShipper(s) {
-
-        setShipper(s.username)
-        OrderServices.editOrder({ _id: order._id, shipper: s.username }).then(data => {
-            alert(data.data.message)
-            OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
-        })
-    }
-
-    function renderStatusOptions() {
-        let status = [{
-            value: 'created',
-            label: 'Vừa Tạo'
-        }, {
-            value: 'ready',
-            label: 'Sẵn Sàng'
-        }, {
-            value: 'shipping',
-            label: 'Đang Giao'
-        }, {
-            value: 'done',
-            label: 'Hoàn Thành'
-        }, {
-            value: 'cancel',
-            label: 'Hủy Đơn'
-        },]
-        return status.map(s => (
-            <DropdownItem className='w-100' onClick={() => handleUpdateStatus(order._id, s)}>
-                <span className='align-middle ms-50'>{s.label}</span>
-            </DropdownItem>
-        ))
-    }
-
-    const renderShipperOptions = () => {
-        return shipperOptions.map(s =>
-            <DropdownItem className='w-100' onClick={() => { handleUpdateShipper(s) }}>
-                <span className='align-middle ms-50'>{s.username}</span>
-            </DropdownItem>
-        )
-    }
 
     function renderProduct() {
         let index = 1;
@@ -204,36 +156,31 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
                     </Row>
                     <Row className='mb-1 text-start'>
                         <Col sm={12} className='mb-1'> Tổng Tiền: {formatMoney(calTotal())}</Col>
-                        <Col sm={12} className='mb-1'>
-                            <UncontrolledButtonDropdown>
-                                <DropdownToggle color='secondary' caret outline>
-                                    <span className='align-middle ms-50'>Trạng Thái</span>
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                    {renderStatusOptions()}
-                                </DropdownMenu>
-                            </UncontrolledButtonDropdown>
-                        </Col>
                         <Col sm={12}>
-                            <Label className='me-1'>Người ship: </Label>
-                            <UncontrolledButtonDropdown>
-                                <DropdownToggle color='secondary' caret outline>
-                                    <span className='align-middle ms-50'>{shipper}</span>
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                    {renderShipperOptions()}
-                                </DropdownMenu>
-                            </UncontrolledButtonDropdown>
+                            <Label className='me-1'>Cửa hàng:  </Label>
+                            <b>{order.shopkeeper}</b>
                         </Col>
                     </Row>
                 </CardBody>
                 {/* FOOTER */}
                 <CardFooter>
-                    <Button color='warning' onClick={() => { handleEdit() }}> Sửa Order </Button>
+                    {order.status == 'ready' &&
+                        <Button color='primary'
+                            onClick={() => handleUpdateStatus(order._id, 'shipping', shipper)}>
+                            Nhận Order
+                        </Button>}
+                    {order.status == 'shipping' && (<Fragment>
+                        <Button className='me-2' color='success'
+                            onClick={() => handleUpdateStatus(order._id, 'done', shipper)}>
+                            Hoàn Thành
+                        </Button>
+                        <Button color='danger'
+                            onClick={() => handleUpdateStatus(order._id, 'cancel', shipper)}>
+                            Hủy Đơn
+                        </Button>
+                    </Fragment>)}
                 </CardFooter>
             </Card>
-            {order && products &&
-                <UpdateOrderModal order={order} products={products} open={modal} handleModal={handleModal} />}
         </Fragment>
     )
 }

@@ -4,7 +4,6 @@ import { formatMoney, formatTimeStamp } from '@utils'
 import { OrderServices, ProductServices, UserServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
-import { data } from './data'
 // ** Add New Modal Component
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
@@ -47,6 +46,7 @@ const OrderManage = () => {
     const [displayOrder, setDisplayOrder] = useState([])
     const [products, setProducts] = useState([])
     const [shipperOptions, setShipperOptions] = useState([])
+    const [pageSize, setPageSize] = useState(5)
     const [sortOption, setSortOption] = useState({
         key: "createAt",
         value: 1,
@@ -80,32 +80,36 @@ const OrderManage = () => {
                 let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
                 console.log("Source data: " + OrderData.length)
                 setDeactivateOrder(doneOrder)
-                setDisplayOrder(getCurrentTableData(doneOrder, currentPage, pageSize))
+                // setDisplayOrder(getCurrentTableData(doneOrder))
                 setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
             }
         })
     }, [])
 
+    // Cập nhật thứ tự bảng khi sắp xếp  
     useEffect(() => {
         console.log(`Sort by - ${sortOption.key} -  - ${sortOption.value} `,)
         if (sortOption) {
-            ProductServices.getProduct('').then(data => {
-                setProducts(data.data.data)
-            })
-            OrderServices.getOrder(`?sort=${sortOption.key}&direction=${sortOption.value}`).then(data => {
-                let OrderData = []
-                if (data.data.data) {
-                    OrderData = data.data.data
-                    let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
-                    setDeactivateOrder(doneOrder)
-                    setDisplayOrder(getCurrentTableData(doneOrder, currentPage, pageSize))
-                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"]
-                        .includes(order.status))
-                    )
-                }
-            })
+            let tempPrd = JSON.parse(JSON.stringify(activeOrder))
+            setActiveOrder([]);
+            tempPrd = tempPrd.sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
+            setTimeout(() => setActiveOrder(tempPrd), 1)
         }
     }, [sortOption])
+
+    // Phân Trang Bảng
+    useEffect(() => {
+        console.log("Current Page: " + currentPage)
+        console.log("Page Size: " + pageSize)
+        // setDisplayOrder(getCurrentTableData(deactivateOrder))
+
+    }, [currentPage])
+
+    useEffect(() => {
+        setCurrentPage(0)
+        // setDisplayOrder(getCurrentTableData(deactivateOrder))
+    }, [pageSize])
+
 
     const sortOptions = [
         {
@@ -143,7 +147,7 @@ const OrderManage = () => {
         {
             name: 'Khách Hàng',
             sortable: true,
-            minWidth: '200px',
+            minWidth: '150px',
             selector: row => row.customerName,
             format: row => renderCustomerName(row.customerName, row.customerId)
         },
@@ -174,8 +178,11 @@ const OrderManage = () => {
         {
             name: 'Kết Quả',
             sortable: true,
-            minWidth: '100px',
-            selector: row => row.status
+            minWidth: '130px',
+            selector: row => row.status,
+            format: row => (<Badge color={row.status == "done" ? "success" : row.status == "cancel" ? "danger" : "warning"}>
+                {row.status == "done" ? "Hoàn Thành" : row.status == "cancel" ? "Hủy Đơn" : "Khác"}
+            </Badge>)
         },
         {
             name: 'Giá Tiền',
@@ -185,24 +192,21 @@ const OrderManage = () => {
         }
     ]
 
-    const pageSize = 2 + 1 + 0
 
 
-    const getCurrentTableData = (source, currentPage, pageSize) => {
-        console.log("Table's Input: ", source, currentPage, pageSize);
+    const getCurrentTableData = (source) => {
+        // currentPage = currentPage - 1
+        console.log("Table's Input: ", source.length, currentPage, pageSize);
         let start = currentPage * pageSize;
         let end = start + pageSize;
-        console.log("Table's Data: ", source.slice(start, end));
+        console.log("Table's Output: ", source.slice(start, end));
 
         return source.slice(start, end)
     }
 
     // ** Function to handle Modal toggle
 
-    const handlePagination = page => {
-        setCurrentPage(page.selected)
-        setDisplayOrder(getCurrentTableData(deactivateOrder, currentPage, pageSize))
-    }
+
 
 
     const renderCustomerName = (name, id) => {
@@ -276,28 +280,33 @@ const OrderManage = () => {
 
 
     // ** Custom Pagination
-    const CustomPagination = () => (
-        <ReactPaginate
-            previousLabel=''
-            nextLabel=''
-            forcePage={currentPage}
-            onPageChange={page => handlePagination(page)}
-            pageCount={Math.ceil(activeOrder.length / pageSize)}
-            breakLabel='...'
-            pageRangeDisplayed={2}
-            marginPagesDisplayed={2}
-            activeClassName='active'
-            pageClassName='page-item'
-            breakClassName='page-item'
-            nextLinkClassName='page-link'
-            pageLinkClassName='page-link'
-            breakLinkClassName='page-link'
-            previousLinkClassName='page-link'
-            nextClassName='page-item next-item'
-            previousClassName='page-item prev-item'
-            containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
-        />
-    )
+    const CustomPagination = () => {
+        // console.log(`${deactivateOrder.length}/${pageSize} = ${Math.ceil(deactivateOrder.length / pageSize)}`)
+        return (
+            <ReactPaginate
+                previousLabel=''
+                nextLabel=''
+                forcePage={currentPage}
+                onPageChange={page => {
+                    setCurrentPage(page.selected)
+                }}
+                pageCount={Math.ceil(deactivateOrder.length / pageSize)}
+                breakLabel='...'
+                pageRangeDisplayed={2}
+                marginPagesDisplayed={2}
+                activeClassName='active'
+                pageClassName='page-item'
+                breakClassName='page-item'
+                nextLinkClassName='page-link'
+                pageLinkClassName='page-link'
+                breakLinkClassName='page-link'
+                previousLinkClassName='page-link'
+                nextClassName='page-item next-item'
+                previousClassName='page-item prev-item'
+                containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
+            />
+        )
+    }
 
     function updateOrderView(newOrder) {
         let match = activeOrder.filter(order => order._id === newOrder._id);
@@ -307,16 +316,15 @@ const OrderManage = () => {
     }
 
     function renderOrderCard() {
-        let result = [];
-        for (let order of activeOrder) {
-            console.log(order[sortOption.key])
-            result.push(
-                <Col lg={4} md={6} sm={12} key={order._id.$oid}>
+        let result = [].concat(activeOrder)
+            .sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
+            .map((order, i) => {
+                console.log(`Order Card at ${i}: ` + order[sortOption.key])
+                return (<Col lg={4} md={6} sm={12} key={order._id.$oid}>
                     <OrderCard shipperOptions={shipperOptions} products={products} baseOrder={order} />
-                </Col>
-            )
-
-        }
+                </Col>)
+            }
+            );
         return result
     }
 
@@ -342,7 +350,7 @@ const OrderManage = () => {
                     <Card className="p-1">
                         <CardTitle>Bộ Lọc</CardTitle>
                         <Row>
-                            <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                            <Col sm={6} className="d-flex pt-1 pb-1 align-items-center" >
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
                                     Trạng Thái:
                                 </Label>
@@ -367,7 +375,7 @@ const OrderManage = () => {
                                 </UncontrolledButtonDropdown>
                             </Col>
 
-                            <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+                            <Col sm={6} className="d-flex pt-1 pb-1 align-items-center" >
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
                                     Sắp Xếp:
                                 </Label>
@@ -381,7 +389,9 @@ const OrderManage = () => {
                                 </UncontrolledButtonDropdown>
                             </Col>
 
-                            <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
+
+
+                            {/* <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
                                 <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>
                                     Search
                                 </Label>
@@ -395,40 +405,49 @@ const OrderManage = () => {
                                     value={searchValue}
                                     onChange={handleFilter}
                                 />
-                            </Col>
+                            </Col> */}
                         </Row>
 
                     </Card>
                 </Col>
             </Row>
-            <Row>
-                {activeOrder && renderOrderCard()}
-                {(activeOrder.length == 0 || !activeOrder) && (
-                    <Col>
-                        <Card>
-                            <CardBody>
-                                Không còn đơn hàng nào cần xử lý
-                            </CardBody>
-                        </Card>
+            {(filterStatus == -1 || filterStatus == 0) && (
+                <Row>
+                    {activeOrder && renderOrderCard()}
+                    {(activeOrder.length == 0 || !activeOrder) && (
+                        <Col>
+                            <Card>
+                                <CardBody>
+                                    Không còn đơn hàng nào cần xử lý
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    )}
+                </Row>
+            )
+            }
+            {
+                (filterStatus == -1 || filterStatus == 1) && (<Row>
+                    <Col className='react-dataTable'>
+                        {console.log("Final Table's Data: ", displayOrder.length)}
+                        <DataTable
+                            noHeader
+                            pagination
+                            columns={tableColumns}
+                            className='react-dataTable'
+                            sortIcon={<ChevronDown size={10} />}
+                            data={deactivateOrder}
+                            paginationComponentOptions={
+                                { rowsPerPageText: "Số Bản Ghi / Trang" }
+                            }
+                        // paginationPerPage={pageSize}
+                        // pagination
+                        // paginationDefaultPage={currentPage + 1 + 0}
+                        // paginationComponent={CustomPagination}
+                        />
                     </Col>
-                )}
-            </Row>
-            <Row>
-                <Col className='react-dataTable'>
-                    {/* {console.log("Final Table's Data: ", displayOrder.length)} */}
-                    <DataTable
-                        noHeader
-                        pagination
-                        columns={tableColumns}
-                        paginationPerPage={pageSize}
-                        className='react-dataTable'
-                        sortIcon={<ChevronDown size={10} />}
-                        paginationDefaultPage={currentPage + 1 + 0}
-                        paginationComponent={CustomPagination}
-                        data={displayOrder}
-                    />
-                </Col>
-            </Row>
+                </Row>)
+            }
 
         </Fragment >
     )

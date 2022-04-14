@@ -24,5 +24,9 @@ const UserService = {
         params = params ? params : {}
         return newAxios.put('/account/changePassword', params).catch(err => console.log("Change User Password Service Fail: ", err.message));
     },
+    getUserDetail: async (params) => {
+        params = params ? params : ''
+        return newAxios.get('/account/user-detail' + params).catch(err => console.log("GET USER DETAIL DATA Service Fail: ", err.message));
+    },
 }
 export default UserService;

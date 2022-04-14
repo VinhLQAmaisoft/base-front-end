@@ -4,9 +4,7 @@ import { PostServices } from '@services'
 import PostCard from '../../components/Cards/PostCard'
 import PostDetailModal from '@my-components/Modals/PostDetailModal'
 // ** Table Data & Columns
-import { data, advSearchColumns } from './data'
 // ** Add New Modal Component
-import AddNewModal from './AddNewModal'
 
 
 // ** Reactstrap Imports
@@ -195,7 +193,7 @@ const PostManage = () => {
                 </UncontrolledButtonDropdown>
               </Col>
 
-              <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
+              {/* <Col sm={3} className="d-flex pt-1 pb-1 align-items-center" >
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} >
                   Sắp Xếp:
                 </Label>
@@ -207,7 +205,7 @@ const PostManage = () => {
                     {renderSortOption(sortOptions)}
                   </DropdownMenu>
                 </UncontrolledButtonDropdown>
-              </Col>
+              </Col> */}
 
               <Col className='d-flex align-items-center justify-content-end mt-1' sm={6}>
                 <Label style={{ fontSize: '15px', marginRight: '10px' }} className='me-1' for='search-input'>

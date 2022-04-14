@@ -4,7 +4,6 @@ import Cookies from 'universal-cookie';
 export const sendUserLogin = createAsyncThunk(`${BASE_URL}/account/login`, async (body, thunkAPI) => {
   try {
     const result = await newAxios.post('/account/login', body);
-    console.log("Login Result: ", result);
     if (result?.data?.data?.token) {
       console.log("Add user token: ", result?.data?.data?.token);
       const cookies = new Cookies();

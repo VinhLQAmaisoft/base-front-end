@@ -3,21 +3,38 @@ import { useState, useEffect } from 'react'
 
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
-import { User, Briefcase, Mail, Calendar, DollarSign, X } from 'react-feather'
+import { User, Briefcase, Mail, Calendar, DollarSign, X, ChevronDown } from 'react-feather'
 import { formatMoney } from '@utils'
 import { ShipperServices } from '@services'
+import DataTable from 'react-data-table-component'
 
 // ** Reactstrap Imports
-import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputGroupText, Row, Col, FormGroup, Form, UncontrolledButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu, ModalFooter } from 'reactstrap'
+import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputGroupText, Row, Col, FormGroup, Form, UncontrolledButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu, ModalFooter, Badge, Card, CardTitle } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
 const AddShipperModal = ({ open, handleModal }) => {
     // ** State
-
+    const [outerShipper, setOuterShipper] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const CloseBtn = <X className='cursor-pointer' size={15} onClick={handleModal} />
+    useEffect(() => {
+        ShipperServices.findShipper({}).then(data => {
+            let result = []
+            if (data.data.data) {
+                data.data.data.map(shipper => {
+                    result.push({
+                        fullname: shipper.fullname,
+                        phone: shipper.phone,
+                        ownerCount: shipper.jobs.length,
+                        isActive: shipper.isActive
+                    })
+                })
+            }
+            setOuterShipper(result)
+        })
+    })
 
     const addShipper = () => {
         if (selectedId != "") {
@@ -26,6 +43,41 @@ const AddShipperModal = ({ open, handleModal }) => {
             })
         }
     }
+
+    const tableColumns = [{
+        name: 'Họ Tên',
+        sortable: true,
+        minWidth: '100px',
+        selector: row => row.fullname
+
+    }, {
+        name: 'SĐT',
+        sortable: true,
+        minWidth: '50px',
+        selector: row => row.phone,
+        // format: row => formatMoney(row.price)
+
+    }, {
+        name: 'Số Chủ',
+        sortable: true,
+        minWidth: '50px',
+        selector: row => row.ownerCount,
+
+    }, {
+        name: 'Trạng thái',
+        sortable: true,
+        minWidth: '50px',
+        selector: row => row.isActive,
+        format: row => {
+            if (row.isActive)
+                return <Badge color="success">Sẵn Sàng</Badge>
+            else
+                return <Badge color="danger">Chưa Sẵn Sàng</Badge>
+
+        }
+
+    }
+    ]
 
     return (
         <Modal
@@ -39,17 +91,44 @@ const AddShipperModal = ({ open, handleModal }) => {
                 <h5 className='modal-title'>Thêm Shipper</h5>
             </ModalHeader>
             <ModalBody className='flex-grow-1'>
-                <Input
-                    className='mb-1'
-                    type='text'
-                    placeholder='ID của shipper'
-                    onChange={(evt) => { setSelectedId(evt.target.value); }}
-                />
-                <Label
-                    className='text-warning'
-                >
-                    Liên hệ shipper để lấy ID của họ!
-                </Label>
+                <Row>
+                    <Col sm={12}>
+                        <Input
+                            className='mb-1'
+                            type='text'
+                            placeholder='ID của shipper'
+                            onChange={(evt) => { setSelectedId(evt.target.value); }}
+                        />
+                    </Col>
+                    <Col sm={12}>
+                        <Label
+                            className='text-warning'
+                        >
+                            Liên hệ shipper để lấy ID của họ!
+                        </Label>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col className='react-dataTable'>
+                        <Card className="p-1">
+                            <CardTitle style={{ display: "flex", justifyContent: 'space-between' }}>
+                                Danh Sách Shipper Tìm Thấy
+                            </CardTitle>
+                            <DataTable
+                                noHeader
+                                pagination
+                                columns={tableColumns}
+                                // paginationPerPage={pageSize}
+                                className='react-dataTable'
+                                sortIcon={<ChevronDown size={10} />}
+                                // paginationDefaultPage={currentPage + 1 + 0}
+                                // paginationComponent={CustomPagination}
+                                data={outerShipper}
+                                noDataComponent="Bạn không có shipper nào"
+                            />
+                        </Card>
+                    </Col>
+                </Row>
             </ModalBody>
             <ModalFooter>
                 <Button

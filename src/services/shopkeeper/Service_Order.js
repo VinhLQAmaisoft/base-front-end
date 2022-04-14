@@ -14,14 +14,25 @@ const OrderService = {
         params = params ? params : ''
         return newAxios.get('/order/get-order' + params).catch(err => console.log("Get Order Service Fail: ", err.message));
     },
+    getOrderDetail: async (params) => {
+        params = params ? params : ''
+        return newAxios.get('/order/get-order-detail' + params).catch(err => console.log("Get Order Service Fail: ", err.message));
+    },
+    getShipperOrder: async (params) => {
+        params = params ? params : {}
+        return newAxios.post('/order/get-shipper-order', params).catch(err => console.log("Get Shipper Order Service Fail: ", err.message));
+    },
     editOrder: async (params) => {
         params = params ? params : {}
         return newAxios.post('/order/edit', params).catch(err => console.log("Edit Order Service Fail: ", err.message));
     },
-
     updateStatus: async (params) => {
         params = params ? params : ''
         return newAxios.put('/order/changeStatus' + params).catch(err => console.log("Update Order Status Service Fail: ", err.message));
+    },
+    shipperUpdateStatus: async (params) => {
+        params = params ? params : {}
+        return newAxios.post('/order/shipper-change-status', params).catch(err => console.log("Shipper Update Order Status Service Fail: ", err.message));
     },
     getTotalEarn: async (params) => {
         params = params ? params : {}

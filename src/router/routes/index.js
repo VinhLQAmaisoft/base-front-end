@@ -48,12 +48,13 @@ const Routes = [
     path: '/shopkeeper/post-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/PostManage')),
     layout: 'VerticalLayout'
-  }, {
+  },
+  {
     path: '/shopkeeper/sell-campaign',
     component: lazy(() => import('../../views/apps/shopkeeper/SellCampaign')),
     layout: 'VerticalLayout'
   },
-  , {
+  {
     path: '/shopkeeper/order-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/OrderManage')),
     layout: 'VerticalLayout'
@@ -62,15 +63,20 @@ const Routes = [
     path: '/shopkeeper/product-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/ProductManage')),
     layout: 'VerticalLayout'
-  }, 
+  },
   {
     path: '/shopkeeper/shipper-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/ShipperManage')),
     layout: 'VerticalLayout'
   },
   {
+    path: '/shopkeeper/figure-manage',
+    component: lazy(() => import('../../views/apps/shopkeeper/FigureManage')),
+    layout: 'VerticalLayout'
+  },
+  {
     path: '/shipper/order-manage',
-    component: lazy(() => import('../../views/apps/shipper/ShipperOrderManagement')),
+    component: lazy(() => import('../../views/apps/shipper/OrderManage')),
     layout: 'VerticalLayout'
   },
   {

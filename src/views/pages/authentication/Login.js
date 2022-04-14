@@ -190,12 +190,7 @@ const Login = () => {
                   )}
                 />
               </div>
-              <div className='form-check mb-1'>
-                <Input type='checkbox' id='remember-me' />
-                <Label className='form-check-label' for='remember-me'>
-                  Duy trì đăng nhập
-                </Label>
-              </div>
+
               <Button color='primary' block>
                 Đăng nhập
               </Button>
