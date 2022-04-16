@@ -4,7 +4,17 @@ import { lazy } from 'react'
 const TemplateTitle = '3SF'
 
 // ** Default Route
-const DefaultRoute = '/home'
+const DefaultRoute = (role) => {
+  if (role == 0) {
+    return '/home'
+  } else if (role == 1) {
+    return '/shopkeeper/post-manage'
+  } else if (role == 2) {
+    return '/admin/user-management'
+  } else {
+    return '/login'
+  }
+}
 
 // ** Merge Routes
 const Routes = [
@@ -13,21 +23,17 @@ const Routes = [
     component: lazy(() => import('../../views/pages/Home'))
   },
   {
-    path: '/admin/user-management',
-    component: lazy(() => import('../../views/apps/admin/UserManagement'))
-  },
-  {
-    path: '/admin/cookie-management',
-    component: lazy(() => import('../../views/apps/admin/CookieManagement'))
-  },
-  {
-    path: '/admin/customer-management',
-    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
-  },
-  {
     path: '/account-settings',
     component: lazy(() => import('../../views/pages/account-settings'))
   },
+  {
+    path: '/error',
+    component: lazy(() => import('../../views/Error')),
+    layout: 'BlankLayout'
+  }
+]
+
+const outsiderRoutes = [
   {
     path: '/login',
     component: lazy(() => import('../../views/pages/authentication/Login')),
@@ -44,6 +50,24 @@ const Routes = [
       authRoute: true
     }
   },
+]
+
+const adminRoutes = [
+  {
+    path: '/admin/user-management',
+    component: lazy(() => import('../../views/apps/admin/UserManagement'))
+  },
+  {
+    path: '/admin/cookie-management',
+    component: lazy(() => import('../../views/apps/admin/CookieManagement'))
+  },
+  {
+    path: '/admin/customer-management',
+    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
+  }
+]
+
+const shopkeeperRoutes = [
   {
     path: '/shopkeeper/post-manage',
     component: lazy(() => import('../../views/apps/shopkeeper/PostManage')),
@@ -79,11 +103,6 @@ const Routes = [
     component: lazy(() => import('../../views/apps/shipper/OrderManage')),
     layout: 'VerticalLayout'
   },
-  {
-    path: '/error',
-    component: lazy(() => import('../../views/Error')),
-    layout: 'BlankLayout'
-  }
 ]
 
-export { DefaultRoute, TemplateTitle, Routes }
+export { DefaultRoute, TemplateTitle, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes }

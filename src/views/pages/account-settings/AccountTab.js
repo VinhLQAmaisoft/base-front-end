@@ -7,7 +7,6 @@ import { toast, Slide } from 'react-toastify'
 import { updateUserProfile } from '../../../services/user'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Flatpickr from 'react-flatpickr'
-import { toast, Slide } from 'react-toastify'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
 const ToastContent = ({ name, message }) => (
@@ -78,7 +77,7 @@ const AccountTab = ({ data }) => {
         { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
       )
     }
-  }, [getUserProfileResult])
+  }, [userProfileUpdated, updateUserProfileResult])
 
   const handleImgReset = () => {
     setAvatar(require('@src/assets/images/avatars/avatar-blank.png').default)
@@ -88,27 +87,10 @@ const AccountTab = ({ data }) => {
     <Fragment>
       <Card>
         <CardHeader className='border-bottom'>
-          <CardTitle tag='h4'>Profile Details</CardTitle>
+          <CardTitle tag='h4'>Chi tiết thông tin cá nhân</CardTitle>
         </CardHeader>
         <CardBody className='py-2 my-25'>
-          {/* <div className='d-flex'>
-            <div className='me-25'>
-              <img className='rounded me-50' src={avatar} alt='Generic placeholder image' height='100' width='100' />
-            </div>
-            <div className='d-flex align-items-end mt-75 ms-1'>
-              <div>
-                <Button tag={Label} className='mb-75 me-75' size='sm' color='primary'>
-                  Upload
-                  <Input type='file' onChange={onChange} hidden accept='image/*' />
-                </Button>
-                <Button className='mb-75' color='secondary' size='sm' outline onClick={handleImgReset}>
-                  Reset
-                </Button>
-                <p className='mb-0'>Allowed JPG, GIF or PNG. Max size of 800kB</p>
-              </div>
-            </div>
-          </div> */}
-          <Form className='mt-2 pt-50' onSubmit={handleSubmit(onSubmit)}>
+          <Form className='mt-2 pt-1' onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <Col sm='6' className='mb-1'>
                 <Label className='form-label' for='fullname'>

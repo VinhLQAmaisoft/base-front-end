@@ -11,9 +11,9 @@ const VerticalLayout = props => {
   const userData = JSON.parse(localStorage.getItem('userData'))
   console.log(userData)
   let navigation = []
-  /*if (!userData || !userData.type) {
-    // window.location.href = "/login";
-  } else*/ if (userData.type === 0) {
+  if (!userData || !userData.type) {
+    window.location.href = "/login";
+  } else if (userData.type === 0) {
     navigation = shipperNavigation
   } else if (userData.type === 1) {
     navigation = shopkeeperNavigation

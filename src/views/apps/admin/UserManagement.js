@@ -10,6 +10,7 @@ import { formatMoney, formatTimeStamp, getRoleByType } from '../../../utility/Ut
 import Flatpickr from 'react-flatpickr'
 import { toast, Slide } from 'react-toastify'
 import { updateUser } from '../../../services/admin'
+import ChangePasswordModal from './ChangePasswordModal'
 
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -51,6 +52,7 @@ const ToastContent = ({ name, message }) => (
 
 const UserManagement = () => {
   const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
+  const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([{}])
@@ -127,23 +129,14 @@ const UserManagement = () => {
 
     if (value.length) {
       updatedData = userData.filter(item => {
-        const startsWith =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.phone.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.role.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
-
         const includes =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.phone.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.role.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
+          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
+          item.phone.toLowerCase().includes(value.toLowerCase()) ||
+          item.role.toLowerCase().includes(value.toLowerCase()) ||
+          item.salary.toLowerCase().includes(value.toLowerCase()) ||
+          status[item.status].title.toLowerCase().includes(value.toLowerCase())
 
-        if (startsWith) {
-          return startsWith
-        } else if (!startsWith && includes) {
+        if (includes) {
           return includes
         } else return null
       })
@@ -229,6 +222,10 @@ const UserManagement = () => {
     console.log(row)
     UserServices.getUserDetail('?id=' + row.id).then(data => setSelectedData(data.data.data))
   };
+
+  const handleChangePassClicked = () => {
+    setModal(!modal)
+  }
 
   const validateFullname = (e) => {
     const fullnameRegex = /^([\w]{2,})+\s+([\w\s]{2,})+$/i
@@ -496,12 +493,12 @@ const UserManagement = () => {
                   <Button type='submit' className='me-1' color='primary'>
                     Cập nhật
                   </Button>
-                  <Button className='me-1' outline color='secondary'>
+                  <Button className='me-1' outline color='secondary' onClick={() => handleChangePassClicked()}>
                     Đổi mật khẩu
                   </Button>
-                  <Button className='me-1' outline color='secondary'>
+                  {/* <Button className='me-1' outline color='secondary'>
                     Thông tin cá nhân
-                  </Button>
+                  </Button> */}
                   <Button outline color=''>
                     <Facebook size={15} className='align-middle me-sm-25 me-0' />
                     Facebook
@@ -512,6 +509,7 @@ const UserManagement = () => {
           </CardBody>
         </Form>
       </Card>
+      <ChangePasswordModal show={modal} setShow={setModal} />
     </Fragment>
   )
 }
