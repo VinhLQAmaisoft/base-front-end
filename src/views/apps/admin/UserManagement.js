@@ -175,59 +175,56 @@ const UserManagement = () => {
   )
 
   // ** Converts table to CSV
-  // function convertArrayOfObjectsToCSV(array) {
-  //   let result
+  function convertArrayOfObjectsToCSV(array) {
+    let result
 
-  //   const columnDelimiter = ','
-  //   const lineDelimiter = '\n'
-  //   const keys = Object.keys(data[0])
+    const columnDelimiter = ','
+    const lineDelimiter = '\n'
+    const keys = Object.keys(userData[0])
 
-  //   result = ''
-  //   result += keys.join(columnDelimiter)
-  //   result += lineDelimiter
+    result = ''
+    result += keys.join(columnDelimiter)
+    result += lineDelimiter
 
-  //   array.forEach(item => {
-  //     let ctr = 0
-  //     keys.forEach(key => {
-  //       if (ctr > 0) result += columnDelimiter
+    array.forEach(item => {
+      let ctr = 0
+      keys.forEach(key => {
+        if (ctr > 0) result += columnDelimiter
 
-  //       result += item[key]
+        result += item[key]
 
-  //       ctr++
-  //     })
-  //     result += lineDelimiter
-  //   })
+        ctr++
+      })
+      result += lineDelimiter
+    })
 
-  //   return result
-  // }
+    return result
+  }
 
-  // // ** Downloads CSV
-  // function downloadCSV(array) {
-  //   const link = document.createElement('a')
-  //   let csv = convertArrayOfObjectsToCSV(array)
-  //   if (csv === null) return
+  // ** Downloads CSV
+  function downloadCSV(array) {
+    const link = document.createElement('a')
+    let csv = convertArrayOfObjectsToCSV(array)
+    if (csv === null) return
 
-  //   const filename = 'export.csv'
+    const filename = 'Dữ liệu người dùng.csv'
 
-  //   if (!csv.match(/^data:text\/csv/i)) {
-  //     csv = `data:text/csv;charset=utf-8,${csv}`
-  //   }
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = `data:text/csv;charset=utf-8,${csv}`
+    }
 
-  //   link.setAttribute('href', encodeURI(csv))
-  //   link.setAttribute('download', filename)
-  //   link.click()
-  // }
+    link.setAttribute('href', encodeURI(csv))
+    link.setAttribute('download', filename)
+    link.click()
+  }
 
   const handleRowClicked = row => {
-    console.log(row)
     UserServices.getUserDetail('?id=' + row.id).then(data => setSelectedData(data.data.data))
   };
 
   const handleChangePassClicked = () => {
     setModal(!modal)
   }
-
-  console.log(selectedData)
   
   const handleFBClicked = (facebook) => {
     
@@ -326,7 +323,6 @@ const UserManagement = () => {
   useEffect(() => {
     if (getResult == true && allUser !== null) {
       const data = allUser.map(item => {
-        console.log(item.fullname, item.facebook)
         const fuid = item.facebook === undefined ? null : item.facebook.uid
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
         return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid }
@@ -366,25 +362,9 @@ const UserManagement = () => {
                 <span className='align-middle ms-50'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer size={15} />
-                  <span className='align-middle ms-50'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(data)}>
+                <DropdownItem className='w-100' onClick={() => downloadCSV(userData)}>
                   <FileText size={15} />
                   <span className='align-middle ms-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid size={15} />
-                  <span className='align-middle ms-50'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File size={15} />
-                  <span className='align-middle ms-50'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy size={15} />
-                  <span className='align-middle ms-50'>Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledButtonDropdown>

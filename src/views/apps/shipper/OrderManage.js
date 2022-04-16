@@ -53,33 +53,33 @@ const OrderManage = () => {
     label: "Mới nhất"
   })
 
-  useEffect(() => {
-    UserServices.getProfile().then(data => {
-      var owners = [];
-      if (data.data.data) {
-        data.data.data.jobs.forEach(job => owners.push(job.owner))
-        setShopkeepers(owners)
-        setShipper(data.data.data.username)
-        OrderServices.getShipperOrder({ shopkeepers: owners }).then(data => {
-          let OrderData = []
-          if (data.data.data) {
-            OrderData = data.data.data
-            let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
-            console.log("Source data: " + OrderData.length)
-            setDeactivateOrder(doneOrder)
-            // setDisplayOrder(getCurrentTableData(doneOrder))
-            setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
-          }
-        })
-      }
-    })
+  // useEffect(() => {
+  //   UserServices.getProfile().then(data => {
+  //     var owners = [];
+  //     if (data.data.data) {
+  //       data.data.data.jobs.forEach(job => owners.push(job.owner))
+  //       setShopkeepers(owners)
+  //       setShipper(data.data.data.username)
+  //       OrderServices.getShipperOrder({ shopkeepers: owners }).then(data => {
+  //         let OrderData = []
+  //         if (data.data.data) {
+  //           OrderData = data.data.data
+  //           let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+  //           console.log("Source data: " + OrderData.length)
+  //           setDeactivateOrder(doneOrder)
+  //           // setDisplayOrder(getCurrentTableData(doneOrder))
+  //           setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+  //         }
+  //       })
+  //     }
+  //   })
 
-    ProductServices.getProduct('').then(data => {
-      // console.log("My Products: ", data.data.data)
-      setProducts(data.data.data)
-    })
+  //   ProductServices.getProduct('').then(data => {
+  //     // console.log("My Products: ", data.data.data)
+  //     setProducts(data.data.data)
+  //   })
 
-  }, [])
+  // }, [])
 
   // Cập nhật thứ tự bảng khi sắp xếp  
   useEffect(() => {

@@ -5,8 +5,9 @@ const TemplateTitle = '3SF'
 
 // ** Default Route
 const DefaultRoute = (role) => {
+  console.log(role)
   if (role == 0) {
-    return '/home'
+    return '/shipper/order-manage'
   } else if (role == 1) {
     return '/shopkeeper/post-manage'
   } else if (role == 2) {
@@ -49,6 +50,13 @@ const outsiderRoutes = [
     meta: {
       authRoute: true
     }
+  },
+]
+
+const shipperRoutes = [
+  {
+    path: '/shipper/order-manage',
+    component: lazy(() => import('../../views/apps/shipper/OrderManage')),
   },
 ]
 
@@ -105,4 +113,4 @@ const shopkeeperRoutes = [
   },
 ]
 
-export { DefaultRoute, TemplateTitle, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes }
+export { DefaultRoute, TemplateTitle, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes, shipperRoutes }
