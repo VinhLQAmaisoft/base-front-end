@@ -51,7 +51,7 @@ const ToastContent = ({ name, message }) => (
 )
 
 const UserManagement = () => {
-  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
+  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '', fuid: '' }
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
@@ -227,6 +227,20 @@ const UserManagement = () => {
     setModal(!modal)
   }
 
+  console.log(selectedData)
+  
+  const handleFBClicked = (facebook) => {
+    
+    if (facebook == undefined) {
+      toast.error(
+        <ToastContent name={'lỗi'} message='Người dùng không có Facebook' />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    } else {
+      window.open(`https://www.facebook.com/profile.php?id=${facebook.uid}`, '_blank').focus();
+    }
+  }
+
   const validateFullname = (e) => {
     const fullnameRegex = /^([\w]{2,})+\s+([\w\s]{2,})+$/i
     if (fullnameRegex.test(e.target.value)) {
@@ -312,8 +326,10 @@ const UserManagement = () => {
   useEffect(() => {
     if (getResult == true && allUser !== null) {
       const data = allUser.map(item => {
+        console.log(item.fullname, item.facebook)
+        const fuid = item.facebook === undefined ? null : item.facebook.uid
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
-        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length }
+        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid }
       })
       setUserData(data)
     }
@@ -499,7 +515,7 @@ const UserManagement = () => {
                   {/* <Button className='me-1' outline color='secondary'>
                     Thông tin cá nhân
                   </Button> */}
-                  <Button outline color=''>
+                  <Button outline color='' onClick={() => handleFBClicked(selectedData.facebook)}>
                     <Facebook size={15} className='align-middle me-sm-25 me-0' />
                     Facebook
                   </Button>
@@ -509,7 +525,7 @@ const UserManagement = () => {
           </CardBody>
         </Form>
       </Card>
-      <ChangePasswordModal show={modal} setShow={setModal} />
+      <ChangePasswordModal show={modal} setShow={setModal} data={selectedData} />
     </Fragment>
   )
 }

@@ -5,7 +5,7 @@ import {
     ModalBody,
     ModalHeader
 } from 'reactstrap'
-import { changeUserPassword } from '../../../services/user'
+import { updateUserPassword } from '../../../services/admin'
 import { useDispatch, useSelector } from 'react-redux'
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
@@ -47,7 +47,7 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
     })
     // ** Hooks
     const dispatch = useDispatch()
-    //   const { userPasswordUpdated, updateUserPasswordResult } = useSelector(state => state.userReducer);
+    const { passwordUpdated, updatedPasswordResult } = useSelector(state => state.adminReducer);
 
     const {
         control,
@@ -60,41 +60,42 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
     })
 
     const onSubmit = submitData => {
-        // if (Object.values(submitData).every(field => field.length > 0)) {
-        //   dispatch(changeUserPassword({
-        //     username: data.username,
-        //     oldpassword: submitData.currentPassword,
-        //     newpassword: submitData.newPassword,
-        //     repass: submitData.retypeNewPassword
-        //   }))
-        // } else {
-        //   for (const key in data) {
-        //     if (data[key].length === 0) {
-        //       setError(key, {
-        //         type: 'manual'
-        //       })
-        //     }
-        //   }
-        // }
+        if (Object.values(submitData).every(field => field.length > 0)) {
+          dispatch(updateUserPassword({
+            _id: data._id,
+            username: data.username,
+            oldpassword: submitData.currentPassword,
+            newpassword: submitData.newPassword,
+            repass: submitData.retypeNewPassword
+          }))
+        } else {
+          for (const key in data) {
+            if (data[key].length === 0) {
+              setError(key, {
+                type: 'manual'
+              })
+            }
+          }
+        }
     }
 
     // console.log(userPasswordUpdated)
 
-    //   useEffect(() => {
-    //     if (userPasswordUpdated != null ) {
-    //       if (userPasswordUpdated.data == null && updateUserPasswordResult == true) {
-    //         toast.error(
-    //           <ToastContent name='lỗi' message={userPasswordUpdated.message}/>,
-    //           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-    //         )
-    //       } else if (userPasswordUpdated.data != null && updateUserPasswordResult == true) {
-    //         toast.success(
-    //           <ToastContent name='thành công' message={userPasswordUpdated.message}/>,
-    //           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-    //         )
-    //       }
-    //     }
-    //   }, [userPasswordUpdated, updateUserPasswordResult])
+      useEffect(() => {
+        if (passwordUpdated != null ) {
+          if (passwordUpdated.data == null && updatedPasswordResult == true) {
+            toast.error(
+              <ToastContent name='lỗi' message={passwordUpdated.message}/>,
+              { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+            )
+          } else if (passwordUpdated.data != null && updatedPasswordResult == true) {
+            toast.success(
+              <ToastContent name='thành công' message={passwordUpdated.message}/>,
+              { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+            )
+          }
+        }
+      }, [passwordUpdated, updatedPasswordResult])
 
 
 
@@ -104,7 +105,7 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
             <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
             <ModalBody className='px-sm-5 mx-50 pb-4'>
                 <h1 className='text-center mb-1'>Thay đổi mật khẩu</h1>
-                <p className='text-center'>Bạn đang thay đổi mật khẩu của người dùng: </p>
+                <p className='text-center'>Bạn đang thay đổi mật khẩu của người dùng: {data.fullname}</p>
                 <Fragment>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Row>

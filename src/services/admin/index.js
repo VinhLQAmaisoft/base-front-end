@@ -76,3 +76,13 @@ export const updateUser = createAsyncThunk(`${BASE_URL}/account/admin-update-pro
         return thunkAPI.rejectWithValue(error.response.data);
     }
 });
+
+export const updateUserPassword = createAsyncThunk(`${BASE_URL}/account/admin-change-password`, async (body, thunkAPI) => {
+    try {
+        const result = await newAxios.put('/account/admin-change-password', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
