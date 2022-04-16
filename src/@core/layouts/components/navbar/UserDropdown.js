@@ -50,7 +50,7 @@ const UserDropdown = () => {
           <Settings size={14} className='me-75' />
           <span className='align-middle'>Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to='/login' onClick={() => dispatch(logoutAction())}>
+        <DropdownItem tag={Link} onClick={() => dispatch(logoutAction())}>
           <Power size={14} className='me-75' />
           <span className='align-middle'>Logout</span>
         </DropdownItem>

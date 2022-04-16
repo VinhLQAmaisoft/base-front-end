@@ -44,7 +44,7 @@ const setCookie = (cname, cvalue, exdays) => {
 }
 
 const defaultValues = {
-  loginPassword: '123456789',
+  loginPassword: 'Tda123456789',
   loginUsername: 'admin'
 }
 
@@ -97,7 +97,7 @@ const Login = () => {
           type: currentUser.data.type
         }
         localStorage.setItem('userData', JSON.stringify(userData))
-        console.log(userData.type)
+        // console.log(userData.type)
         if (userData) {
           switch (userData.type) {
             case 0:
@@ -107,7 +107,7 @@ const Login = () => {
               history.push('/shopkeeper/post-manage')
               break;
             case 2:
-              history.push('/home')
+              history.push('/admin/user-management')
               break;
             default: history.push('/login')
               break;

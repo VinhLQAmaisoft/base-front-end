@@ -71,13 +71,12 @@ const NotAuthorized = () => {
       </Link>
       <div className='misc-inner p-2 p-sm-3'>
         <div className='w-100 text-center'>
-          <h2 className='mb-1'>You are not authorized! 🔐</h2>
+          <h2 className='mb-1'>Bạn không có quyền truy cập! 🔐</h2>
           <p className='mb-2'>
-            The Webtrends Marketing Lab website in IIS uses the default IUSR account credentials to access the web pages
-            it serves.
+            Vui lòng quay trở lại trang đăng nhập để đăng nhập.
           </p>
-          <Button tag={Link} to='/' color='primary' className='btn-sm-block mb-1'>
-            Back to Home
+          <Button tag={Link} to='/login' color='primary' className='btn-sm-block mb-1'>
+            Quay lại trang đăng nhập
           </Button>
           <img className='img-fluid' src={source} alt='Not authorized page' />
         </div>

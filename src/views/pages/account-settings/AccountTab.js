@@ -1,4 +1,3 @@
-// ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
@@ -10,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Flatpickr from 'react-flatpickr'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
-const ToastContent = ({name, message}) => (
+const ToastContent = ({ name, message }) => (
   <Fragment>
     <div className='toastify-header'>
       <div className='title-wrapper'>
@@ -24,9 +23,9 @@ const ToastContent = ({name, message}) => (
 )
 
 const AccountTab = ({ data }) => {
-  
+
   const updateSchema = yup.object().shape({
-    fullname: yup.string().matches(/^([\w]{2,})+\s+([\w\s]{2,})+$/i, 'Tên không phù hợp').required('Bạn cần nhập tên'),
+    fullname: yup.string().matches(/^([\w]{2,})+\s+([\w\s]{2,})+$/i, 'Tên không phù hợp'),
     email: yup.string().email().required('Bạn cần nhập email'),
     birthdate: yup.date().required('Bạn cần nhập ngày sinh'),
     phone: yup.string().matches(/^[0-9]{10}$/, 'Bạn cần nhập số, không nhập chữ hoặc kí tự đặc biệt').required('Bạn cần nhập số điện thoại'),
@@ -35,7 +34,7 @@ const AccountTab = ({ data }) => {
   const dispatch = useDispatch()
   const { userProfileUpdated, updateUserProfileResult } = useSelector(state => state.userReducer);
 
-  // console.log(data)
+  // console.log(data.birthdate)
 
   const defaultValues = {
     fullname: data.fullname,
@@ -53,24 +52,22 @@ const AccountTab = ({ data }) => {
   // ** States
   // const [avatar, setAvatar] = useState('')
 
-  // const onChange = e => {
-  //   const reader = new FileReader(),
-  //     files = e.target.files
-  //   reader.onload = function () {
-  //     setAvatar(reader.result)
-  //   }
-  //   reader.readAsDataURL(files[0])
-  // }
+  const onSubmit = data => {
+    console.log(Object.values(data).every(field => {
+      console.log(field)
+    }))
+    if (Object.values(data).every(field => {
+      console.log(field)
+      field.length == 0
+    })) {
+      toast.info(
+        <ToastContent name='mới' message='Không có gì thay đổi' />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    } else {
+      console.log(data)
+    }
 
-  const onSubmit = submitData => {
-    dispatch(updateUserProfile({
-      username: data.username,
-      fullname: submitData.fullname,
-      birthdate: submitData.birthdate,
-      phone: submitData.phone,
-      email: submitData.email,
-      replySyntaxs: data.replySyntaxs
-     }))
   }
 
   useEffect(() => {
@@ -81,8 +78,6 @@ const AccountTab = ({ data }) => {
       )
     }
   }, [userProfileUpdated, updateUserProfileResult])
-  
-  console.log(userProfileUpdated)
 
   const handleImgReset = () => {
     setAvatar(require('@src/assets/images/avatars/avatar-blank.png').default)
@@ -92,27 +87,10 @@ const AccountTab = ({ data }) => {
     <Fragment>
       <Card>
         <CardHeader className='border-bottom'>
-          <CardTitle tag='h4'>Profile Details</CardTitle>
+          <CardTitle tag='h4'>Chi tiết thông tin cá nhân</CardTitle>
         </CardHeader>
         <CardBody className='py-2 my-25'>
-          {/* <div className='d-flex'>
-            <div className='me-25'>
-              <img className='rounded me-50' src={avatar} alt='Generic placeholder image' height='100' width='100' />
-            </div>
-            <div className='d-flex align-items-end mt-75 ms-1'>
-              <div>
-                <Button tag={Label} className='mb-75 me-75' size='sm' color='primary'>
-                  Upload
-                  <Input type='file' onChange={onChange} hidden accept='image/*' />
-                </Button>
-                <Button className='mb-75' color='secondary' size='sm' outline onClick={handleImgReset}>
-                  Reset
-                </Button>
-                <p className='mb-0'>Allowed JPG, GIF or PNG. Max size of 800kB</p>
-              </div>
-            </div>
-          </div> */}
-          <Form className='mt-2 pt-50' onSubmit={handleSubmit(onSubmit)}>
+          <Form className='mt-2 pt-1' onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <Col sm='6' className='mb-1'>
                 <Label className='form-label' for='fullname'>
@@ -122,7 +100,7 @@ const AccountTab = ({ data }) => {
                   name='fullname'
                   control={control}
                   render={({ field }) => (
-                    <Input id='fullname' placeholder='Họ và tên' invalid={errors.fullname && true} {...field} />
+                    <Input id='fullName' placeholder='Fullname' invalid={errors.fullname && true} {...field} />
                   )}
                 />
                 {errors && errors.fullname && <FormFeedback>{errors.fullname.message}</FormFeedback>}
@@ -152,7 +130,7 @@ const AccountTab = ({ data }) => {
                       id='phone'
                       name='phone'
                       className='form-control'
-                      placeholder='Số điện thoại'
+                      placeholder='1 234 567 8900'
                       invalid={errors.phone && true} {...field}
                     />
                   )}
@@ -160,17 +138,17 @@ const AccountTab = ({ data }) => {
                 {errors && errors.phone && <FormFeedback>{errors.phone.message}</FormFeedback>}
               </Col>
               <Col sm='6' className='mb-1'>
-                <Label className='form-label' for='updateDob'>
+                <Label className='form-label' for='birthdate'>
                   Ngày sinh
                 </Label>
                 <Controller
                   name='birthdate'
                   control={control}
                   render={({ field }) => (
-                    <Flatpickr id='date-time-picker' className='form-control' name='birthdate'/*onChange={(date) => setBirthDate(date)}*/ invalid={errors.birthdate && true} {...field}/>
+                    <Flatpickr id='birthdate' className='form-control' name='birthdate'/*onChange={(date) => setBirthDate(date)}*/ invalid={errors.birthdate && true} {...field} />
                   )}
                 />
-                {errors && errors.birthdate && <FormFeedback>{errors.birthdate.message}</FormFeedback>}              
+                {errors && errors.birthdate && <FormFeedback>{errors.birthdate.message}</FormFeedback>}
               </Col>
               <Col className='mt-2' sm='12'>
                 <Button type='submit' className='me-1' color='primary'>

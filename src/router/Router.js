@@ -1,5 +1,5 @@
 // ** React Imports
-import { Suspense, lazy, Fragment } from 'react'
+import { Suspense, lazy, Fragment, useState, useEffect } from 'react'
 
 // ** Utils
 import { useLayout } from '@hooks/useLayout'
@@ -7,12 +7,12 @@ import { useRouterTransition } from '@hooks/useRouterTransition'
 
 // ** Custom Components
 import LayoutWrapper from '@layouts/components/layout-wrapper'
-
+import { useDispatch, useSelector } from 'react-redux'
 // ** Router Components
 import { BrowserRouter as AppRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 // ** Routes & Default Routes
-import { DefaultRoute, Routes } from './routes'
+import { DefaultRoute, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes } from './routes'
 
 // ** Layouts
 import BlankLayout from '@layouts/BlankLayout'
@@ -32,9 +32,22 @@ const Router = () => {
 
   // ** Current Active Item
   const currentActiveItem = null
+  const [userRole, setUserRole] = useState(4)
+  
+  const { isAuth, currentUser } = useSelector(state => state.auth);
+
+  const userData = JSON.parse(localStorage.getItem('userData'))
+  useEffect(() => {
+    if (isAuth == true && currentUser != null) {
+      
+      setUserRole(currentUser.data.type)
+    } else if (userData != null) {
+      setUserRole(userData.type)
+    }
+  }, [isAuth, currentUser])
 
   // ** Return Filtered Array of Routes & Paths
-  const LayoutRoutesAndPaths = layout => {
+  const LayoutRoutesAndPaths = (layout, role) => {
     const LayoutRoutes = []
     const LayoutPaths = []
 
@@ -42,7 +55,43 @@ const Router = () => {
       Routes.filter(route => {
         // ** Checks if Route layout or Default layout matches current layout
         if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
-          // console.log(route)
+          console.log(route)
+          LayoutRoutes.push(route)
+          LayoutPaths.push(route.path)
+        }
+      })
+    }
+
+    if (role == 4 && outsiderRoutes) {
+      console.log('outsider')
+      outsiderRoutes.filter(route => {
+        // ** Checks if Route layout or Default layout matches current layout
+        if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
+          console.log(route)
+          LayoutRoutes.push(route)
+          LayoutPaths.push(route.path)
+        }
+      })
+    }
+
+    if (role == 2 && adminRoutes) {
+      console.log('admin')
+      adminRoutes.filter(route => {
+        // ** Checks if Route layout or Default layout matches current layout
+        if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
+          console.log(route)
+          LayoutRoutes.push(route)
+          LayoutPaths.push(route.path)
+        }
+      })
+    }
+
+    if (role == 1 && shopkeeperRoutes) {
+      console.log('shopkeeper')
+      shopkeeperRoutes.filter(route => {
+        // ** Checks if Route layout or Default layout matches current layout
+        if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
+          console.log(route)
           LayoutRoutes.push(route)
           LayoutPaths.push(route.path)
         }
@@ -51,6 +100,9 @@ const Router = () => {
 
     return { LayoutRoutes, LayoutPaths }
   }
+
+  console.log(isAuth)
+  console.log(userRole)
 
   const NotAuthorized = lazy(() => import('@src/views/NotAuthorized'))
 
@@ -103,7 +155,7 @@ const Router = () => {
       const LayoutTag = Layouts[layout]
 
       // ** Get Routes and Paths of the Layout
-      const { LayoutRoutes, LayoutPaths } = LayoutRoutesAndPaths(layout)
+      const { LayoutRoutes, LayoutPaths } = LayoutRoutesAndPaths(layout, userRole)
 
       // ** We have freedom to display different layout for different route
       // ** We have made LayoutTag dynamic based on layout, we can also replace it with the only layout component,
@@ -155,20 +207,20 @@ const Router = () => {
                               /*eslint-disable */
                               {...(route.appLayout
                                 ? {
-                                    appLayout: route.appLayout
-                                  }
+                                  appLayout: route.appLayout
+                                }
                                 : {})}
                               {...(route.meta
                                 ? {
-                                    routeMeta: route.meta
-                                  }
+                                  routeMeta: route.meta
+                                }
                                 : {})}
                               {...(route.className
                                 ? {
-                                    wrapperClass: route.className
-                                  }
+                                  wrapperClass: route.className
+                                }
                                 : {})}
-                              /*eslint-enable */
+                            /*eslint-enable */
                             >
                               <Suspense fallback={null}>
                                 <route.component {...props} />
@@ -196,7 +248,11 @@ const Router = () => {
           exact
           path='/'
           render={() => {
-            return <Redirect to={DefaultRoute} />
+            if (userData != null) {
+              return <Redirect to={DefaultRoute(userData.type)} />
+            } else {
+              return <Redirect to='/misc/not-authorized' />
+            }
           }}
         />
         {/* Not Auth Route */}

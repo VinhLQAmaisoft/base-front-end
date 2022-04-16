@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getAllUser, getAllCookie, getAllCustomer, getAllCustomerOrderDetail, createNewCookie, updateCookie, updateUser } from '../services/admin/index'
+import { getAllUser, getAllCookie, getAllCustomer, getAllCustomerOrderDetail, createNewCookie, updateCookie, updateUser, updateUserPassword } from '../services/admin/index'
 
 const initialState = {
   allUser: null,
@@ -13,6 +13,8 @@ const initialState = {
   getResult: false,
   getCustomerOrderResult: false,
   createCookieResult: false,
+  passwordUpdated: null,
+  updatedPasswordResult: false,
 }
 
 const slice = createSlice({
@@ -111,6 +113,17 @@ const slice = createSlice({
 
     builder.addCase(updateUser.rejected, (state, action) => {
       state.updatedUserResult = false;
+      console.log('err:', action.error);
+    });
+
+    builder.addCase(updateUserPassword.fulfilled, (state, action) => {
+      state.passwordUpdated = action.payload;
+      state.updatedPasswordResult = true
+      console.log(state, action)
+    });
+
+    builder.addCase(updateUserPassword.rejected, (state, action) => {
+      state.updatedPasswordResult = false;
       console.log('err:', action.error);
     });
   }

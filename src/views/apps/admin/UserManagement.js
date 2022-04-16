@@ -10,6 +10,7 @@ import { formatMoney, formatTimeStamp, getRoleByType } from '../../../utility/Ut
 import Flatpickr from 'react-flatpickr'
 import { toast, Slide } from 'react-toastify'
 import { updateUser } from '../../../services/admin'
+import ChangePasswordModal from './ChangePasswordModal'
 
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -50,7 +51,8 @@ const ToastContent = ({ name, message }) => (
 )
 
 const UserManagement = () => {
-  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '' }
+  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '', fuid: '' }
+  const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([{}])
@@ -127,23 +129,14 @@ const UserManagement = () => {
 
     if (value.length) {
       updatedData = userData.filter(item => {
-        const startsWith =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.phone.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.role.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
-
         const includes =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.phone.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.role.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
+          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
+          item.phone.toLowerCase().includes(value.toLowerCase()) ||
+          item.role.toLowerCase().includes(value.toLowerCase()) ||
+          item.salary.toLowerCase().includes(value.toLowerCase()) ||
+          status[item.status].title.toLowerCase().includes(value.toLowerCase())
 
-        if (startsWith) {
-          return startsWith
-        } else if (!startsWith && includes) {
+        if (includes) {
           return includes
         } else return null
       })
@@ -230,6 +223,24 @@ const UserManagement = () => {
     UserServices.getUserDetail('?id=' + row.id).then(data => setSelectedData(data.data.data))
   };
 
+  const handleChangePassClicked = () => {
+    setModal(!modal)
+  }
+
+  console.log(selectedData)
+  
+  const handleFBClicked = (facebook) => {
+    
+    if (facebook == undefined) {
+      toast.error(
+        <ToastContent name={'lỗi'} message='Người dùng không có Facebook' />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+    } else {
+      window.open(`https://www.facebook.com/profile.php?id=${facebook.uid}`, '_blank').focus();
+    }
+  }
+
   const validateFullname = (e) => {
     const fullnameRegex = /^([\w]{2,})+\s+([\w\s]{2,})+$/i
     if (fullnameRegex.test(e.target.value)) {
@@ -315,8 +326,10 @@ const UserManagement = () => {
   useEffect(() => {
     if (getResult == true && allUser !== null) {
       const data = allUser.map(item => {
+        console.log(item.fullname, item.facebook)
+        const fuid = item.facebook === undefined ? null : item.facebook.uid
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
-        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length }
+        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid }
       })
       setUserData(data)
     }
@@ -496,13 +509,13 @@ const UserManagement = () => {
                   <Button type='submit' className='me-1' color='primary'>
                     Cập nhật
                   </Button>
-                  <Button className='me-1' outline color='secondary'>
+                  <Button className='me-1' outline color='secondary' onClick={() => handleChangePassClicked()}>
                     Đổi mật khẩu
                   </Button>
-                  <Button className='me-1' outline color='secondary'>
+                  {/* <Button className='me-1' outline color='secondary'>
                     Thông tin cá nhân
-                  </Button>
-                  <Button outline color=''>
+                  </Button> */}
+                  <Button outline color='' onClick={() => handleFBClicked(selectedData.facebook)}>
                     <Facebook size={15} className='align-middle me-sm-25 me-0' />
                     Facebook
                   </Button>
@@ -512,6 +525,7 @@ const UserManagement = () => {
           </CardBody>
         </Form>
       </Card>
+      <ChangePasswordModal show={modal} setShow={setModal} data={selectedData} />
     </Fragment>
   )
 }
