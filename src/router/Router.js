@@ -37,10 +37,12 @@ const Router = () => {
   const { isAuth, currentUser } = useSelector(state => state.auth);
 
   const userData = JSON.parse(localStorage.getItem('userData'))
+  
   useEffect(() => {
     if (isAuth == true && currentUser != null) {
-      
-      setUserRole(currentUser.data.type)
+      if (currentUser.data != null) {
+        setUserRole(currentUser.data.type)
+      }
     } else if (userData != null) {
       setUserRole(userData.type)
     }
