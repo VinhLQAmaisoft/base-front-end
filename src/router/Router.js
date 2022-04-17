@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BrowserRouter as AppRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 // ** Routes & Default Routes
-import { DefaultRoute, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes } from './routes'
+import { DefaultRoute, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes, shipperRoutes } from './routes'
 
 // ** Layouts
 import BlankLayout from '@layouts/BlankLayout'
@@ -37,7 +37,7 @@ const Router = () => {
   const { isAuth, currentUser } = useSelector(state => state.auth);
 
   const userData = JSON.parse(localStorage.getItem('userData'))
-  
+
   useEffect(() => {
     if (isAuth == true && currentUser != null) {
       if (currentUser.data != null) {
@@ -91,6 +91,18 @@ const Router = () => {
     if (role == 1 && shopkeeperRoutes) {
       console.log('shopkeeper')
       shopkeeperRoutes.filter(route => {
+        // ** Checks if Route layout or Default layout matches current layout
+        if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
+          console.log(route)
+          LayoutRoutes.push(route)
+          LayoutPaths.push(route.path)
+        }
+      })
+    }
+
+    if (role == 0 && shipperRoutes) {
+      console.log('shopkeeper')
+      shipperRoutes.filter(route => {
         // ** Checks if Route layout or Default layout matches current layout
         if (route.layout === layout || (route.layout === undefined && DefaultLayout === layout)) {
           console.log(route)
@@ -180,6 +192,7 @@ const Router = () => {
           >
             <Switch>
               {LayoutRoutes.map(route => {
+                // console.log(route)
                 return (
                   <Route
                     key={route.path}

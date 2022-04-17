@@ -101,7 +101,7 @@ const Login = () => {
         if (userData) {
           switch (userData.type) {
             case 0:
-              history.push('/home')
+              history.push('/shipper/order-manage')
               break;
             case 1:
               history.push('/shopkeeper/post-manage')

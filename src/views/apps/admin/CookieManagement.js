@@ -176,7 +176,7 @@ const CookieManagement = () => {
 
     const columnDelimiter = ','
     const lineDelimiter = '\n'
-    const keys = Object.keys(data[0])
+    const keys = Object.keys(cookieData[0])
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -203,7 +203,7 @@ const CookieManagement = () => {
     let csv = convertArrayOfObjectsToCSV(array)
     if (csv === null) return
 
-    const filename = 'export.csv'
+    const filename = 'Dữ liệu Cookie.csv'
 
     if (!csv.match(/^data:text\/csv/i)) {
       csv = `data:text/csv;charset=utf-8,${csv}`
@@ -309,25 +309,9 @@ const CookieManagement = () => {
                 <span className='align-middle ms-50'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer size={15} />
-                  <span className='align-middle ms-50'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(data)}>
+                <DropdownItem className='w-100' onClick={() => downloadCSV(cookieData)}>
                   <FileText size={15} />
                   <span className='align-middle ms-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid size={15} />
-                  <span className='align-middle ms-50'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File size={15} />
-                  <span className='align-middle ms-50'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy size={15} />
-                  <span className='align-middle ms-50'>Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledButtonDropdown>
