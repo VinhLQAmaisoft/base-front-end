@@ -42,8 +42,6 @@ const OrderManage = () => {
   const [filterStatus, setFilterStatus] = useState(-1)
   const [activeOrder, setActiveOrder] = useState([])
   const [deactivateOrder, setDeactivateOrder] = useState([])
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [displayOrder, setDisplayOrder] = useState([])
   const [products, setProducts] = useState([])
   const [shipperOptions, setShipperOptions] = useState([])
   const [pageSize, setPageSize] = useState(5)
@@ -68,7 +66,6 @@ const OrderManage = () => {
             let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
             console.log("Source data: " + OrderData.length)
             setDeactivateOrder(doneOrder)
-
             setActiveOrder(JSON.parse(JSON.stringify(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))))
           }
         })

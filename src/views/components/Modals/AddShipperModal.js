@@ -25,6 +25,7 @@ const AddShipperModal = ({ open, handleModal }) => {
             if (data.data.data) {
                 data.data.data.map(shipper => {
                     result.push({
+                        _id: shipper._id,
                         fullname: shipper.fullname,
                         phone: shipper.phone,
                         ownerCount: shipper.jobs.length,
@@ -34,11 +35,12 @@ const AddShipperModal = ({ open, handleModal }) => {
             }
             setOuterShipper(result)
         })
-    })
+    }, [])
 
-    const addShipper = () => {
-        if (selectedId != "") {
-            ShipperServices.addShipper({ id: selectedId }).then((data) => {
+    const addShipper = (id) => {
+        console.log("ID: ", id)
+        if (id != "") {
+            ShipperServices.addShipper({ id }).then((data) => {
                 alert(data.data.message)
             })
         }
@@ -75,6 +77,12 @@ const AddShipperModal = ({ open, handleModal }) => {
                 return <Badge color="danger">Chưa Sẵn Sàng</Badge>
 
         }
+    }, {
+        name: 'Hành động',
+        sortable: true,
+        minWidth: '50px',
+        selector: row => <Button color="success" size='sm' onClick={() => addShipper(row._id)}>Mời</Button>,
+
 
     }
     ]
@@ -84,6 +92,7 @@ const AddShipperModal = ({ open, handleModal }) => {
             isOpen={open}
             toggle={handleModal}
             // className='sidebar-sm'
+            size='xl'
             modalClassName='modal-fade-in'
             contentClassName='pt-0'
         >

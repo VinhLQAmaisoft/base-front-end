@@ -1,7 +1,7 @@
 // ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 import { formatMoney, formatTimeStamp } from '@utils'
-import { OrderServices, ProductServices, UserServices } from '@services'
+import { OrderServices, ProductServices, ShipperServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
 // ** Add New Modal Component
@@ -55,16 +55,9 @@ const OrderManage = () => {
 
     useEffect(() => {
         var intervalTask = null;
-        UserServices.getProfile().then(data => {
+        ShipperServices.getJob().then(data => {
             if (data.data.data) {
-                let rawShipper = data.data.data.shippers;
-                let shippers = rawShipper.map(shipper => {
-                    let data = shipper.split('---');
-                    return {
-                        fullName: data[0],
-                        username: data[1],
-                    }
-                })
+                let shippers = data.data.data.filter(job => job.status == 'accepted').map(job => job.shipper);
                 setShipperOptions(shippers)
                 console.log("My Shipper: ", shippers)
             }

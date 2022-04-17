@@ -16,11 +16,18 @@ export default function ProductManage() {
     const [tempProduct, setTempProduct] = useState(null)
     useEffect(() => {
         ShipperServices.getShipper().then(data => {
-            if (data.data.data) {
+            if (data.data.data != null) {
                 setShippers(data.data.data)
                 getCurrentObject(shippers)
             }
         })
+        let intervalTask = setInterval(() => ShipperServices.getShipper().then(data => {
+            if (data.data.data) {
+                setShippers(data.data.data)
+                getCurrentObject(shippers)
+            }
+        }), 5000)
+        return () => window.clearInterval(intervalTask)
     }, [])
 
     useEffect(() => {
@@ -68,8 +75,8 @@ export default function ProductManage() {
         name: 'Ngày tham gia',
         sortable: true,
         minWidth: '50px',
-        selector: row => row.jobs.createAt,
-        format: row => formatTimeStamp(row.jobs.createAt)
+        selector: row => row.createAt,
+        format: row => row.createAt != 'Chưa đồng ý' ? formatTimeStamp(row.jobs.createAt) : row.createAt
 
     }, {
         name: 'Hành Động',
@@ -78,8 +85,7 @@ export default function ProductManage() {
         selector: row => {
             return (
                 <Fragment>
-                    <Button color="primary" size="sm" onClick={() => { selectShipper(row._id) }} className='me-1'>Chi Tiết</Button>
-                    <Button color="danger" size="sm" onClick={() => { deleteShipper(row._id) }} >Xóa</Button>
+                    {row.createAt != 'Chưa đồng ý' && <Button color="primary" size="sm" onClick={() => { selectShipper(row._id) }} className='me-1'>Chi Tiết</Button>}
                 </Fragment>
             )
         }
@@ -105,12 +111,26 @@ export default function ProductManage() {
         }
     }
 
-    const deleteShipper = (id) => {
-        ShipperServices.deleteShipper({ id }).then(data => {
-            alert(data.data.message);
-            let newShipper = shippers.find(shipper => shipper.id != id)
-            setShippers(newShipper)
-        })
+    const deleteShipper = (shipper) => {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'))
+            if (userData) {
+                ShipperServices.updateJob({
+                    shipper,
+                    status: 'reject',
+
+                }).then(data => {
+                    alert(data.data.message);
+
+                })
+            } else {
+                alert("Đăng nhập hết hạn")
+            }
+        } catch (error) {
+            console.log(error)
+            alert("Đăng nhập hết hạn")
+            return
+        }
     }
 
     const deleteKeyword = (keyword) => {
@@ -240,7 +260,7 @@ export default function ProductManage() {
                             </Row>
                         </CardBody>
                         <CardFooter >
-                            <Button color='primary' disabled={selectedShipper == null} onClick={() => { deleteShipper() }}>Xóa Shipper</Button>
+                            <Button color='primary' disabled={selectedShipper == null} onClick={() => { deleteShipper(selectedShipper?.username) }}>Xóa Shipper</Button>
                         </CardFooter>
                     </Card>
                 </Col>
