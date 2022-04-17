@@ -18,7 +18,7 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
     const [selectedProduct, setSelectedProduct] = useState({})
     const [productOptions, setProductOptions] = useState(products ? products : [])
     const [tempListProduct, setTempListProduct] = useState(comment?.data?.products ? comment?.data?.products : [])
-    console.log("tempListProduct: ", tempListProduct)
+    // console.log("tempListProduct: ", tempListProduct)
     // ** Custom close btn
     const CloseBtn = <X className='cursor-pointer' size={15} onClick={handleModal} />
 

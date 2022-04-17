@@ -6,16 +6,16 @@ import { formatMoney } from '@utils'
 export default function PostDetailTab(props) {
     // console.log("PostDetailTab PROPS: ", props)
     const [modal, setModal] = useState(false);
+    const [isScan, setIsScan] = useState(true)
+    const [isComment, setIsComment] = useState(true)
     const [post, SetPost] = useState(props?.post);
-    const [scanJob, setScanJob] = useState(null);
-    const [counterJob, setCounterJob] = useState(null)
+
     const [comments, setComments] = useState([]);
     const [replySyntax, setReplySyntax] = useState([]);
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
-    const [isScan, setIsScan] = useState(true)
-    const [isComment, setIsComment] = useState(true)
+
     const [timer, setTimer] = useState(120);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
@@ -33,11 +33,10 @@ export default function PostDetailTab(props) {
                     if (!data.data?.data) {
                         alert(data.data.message)
                     }
-                    let taskId = setCounter();
-                    setCounterJob(taskId)
+
                     CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
-                    let task = createScanInterval(120)
-                    setScanJob(task)
+
+
 
 
                 })
@@ -51,16 +50,20 @@ export default function PostDetailTab(props) {
 
     //Clear Interval Task!!!
     useEffect(() => {
+        console.log("Init Interval Task!!!!!!!!!!!!!!!!!!!")
+        let x = setCounter()
+        let y = createScanInterval(120)
+
         return () => {
-            console.log("Leave Page!!!!!!!!!!!!!!!!!!!")
-            // if (scanJob) {
-            console.log("hủy job scan")
-            clearInterval(scanJob)
-            // }
-            // if (counterJob) {
-            console.log("hủy job counter")
-            clearInterval(counterJob)
-            // }
+            console.log("Leave Page!!!!!!!!!!!!!!!y!!!!")
+            if (y) {
+                console.log("hủy job scan")
+                window.clearInterval(y)
+            }
+            if (x) {
+                console.log("hủy job counter")
+                window.clearInterval(x)
+            }
         };
     }, []);
 
@@ -77,7 +80,20 @@ export default function PostDetailTab(props) {
         }, 1000)
     }
 
-
+    async function handleUpdate() {
+        let content = document.getElementById('content').value;
+        if (content == post.content) {
+            alert('Nội dung chưa được thay đổi');
+            return
+        }
+        PostServices.editPost({
+            fb_id: post.fb_id,
+            content,
+            attachments: post.attachment
+        }).then(res => {
+            alert(res.data.message)
+        })
+    }
 
     function sortComment(rawList) {
         let parent = rawList.filter(comment => comment.parentId == null);
@@ -98,35 +114,37 @@ export default function PostDetailTab(props) {
         return result
     }
 
-    const handleModal = () => setModal(!modal)
+    const handleModal = () => setModal(!modal) 
 
 
     const createScanInterval = (second) => {
         const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
         let x = setInterval(() => {
             let now = new Date()
-            console.log(`${now.toLocaleString()} Bắt Đầu Quét`)
-            isScan && CommentServices.scanComment({
-                postId: post._id
-            }).then(data => {
-                if (!data.data?.data) {
-                    alert(data.data.message)
-                    setIsScan = false;
-                    setIsComment = false;
-                } else {
-                    let now2 = new Date()
-                    console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài`)
-                    if (isComment) {
-                        CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+            if (isScan) {
+                console.log(`${now.toLocaleString()} Bắt Đầu Quét ${isScan}`)
+                CommentServices.scanComment({
+                    postId: post._id
+                }).then(data => {
+                    if (!data.data?.data) {
+                        alert(data.data.message)
+                        setIsScan(false);
+                        setIsComment(false);
+                    } else {
+                        let now2 = new Date()
+                        if (isComment) {
+                            console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài ${isComment}`)
+                            CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+                        }
                     }
-                }
-                CommentServices.getComment(`?post_id=${post._id}`)
-                    .then((data) => {
-                        setComments(sortComment(data.data.data));
-                        setCommentRender(renderComment(comments));
-                        setTimer(second)
-                    })
-            })
+                    CommentServices.getComment(`?post_id=${post._id}`)
+                        .then((data) => {
+                            setComments(sortComment(data.data.data));
+                            setCommentRender(renderComment(comments));
+                            setTimer(second)
+                        })
+                })
+            }
         }, second * 1000)
         return x
     }
@@ -358,14 +376,31 @@ export default function PostDetailTab(props) {
                             <Input
                                 type="checkbox"
                                 checked={isScan}
-                                onChange={(e) => setIsScan(e.target.checked)} />
+                                onChange={(e) => {
+                                    console.log("Input = " + e.target.checked)
+                                    setIsScan(e.target.checked);
+                                    setTimeout(() => {
+                                        console.log("New IS SCAN: ", isScan)
+                                    }, 1000)
+                                }
+                                } />
                         </Col >
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Tự động chấm bài: </Label>
-                            <Input
+                            <Button size="sm" color={isComment ? 'warning' : 'success'} onClick={() => { setIsComment(!isComment); }}>
+                                {isComment ? 'Dừng' : 'Bắt Đầu'}
+                            </Button>
+                            {/* <Input
                                 type="checkbox"
                                 checked={isComment}
-                                onChange={(e) => setIsComment(e.target.checked)} />
+                                onChange={(e) => {
+                                    console.log("Input = " + e.target.checked)
+                                    setIsComment(e.target.checked)
+                                    setTimeout(() => {
+                                        console.log("New IS COMMENT: ", isComment)
+                                    }, 1000)
+
+                                }} /> */}
                         </Col >
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
@@ -375,15 +410,20 @@ export default function PostDetailTab(props) {
                         <Col sm="12" className="mb-2">
                             <Label className="text-dark fs-5" for="exampleText">
                                 Nội Dung
+                            </Label><br></br>
+                            <Label className="text-warning fs-6" >
+                                <i> Chỉ có thể chỉnh sửa tối đa 2 lần!!!</i>
                             </Label>
                             <Input
                                 id="content"
                                 name="text"
                                 type="textarea"
                                 defaultValue={post.content}
-                                style={{ minHeight: '200px' }}
-                                editable="false"
+                                style={{ minHeight: '200px', marginBottom: '5px' }}
+                                editable="true"
+                                className="mb-1"
                             />
+                            <Button color="primary" size="sm" onClick={() => handleUpdate()}>Cập nhật</Button>
                         </Col>
 
                         {/* SẢN PHẨM */}

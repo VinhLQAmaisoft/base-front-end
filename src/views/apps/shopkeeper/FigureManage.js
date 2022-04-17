@@ -161,6 +161,9 @@ export default function ProductManage() {
         console.log("Time Range 1: ", timeRange)
         setXAxis(getDates(timeRange[0].getTime(), timeRange[1].getTime()))
         getFigure(timeRange[0].getTime(), timeRange[1].getTime())
+        console.log("Order Figure: ", orderFigure)
+        console.log("Product Figure: ", productFigure)
+        console.log("Revenue Figure: ", revenueFigure)
         getShipperFigure()
         getProductFigure()
     }, [timeRange])
@@ -172,7 +175,7 @@ export default function ProductManage() {
     }
 
     // **Chart Option
-    const options = {
+    const options1 = {
         chart: {
             parentHeightOffset: 0,
             toolbar: {
@@ -188,7 +191,10 @@ export default function ProductManage() {
         },
         legend: {
             position: 'top',
-            horizontalAlign: 'start'
+            horizontalAlign: 'start',
+            onItemClick: {
+                toggleDataSeries: true
+            },
         },
         grid: {
             xaxis: {
@@ -199,7 +205,76 @@ export default function ProductManage() {
         },
         colors: [areaColors.series3, areaColors.series2, areaColors.series1],
         xaxis: {
-            categories: xAxis
+            categories: xAxis,
+            title: {
+                text: "Thống Kê Doanh Số Bán Hàng",
+                style: {
+                    color: undefined,
+                    fontSize: '15px',
+                    fontFamily: ' Arial',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+            }
+        },
+        zoom: {
+            enabled: false,
+        },
+        selection: {
+            enabled: false,
+        },
+        fill: {
+            opacity: 1,
+            type: 'solid'
+        },
+        tooltip: {
+            shared: false
+        },
+        yaxis: {
+            opposite: direction === 'rtl'
+        }
+    }
+    const options2 = {
+        chart: {
+            parentHeightOffset: 0,
+            toolbar: {
+                show: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: false,
+            curve: 'straight'
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'start',
+            onItemClick: {
+                toggleDataSeries: false
+            },
+        },
+        grid: {
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            }
+        },
+        colors: [areaColors.series1],
+        xaxis: {
+            categories: xAxis,
+            title: {
+                text: "Thống Kê Doanh Thu (vnđ)",
+                style: {
+                    color: undefined,
+                    fontSize: '15px',
+                    fontFamily: ' Arial',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+            }
         },
         zoom: {
             enabled: false,
@@ -220,7 +295,7 @@ export default function ProductManage() {
     }
 
     // ** Chart Series
-    const series = [
+    const series1 = [
         {
             name: 'Sản Phẩm Đã Bán',
             data: productFigure
@@ -228,7 +303,9 @@ export default function ProductManage() {
         {
             name: 'Số Đơn Đã Nhận',
             data: orderFigure
-        },
+        }
+    ]
+    const series2 = [
         {
             name: 'Doanh Thu',
             data: revenueFigure
@@ -471,7 +548,8 @@ export default function ProductManage() {
                             </Col>
                         </CardHeader>
                         <CardBody>
-                            <Chart options={options} series={series} type='area' height={400} />
+                            <Chart options={options1} series={series1} type='area' height={400} />
+                            <Chart options={options2} series={series2} type='area' height={400} />
                             <Row>
                                 <Col sm={12}>Tổng Lợi Nhuận: <b>{formatMoney(totalRevenue)}</b> </Col>
                                 <Col sm={12}>Tổng Số Đơn Hàng Đã Nhận:<b> {totalOrder} đơn</b></Col>

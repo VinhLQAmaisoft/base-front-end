@@ -256,8 +256,8 @@ export default function ProductManage() {
             return listKeywords.map(keyword => (
                 <Badge
                     outline={true}
-                    style={{ padding: '5px' }}
-                    className='me-1'
+                    style={{ padding: '5px',margin:'5px' }}
+                    // className='m-1'
                     color='info'
                     key={`detail - ${keyword}`}
                 >
