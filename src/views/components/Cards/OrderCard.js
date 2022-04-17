@@ -60,11 +60,11 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
     }
 
     useEffect(() => {
-        let loop = updateOrderData();
-        return () => {
-            console.log("Leave ORDER MANAGE PAGE!!!!!!!!!!!!!!!!!!!!")
-            window.clearInterval(loop)
-        }
+        // let loop = updateOrderData();
+        // return () => {
+        //     console.log("Leave ORDER MANAGE PAGE!!!!!!!!!!!!!!!!!!!!")
+        //     window.clearInterval(loop)
+        // }
     }, [])
 
     const updateOrderData = () => {
@@ -84,16 +84,16 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
 
     function handleUpdateStatus(id, status) {
         setOrderStatus(status.label)
-        OrderServices.updateStatus(`?id=${id}&status=${status.value}`).then(data => {
+        OrderServices.updateStatus(`?id=${id}&status=${status.value}&updateAt=${Date.now()}`).then(data => {
             alert(data.data.message)
             OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
         })
     }
 
     function handleUpdateShipper(s) {
-
+        let updateAt = Date.now()
         setShipper(s.username)
-        OrderServices.editOrder({ _id: order._id, shipper: s.username }).then(data => {
+        OrderServices.editOrder({ _id: order._id, shipper: s.username, updateAt }).then(data => {
             alert(data.data.message)
             OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
         })
@@ -170,8 +170,10 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
                 <CardHeader className='flex-md-col mb-1 flex-column align-items-center align-items-start border-bottom'>
                     <div className='d-flex w-100' style={{ justifyContent: 'center' }}>
                         {renderHeader()}
-                        {/* <a className='ml-3' target='_blank' href={props.fb_url}> Trực quan</a> */}
                     </div>
+                    <CardSubtitle className='mt-1'>
+                        Mã đơn hàng: <i>{order._id}</i>
+                    </CardSubtitle>
                 </CardHeader>
                 <CardBody className='text-center p-1'>
                     {/* CONTENT */}

@@ -54,6 +54,7 @@ const OrderManage = () => {
     })
 
     useEffect(() => {
+        var intervalTask = null;
         UserServices.getProfile().then(data => {
             if (data.data.data) {
                 let rawShipper = data.data.data.shippers;
@@ -84,6 +85,25 @@ const OrderManage = () => {
                 setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
             }
         })
+        setInterval(() => {
+            OrderServices.getOrder('').then(data => {
+                let OrderData = []
+                if (data.data.data) {
+                    OrderData = data.data.data
+                    let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+                    setDeactivateOrder(doneOrder)
+                    // setDisplayOrder(getCurrentTableData(doneOrder))
+                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+                }
+            })
+        }, 5000)
+        return () => {
+            console.log("Rời Order Manage")
+            if (intervalTask) {
+                console.log("Hủy Interval Task")
+                window.clearInterval(intervalTask)
+            }
+        }
     }, [])
 
     // Cập nhật thứ tự bảng khi sắp xếp  
@@ -280,33 +300,33 @@ const OrderManage = () => {
 
 
     // ** Custom Pagination
-    const CustomPagination = () => {
-        // console.log(`${deactivateOrder.length}/${pageSize} = ${Math.ceil(deactivateOrder.length / pageSize)}`)
-        return (
-            <ReactPaginate
-                previousLabel=''
-                nextLabel=''
-                forcePage={currentPage}
-                onPageChange={page => {
-                    setCurrentPage(page.selected)
-                }}
-                pageCount={Math.ceil(deactivateOrder.length / pageSize)}
-                breakLabel='...'
-                pageRangeDisplayed={2}
-                marginPagesDisplayed={2}
-                activeClassName='active'
-                pageClassName='page-item'
-                breakClassName='page-item'
-                nextLinkClassName='page-link'
-                pageLinkClassName='page-link'
-                breakLinkClassName='page-link'
-                previousLinkClassName='page-link'
-                nextClassName='page-item next-item'
-                previousClassName='page-item prev-item'
-                containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
-            />
-        )
-    }
+    // const CustomPagination = () => {
+    //     // console.log(`${deactivateOrder.length}/${pageSize} = ${Math.ceil(deactivateOrder.length / pageSize)}`)
+    //     return (
+    //         <ReactPaginate
+    //             previousLabel=''
+    //             nextLabel=''
+    //             forcePage={currentPage}
+    //             onPageChange={page => {
+    //                 setCurrentPage(page.selected)
+    //             }}
+    //             pageCount={Math.ceil(deactivateOrder.length / pageSize)}
+    //             breakLabel='...'
+    //             pageRangeDisplayed={2}
+    //             marginPagesDisplayed={2}
+    //             activeClassName='active'
+    //             pageClassName='page-item'
+    //             breakClassName='page-item'
+    //             nextLinkClassName='page-link'
+    //             pageLinkClassName='page-link'
+    //             breakLinkClassName='page-link'
+    //             previousLinkClassName='page-link'
+    //             nextClassName='page-item next-item'
+    //             previousClassName='page-item prev-item'
+    //             containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
+    //         />
+    //     )
+    // }
 
     function updateOrderView(newOrder) {
         let match = activeOrder.filter(order => order._id === newOrder._id);
@@ -319,8 +339,7 @@ const OrderManage = () => {
         let result = [].concat(activeOrder)
             .sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
             .map((order, i) => {
-                console.log(`Order Card at ${i}: ` + order[sortOption.key])
-                return (<Col lg={4} md={6} sm={12} key={order._id.$oid}>
+                return (<Col lg={4} md={6} sm={12} key={JSON.stringify(order)}>
                     <OrderCard shipperOptions={shipperOptions} products={products} baseOrder={order} />
                 </Col>)
             }

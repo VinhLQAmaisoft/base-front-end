@@ -69,8 +69,7 @@ const AddNewModal = ({ open, updateOrderView, handleModal, order, products }) =>
             customerName: document.getElementById('name').value,
             address: document.getElementById('address').value,
             phone: document.getElementById('phone').value,
-            // customerId: comment.author.name,
-            // postId: comment.post_id,
+            updateAt: Date.now(),
         }).then(data => {
             alert(data.data.message);
             if (data.data.data) {

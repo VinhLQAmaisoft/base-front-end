@@ -8,7 +8,7 @@ import ShipperOrderCard from '@my-components/Cards/ShipperOrderCard'
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus } from 'react-feather'
+import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, CloudSnow } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
@@ -53,33 +53,58 @@ const OrderManage = () => {
     label: "Mới nhất"
   })
 
-  // useEffect(() => {
-  //   UserServices.getProfile().then(data => {
-  //     var owners = [];
-  //     if (data.data.data) {
-  //       data.data.data.jobs.forEach(job => owners.push(job.owner))
-  //       setShopkeepers(owners)
-  //       setShipper(data.data.data.username)
-  //       OrderServices.getShipperOrder({ shopkeepers: owners }).then(data => {
-  //         let OrderData = []
-  //         if (data.data.data) {
-  //           OrderData = data.data.data
-  //           let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
-  //           console.log("Source data: " + OrderData.length)
-  //           setDeactivateOrder(doneOrder)
-  //           // setDisplayOrder(getCurrentTableData(doneOrder))
-  //           setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
-  //         }
-  //       })
-  //     }
-  //   })
+  useEffect(() => {
+    UserServices.getProfile().then(data => {
+      var owners = [];
+      if (data.data.data) {
 
-  //   ProductServices.getProduct('').then(data => {
-  //     // console.log("My Products: ", data.data.data)
-  //     setProducts(data.data.data)
-  //   })
+        data.data.data.jobs.forEach(job => owners.push(job.owner))
+        setShopkeepers(owners)
+        setShipper(data.data.data.username)
+        OrderServices.getShipperOrder({ shopkeepers: owners }).then(data => {
+          let OrderData = []
+          if (data.data.data) {
+            OrderData = data.data.data
+            let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+            console.log("Source data: " + OrderData.length)
+            setDeactivateOrder(doneOrder)
 
-  // }, [])
+            setActiveOrder(JSON.parse(JSON.stringify(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))))
+          }
+        })
+
+      }
+    })
+
+    ProductServices.getProduct('').then(data => {
+      // console.log("My Products: ", data.data.data)
+      setProducts(data.data.data)
+    })
+    var intervalTask = null;
+    intervalTask = setInterval(() => {
+      if (shopkeepers) {
+        OrderServices.getShipperOrder({ shopkeepers }).then(data => {
+          let OrderData = []
+          if (data.data.data) {
+            OrderData = data.data.data
+            let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+            console.log("Source data: " + OrderData.length)
+            setDeactivateOrder(doneOrder)
+            // setDisplayOrder(getCurrentTableData(doneOrder))
+            setActiveOrder(JSON.parse(JSON.stringify(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))))
+
+          }
+        }).catch(() => { })
+      }
+    }, 5000)
+    return () => {
+      console.log("Rời Order Manage")
+      console.log("Hủy Interval Task")
+      window.clearInterval(intervalTask)
+
+    }
+
+  }, [])
 
   // Cập nhật thứ tự bảng khi sắp xếp  
   useEffect(() => {
@@ -190,15 +215,15 @@ const OrderManage = () => {
 
 
 
-  const getCurrentTableData = (source) => {
-    // currentPage = currentPage - 1
-    console.log("Table's Input: ", source.length, currentPage, pageSize);
-    let start = currentPage * pageSize;
-    let end = start + pageSize;
-    console.log("Table's Output: ", source.slice(start, end));
+  // const getCurrentTableData = (source) => {
+  //   // currentPage = currentPage - 1
+  //   console.log("Table's Input: ", source.length, currentPage, pageSize);
+  //   let start = currentPage * pageSize;
+  //   let end = start + pageSize;
+  //   console.log("Table's Output: ", source.slice(start, end));
 
-    return source.slice(start, end)
-  }
+  //   return source.slice(start, end)
+  // }
 
   // ** Function to handle Modal toggle
 
@@ -304,19 +329,18 @@ const OrderManage = () => {
     )
   }
 
-  function updateOrderView(newOrder) {
-    let match = activeOrder.filter(order => order._id === newOrder._id);
-    if (match.length > 0) {
-      match[0] = JSON.parse(JSON.stringify(newOrder));
-    }
-  }
+  // function updateOrderView(newOrder) {
+  //   let match = activeOrder.filter(order => order._id === newOrder._id);
+  //   if (match.length > 0) {
+  //     match[0] = JSON.parse(JSON.stringify(newOrder));
+  //   }
+  // }
 
   function renderOrderCard() {
     let result = [].concat(activeOrder)
       .sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
       .map((order, i) => {
-        console.log(`Order Card at ${i}: ` + order[sortOption.key])
-        return (<Col lg={4} md={6} sm={12} key={order._id.$oid}>
+        return (<Col lg={4} md={6} sm={12} key={JSON.stringify(order)}>
           <ShipperOrderCard shipper={shipper} products={products} baseOrder={order} />
         </Col>)
       }
