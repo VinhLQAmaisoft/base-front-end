@@ -3,7 +3,7 @@ import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
-import { getAllUser } from '../../../services/admin'
+import { getAllUser, changeStatusUser } from '../../../services/admin'
 import { UserServices } from '../../../services'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatMoney, formatTimeStamp, getRoleByType } from '../../../utility/Utils'
@@ -51,14 +51,15 @@ const ToastContent = ({ name, message }) => (
 )
 
 const UserManagement = () => {
-  const defaultSelectedData = { full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '', fuid: '' }
+  const defaultSelectedData = { _id: '', full_name: '', phone: '', role: '', salary: '', status: 1, password: '', email: '', owner: '', birthdate: '', joiningdate: '', post_total: '', product_total: '', fuid: '' }
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([{}])
   const [userData, setUserData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
-  const { allUser, getResult, userUpdated, updatedUserResult } = useSelector(state => state.adminReducer);
+  const [toggleSwitch, setToggleSwitch] = useState(false)
+  const { allUser, getResult, userUpdated, updatedUserResult, deactiveUser, deactiveUserResult } = useSelector(state => state.adminReducer);
   const dispatch = useDispatch()
 
   const [email, setEmail] = useState('')
@@ -219,15 +220,66 @@ const UserManagement = () => {
   }
 
   const handleRowClicked = row => {
-    UserServices.getUserDetail('?id=' + row.id).then(data => setSelectedData(data.data.data))
+    UserServices.getUserDetail('?id=' + row.id).then(data => {
+      setSelectedData(data.data.data)
+    })
+    // Table not in searching 
+    const newData = userData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    console.log(filteredData)
+    // Table in searching
+    const newSearchingData = filteredData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    setUserData(newData)
+    setFilteredData(newSearchingData)
+    setToggleSwitch(!Boolean(row.status))
   };
+
+  const conditionalRowStyles = [
+    {
+      when: row => {
+        return row.toggleSelected
+      },
+      style: {
+        backgroundColor: "#f0f0f0",
+        userSelect: "none"
+      }
+    }
+  ];
 
   const handleChangePassClicked = () => {
     setModal(!modal)
   }
-  
+
+  const handleSwitchClicked = () => {
+    dispatch(changeStatusUser(selectedData._id))
+  }
+
+
   const handleFBClicked = (facebook) => {
-    
+
     if (facebook == undefined) {
       toast.error(
         <ToastContent name={'lỗi'} message='Người dùng không có Facebook' />,
@@ -296,6 +348,29 @@ const UserManagement = () => {
     }
   }
 
+  // console.log(deactiveUser, deactiveUserResult)
+
+  useEffect(() => {
+    if (deactiveUser == null && deactiveUserResult == false) {
+      console.log('Loi doi status')
+    } else {
+      if (deactiveUser.data == null && deactiveUserResult == true) {
+        toast.error(
+          <ToastContent name={'lỗi'} message={deactiveUser.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (deactiveUser.data != null && deactiveUserResult == true) {
+        toast.success(
+          <ToastContent name={'mới'} message={deactiveUser.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        dispatch(getAllUser())
+        setToggleSwitch(!toggleSwitch)
+      }
+    }
+    // console.log(deactiveUser)
+  }, [deactiveUser, deactiveUserResult])
+
   useEffect(() => {
     if (userUpdated == null && updatedUserResult == false) {
       console.log('csadcsd')
@@ -322,11 +397,27 @@ const UserManagement = () => {
 
   useEffect(() => {
     if (getResult == true && allUser !== null) {
+      let updatedData = []
       const data = allUser.map(item => {
         const fuid = item.facebook === undefined ? null : item.facebook.uid
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
-        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid }
+        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid, toggleSelected: false }
       })
+      if (searchValue.length) {
+        updatedData = data.filter(item => {
+          const includes =
+            item.full_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.phone.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.role.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.salary.toLowerCase().includes(searchValue.toLowerCase()) ||
+            status[item.status].title.toLowerCase().includes(searchValue.toLowerCase())
+
+          if (includes) {
+            return includes
+          } else return null
+        })
+        setFilteredData(updatedData)
+      }
       setUserData(data)
     }
   }, [getResult, allUser])
@@ -397,6 +488,7 @@ const UserManagement = () => {
             paginationComponent={CustomPagination}
             data={searchValue.length ? filteredData : userData}
             onRowClicked={handleRowClicked}
+            conditionalRowStyles={conditionalRowStyles}
 
           />
         </div>
@@ -414,7 +506,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='fullnameMulti'>
                   Tên chủ tài khoản
                 </Label>
-                <Input type='text' name='fullname' id='fullnameMulti' placeholder='fullname' defaultValue={selectedData.fullname || selectedData.full_name} invalid={fullnameError} onChange={(e) => {
+                <Input type='text' name='fullname' id='fullnameMulti' placeholder='Họ và tên' defaultValue={selectedData.fullname || selectedData.full_name} invalid={fullnameError} onChange={(e) => {
                   validateFullname(e)
                   setFullname(e.target.value)
                 }} />
@@ -424,7 +516,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='phoneMulti'>
                   Số điện thoại
                 </Label>
-                <Input type='text' name='phone' id='phoneMulti' placeholder='phone' defaultValue={selectedData.phone} invalid={phoneError} onChange={(e) => {
+                <Input type='text' name='phone' id='phoneMulti' placeholder='Số điện thoại' defaultValue={selectedData.phone} invalid={phoneError} onChange={(e) => {
                   validatePhone(e)
                   setPhone(e.target.value)
                 }} />
@@ -434,7 +526,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='emailMulti'>
                   Email
                 </Label>
-                <Input type='text' name='email' id='emailMulti' placeholder='email' defaultValue={selectedData?.email} invalid={emailError} onChange={(e) => {
+                <Input type='text' name='email' id='emailMulti' placeholder='Email' defaultValue={selectedData?.email} invalid={emailError} onChange={(e) => {
                   validateEmail(e)
                   setEmail(e.target.value)
                 }} />
@@ -456,13 +548,13 @@ const UserManagement = () => {
                 <Label className='form-label' for='ownerMulti'>
                   Người chủ
                 </Label>
-                <Input type='text' name='owner' id='ownerMulti' placeholder='owner' value={selectedData.owner} disabled />
+                <Input type='text' name='owner' id='ownerMulti' placeholder='Người quản lý' value={selectedData.owner} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='postMulti'>
                   Tổng bài
                 </Label>
-                <Input type='text' name='post' id='postMulti' placeholder='post' value={selectedData?.post?.length || 0} disabled />
+                <Input type='text' name='post' id='postMulti' placeholder='Số bài đăng' value={selectedData?.post?.length || 0} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='joiningDateMulti'>
@@ -476,13 +568,13 @@ const UserManagement = () => {
                 <Label className='form-label' for='productMulti'>
                   Tổng sản phẩm
                 </Label>
-                <Input type='text' name='product' id='productMulti' placeholder='100' value={selectedData?.product?.length || 0} disabled />
+                <Input type='text' name='product' id='productMulti' placeholder='Tổng sản phẩm' value={selectedData?.product?.length || 0} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='salaryMulti'>
                   Tổng doanh thu
                 </Label>
-                <Input type='text' name='salary' id='salaryMulti' placeholder='25000' value={formatMoney(calTotal(selectedData.type, selectedData.order))} disabled />
+                <Input type='text' name='salary' id='salaryMulti' placeholder='Tổng doanh thu' value={formatMoney(calTotal(selectedData.type, selectedData.order))} disabled />
               </Col>
               <Col sm='12'>
                 <div className='d-flex'>
@@ -492,13 +584,18 @@ const UserManagement = () => {
                   <Button className='me-1' outline color='secondary' onClick={() => handleChangePassClicked()}>
                     Đổi mật khẩu
                   </Button>
-                  {/* <Button className='me-1' outline color='secondary'>
-                    Thông tin cá nhân
-                  </Button> */}
-                  <Button outline color='' onClick={() => handleFBClicked(selectedData.facebook)}>
+                  <Button className='me-1' outline color='primary' onClick={() => handleFBClicked(selectedData.facebook)}>
                     <Facebook size={15} className='align-middle me-sm-25 me-0' />
                     Facebook
                   </Button>
+                  <div className='d-flex flex-column'>
+                    <Label for='switch-primary' className='form-check-label mb-50'>
+                      Khóa
+                    </Label>
+                    <div className='form-switch form-check-primary'>
+                      <Input type='switch' id='switch-primary' name='primary' checked={toggleSwitch} onClick={handleSwitchClicked} />
+                    </div>
+                  </div>
                 </div>
               </Col>
             </Row>

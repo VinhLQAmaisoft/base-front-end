@@ -43,6 +43,7 @@ const CookieManagement = () => {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
+  const [toggleSwitch, setToggleSwitch] = useState(false)
   const [cookieData, setCookieData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
   const { allCookie, getResult, cookieResult, createCookieResult, cookieUpdated, updatedCookieResult } = useSelector(state => state.adminReducer);
@@ -111,28 +112,15 @@ const CookieManagement = () => {
     setSearchValue(value)
 
     if (value.length) {
-      updatedData = data.filter(item => {
-        const startsWith =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.post.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.email.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.age.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.start_date.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
-
+      updatedData = cookieData.filter(item => {
+        console.log(item)
         const includes =
-          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
-          item.post.toLowerCase().includes(value.toLowerCase()) ||
-          item.email.toLowerCase().includes(value.toLowerCase()) ||
-          item.age.toLowerCase().includes(value.toLowerCase()) ||
-          item.salary.toLowerCase().includes(value.toLowerCase()) ||
-          item.start_date.toLowerCase().includes(value.toLowerCase()) ||
+          item.data.toLowerCase().includes(value.toLowerCase()) ||
+          item.dtsg.toLowerCase().includes(value.toLowerCase()) ||
+          item.uid.toLowerCase().includes(value.toLowerCase()) ||
           status[item.status].title.toLowerCase().includes(value.toLowerCase())
 
-        if (startsWith) {
-          return startsWith
-        } else if (!startsWith && includes) {
+        if (includes) {
           return includes
         } else return null
       })
@@ -215,14 +203,60 @@ const CookieManagement = () => {
   }
 
   const handleRowClicked = row => {
-    console.log(row)
     setSelectedData(row)
+
+    const newData = cookieData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    const newSearchingData = filteredData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    setFilteredData(newSearchingData)
+    setCookieData(newData)
   };
+
+  const handleSwitchClicked = () => {
+    // dispatch(changeStatusUser(selectedData._id))
+    setToggleSwitch(!toggleSwitch)
+  }
+
+
+  const conditionalRowStyles = [
+    {
+      when: row => {
+        return row.toggleSelected
+      },
+      style: {
+        backgroundColor: "#f0f0f0",
+        userSelect: "none"
+      }
+    }
+  ];
 
   const onUpdateSubmit = e => {
     console.log(updatedCookie)
     if (updatedCookie != '') {
-      dispatch(updateCookie({cookie: updatedCookie, uid: selectedData.uid}))
+      dispatch(updateCookie({ cookie: updatedCookie, uid: selectedData.uid }))
     } else {
       toast.info(
         <ToastContent name={'mới'} message={'Cookie không có gì thay dổi'} />,
@@ -291,7 +325,7 @@ const CookieManagement = () => {
     if (getResult == true && allCookie !== null) {
       const data = allCookie.map(item => {
         // const status = item.sta === undefined ? 0 : Number(item.isActive)
-        return { data: item.data, dtsg: item.dtsg, uid: item.uid, token: item.token, status: item.status }
+        return { id: item._id, data: item.data, dtsg: item.dtsg, uid: item.uid, token: item.token, status: item.status, toggleSelected: false }
       })
       setCookieData(data)
       console.log(allCookie)
@@ -344,6 +378,7 @@ const CookieManagement = () => {
             paginationComponent={CustomPagination}
             data={searchValue.length ? filteredData : cookieData}
             onRowClicked={handleRowClicked}
+            conditionalRowStyles={conditionalRowStyles}
           // onSelectedRowsChange={handleChange}
           />
         </div>
@@ -366,7 +401,16 @@ const CookieManagement = () => {
                   <Button className='me-1' color='primary' type='submit'>
                     Cập nhật
                   </Button>
+                  <div className='d-flex flex-column'>
+                    <Label for='switch-primary' className='form-check-label mb-50'>
+                      Khóa
+                    </Label>
+                    <div className='form-switch form-check-primary'>
+                      <Input type='switch' id='switch-primary' name='primary' checked={toggleSwitch} onClick={handleSwitchClicked} />
+                    </div>
+                  </div>
                 </div>
+
               </Col>
             </Row>
           </Form>

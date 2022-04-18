@@ -4,7 +4,9 @@ import { useSkin } from '@hooks/useSkin'
 import { Link, useHistory } from 'react-router-dom'
 import InputPasswordToggle from '@components/input-password-toggle'
 import { useForm, Controller } from 'react-hook-form'
-import { Row, Col, CardTitle, CardText, Form, Label, Input, Button } from 'reactstrap'
+import { Row, Col, CardTitle, CardText, Form, Label, Input, Button, FormFeedback } from 'reactstrap'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import '@styles/react/pages/page-authentication.scss'
 import { sendUserLogin } from '../../../services/auth/index'
 import { toast, Slide } from 'react-toastify'
@@ -49,6 +51,12 @@ const defaultValues = {
 }
 
 const Login = () => {
+
+  const SigninSchema = yup.object().shape({
+    loginUsername: yup.string().required('Bạn cần nhập tên tài khoản'),
+    loginPassword: yup.string().required('Bạn cần nhập mật khẩu')
+  })
+
   const { skin } = useSkin()
   const dispatch = useDispatch()
   const history = useHistory()
@@ -58,7 +66,7 @@ const Login = () => {
     setError,
     handleSubmit,
     formState: { errors }
-  } = useForm({ defaultValues })
+  } = useForm({ defaultValues, mode: 'onChange', resolver: yupResolver(SigninSchema) })
 
   const illustration = skin === 'dark' ? 'login-v2-dark.svg' : 'login-v2.svg',
     source = require(`@src/assets/images/pages/${illustration}`).default
@@ -165,12 +173,13 @@ const Login = () => {
                     <Input
                       autoFocus
                       placeholder='Tên tài khoản'
-                      invalid={errors.loginEmail && true}
+                      invalid={errors.loginUsername && true}
                       {...field}
                     />
                     // console.log(field)
                   )}
                 />
+                {errors.loginUsername ? <FormFeedback>{errors.loginUsername.message}</FormFeedback> : null}
               </div>
               <div className='mb-1'>
                 <div className='d-flex justify-content-between'>
@@ -189,6 +198,7 @@ const Login = () => {
                     <InputPasswordToggle className='input-group-merge' invalid={errors.loginPassword && true} {...field} />
                   )}
                 />
+                {errors.loginPassword ? <FormFeedback>{errors.loginPassword.message}</FormFeedback> : null}
               </div>
 
               <Button color='primary' block>

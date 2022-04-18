@@ -86,3 +86,13 @@ export const updateUserPassword = createAsyncThunk(`${BASE_URL}/account/admin-ch
         return thunkAPI.rejectWithValue(error.response.data);
     }
 });
+
+export const changeStatusUser= createAsyncThunk(`${BASE_URL}/account/changeStatus`, async (body, thunkAPI) => {
+    try {
+        const result = await newAxios.put('/account/changeStatus?id=' + body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
