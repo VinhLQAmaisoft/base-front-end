@@ -37,10 +37,8 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
 
 
     const SignupSchema = yup.object().shape({
-        currentPassword: yup.string()
-            .required('Bạn cần nhập mật khẩu hiện tại'),
         newPassword: yup.string().min(8, 'Mật khẩu gồm ít nhất 8 kí tự')
-            .required('Bạn cần nhập mật khẩu')
+            .required('Bạn cần nhập mật khẩu mới')
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, 'Mật khẩu gồm ít nhất 8 kí tự, 1 chữ hoa, 1 chữ thường'),
         retypeNewPassword: yup.string()
             .oneOf([yup.ref('newPassword'), null], 'Bạn hãy nhập đúng với mật khẩu vừa nhập'),
@@ -64,7 +62,7 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
           dispatch(updateUserPassword({
             _id: data._id,
             username: data.username,
-            oldpassword: submitData.currentPassword,
+            oldpassword: data.password,
             newpassword: submitData.newPassword,
             repass: submitData.retypeNewPassword
           }))
@@ -130,23 +128,6 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm='6' className='mb-1'>
-                                <Controller
-                                    control={control}
-                                    id='newPassword'
-                                    name='newPassword'
-                                    render={({ field }) => (
-                                        <InputPasswordToggle
-                                            label='Mật khẩu mới'
-                                            htmlFor='newPassword'
-                                            className='input-group-merge'
-                                            invalid={errors.newPassword && true}
-                                            {...field}
-                                        />
-                                    )}
-                                />
-                                {errors.newPassword && <FormFeedback className='d-block'>{errors.newPassword.message}</FormFeedback>}
-                            </Col>
                             <Col sm='6' className='mb-1'>
                                 <Controller
                                     control={control}

@@ -69,13 +69,13 @@ const Register = () => {
 
   const SignupSchema = yup.object().shape({
     fullname: yup.string().matches(/^([\w]{2,})+\s+([\w\s]{2,})+$/i, 'Tên không phù hợp').required('Bạn cần nhập họ và tên'),
-    email: yup.string().email().required('Bạn cần nhập email'),
+    email: yup.string().email('Email không hợp lệ').required('Bạn cần nhập email'),
     username: yup.string().min(5, 'Nhập ít nhất 5 kí tự').required('Bạn cần nhập tên tài khoản'),
     password: yup.string().min(8, 'Mật khẩu gồm ít nhất 8 kí tự').required('Bạn cần nhập mật khẩu').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, 'Mật khẩu gồm ít nhất 8 kí tự, 1 chữ hoa, 1 chữ thường'),
     birthdate: yup.date().required('Bạn cần nhập ngày sinh'),
     repeatpassword: yup.string()
       .oneOf([yup.ref('password'), null], 'Bạn hãy nhập đúng với mật khẩu vừa nhập'),
-    phone: yup.string().matches(/^[0-9]{10}$/, 'Bạn cần nhập số, không nhập chữ hoặc kí tự đặc biệt').required('Bạn cần nhập số điện thoại'),
+    phone: yup.string().matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ').required('Bạn cần nhập số điện thoại'),
     role: yup.object().typeError('Bạn cần chọn vai trò').required('Bạn cần chọn vai trò')
   })
 
