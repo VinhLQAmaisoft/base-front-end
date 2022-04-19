@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { ProductServices, ShipperServices } from '@services'
-import { formatMoney, formatTimeStamp } from '@utils'
+import { formatMoney, formatTimeStamp, alert } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, Input, Label, Row } from 'reactstrap'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
@@ -120,15 +120,15 @@ export default function ProductManage() {
                     status: 'reject',
 
                 }).then(data => {
-                    alert(data.data.message);
+                    alert.success(data.data.message);
 
                 })
             } else {
-                alert("Đăng nhập hết hạn")
+                alert.error("Đăng nhập hết hạn")
             }
         } catch (error) {
             console.log(error)
-            alert("Đăng nhập hết hạn")
+            alert.error("Đăng nhập hết hạn")
             return
         }
     }

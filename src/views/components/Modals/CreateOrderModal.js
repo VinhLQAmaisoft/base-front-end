@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
 import { User, Briefcase, Mail, Calendar, DollarSign, X } from 'react-feather'
-import { formatMoney } from '@utils'
+import { formatMoney, alert} from '@utils'
 import { OrderServices } from '@services'
 
 // ** Reactstrap Imports
@@ -68,7 +68,7 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
         console.log(`Add  ${selectedProduct} * ${quantity} `)
 
         if (!selectedProduct || /\D/.test(quantity) || quantity == "") {
-            return alert("Thông tin không phù hợp");
+            return alert.error("Thông tin không phù hợp");
         }
         else {
             if (tempListProduct.length > 0) {
@@ -93,7 +93,7 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
             postId: comment.post_id,
             createAt: Date.now(),
         }).then(data => {
-            alert(data.data.message);
+            alert.info(data.data.message);
             if (data.data.data) {
                 let tempComment = { ...comment };
                 tempComment.type = 1;

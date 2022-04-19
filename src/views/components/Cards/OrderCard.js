@@ -21,7 +21,7 @@ import {
     Collapse
 } from 'reactstrap'
 import { User, Phone, Home } from 'react-feather'
-import { formatMoney } from '@utils'
+import { formatMoney,alert } from '@utils'
 import UpdateOrderModal from '@my-components/Modals/UpdateOrderModal'
 import { OrderServices } from '@services'
 export default function OrderCard({ baseOrder, products, shipperOptions }) {
@@ -85,7 +85,7 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
     function handleUpdateStatus(id, status) {
         setOrderStatus(status.label)
         OrderServices.updateStatus(`?id=${id}&status=${status.value}&updateAt=${Date.now()}`).then(data => {
-            alert(data.data.message)
+            alert.success(data.data.message)
             OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
         })
     }
@@ -94,7 +94,7 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
         let updateAt = Date.now()
         setShipper(s.username)
         OrderServices.editOrder({ _id: order._id, shipper: s.username, updateAt }).then(data => {
-            alert(data.data.message)
+            alert.success(data.data.message)
             OrderServices.getOrder(`?id=${order._id}`).then(data => setOrder(data.data.data[0]))
         })
     }

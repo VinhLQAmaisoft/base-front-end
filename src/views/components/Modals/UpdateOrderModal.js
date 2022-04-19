@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
 import { User, Briefcase, Mail, Calendar, DollarSign, X } from 'react-feather'
-import { formatMoney } from '@utils'
+import { formatMoney,alert } from '@utils'
 import { OrderServices } from '@services'
 
 // ** Reactstrap Imports
@@ -46,7 +46,7 @@ const AddNewModal = ({ open, updateOrderView, handleModal, order, products }) =>
     const addProduct = () => {
         let quantity = document.getElementById("p-price").value;
         if (/\D/.test(quantity)) {
-            return alert("Số Lượng Không Phù hợp");
+            return alert.error("Số Lượng Không Phù hợp");
         }
         else {
             if (tempListProduct) {
@@ -71,7 +71,7 @@ const AddNewModal = ({ open, updateOrderView, handleModal, order, products }) =>
             phone: document.getElementById('phone').value,
             updateAt: Date.now(),
         }).then(data => {
-            alert(data.data.message);
+            alert.info(data.data.message);
             if (data.data.data) {
                 order.product = tempListProduct;
                 order.customerName = document.getElementById('name').value;

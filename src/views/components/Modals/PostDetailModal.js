@@ -41,52 +41,9 @@ export default function PostDetailTab({ post, open, handleModal }) {
         return result
     }
 
-    const createScanInterval = (second) => {
-        const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
-        let x = setInterval(() => {
-            CommentServices.scanComment({
-                postId: post._id
-            }).then(data => {
-                if (!data.data?.data) {
-                    alert(data.data.message)
-                    clearInterval(x)
-                }
-                CommentServices.getComment(`?post_id=${post._id}`)
-                    .then((data) => {
-                        setComments(sortComment(data.data.data));
-                        setCommentRender(renderComment(comments));
-                    })
-                console.log("Tạo Comment Mới!!!!!!")
-                CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
-            })
-        }, second * 1000)
-        return x
-    }
-
     //------------------------------------------------------------------------------ LOGIC FUNCTION ------------------------------------------------------------------------------
 
-    const createOrder = comment => {
-        setSelectedComment(comment)
-        handleModal()
-        // alert(`Create Order ${commentId}`)
-    }
 
-    const cancelOrder = commentId => {
-        alert(`Cancel Order ${commentId}`)
-    }
-
-    const disableComment = () => {
-        PostServices.disablePost({ postId: post.fb_id }).then(data => alert(data.data.message))
-    }
-
-    const replyComment = (commentId, syntax) => {
-        alert(`Reply Comment ${commentId}: ${syntax}`)
-        CommentServices.replyComment({
-            postId: post.fb_id,
-            content: syntax,
-            commentId: commentId,
-        }).then(data => alert(data.data.message))
-    }
 
     const handleCommentFilter = (evt, value) => {
         // console.log(evt)

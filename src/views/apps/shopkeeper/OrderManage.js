@@ -54,7 +54,7 @@ const OrderManage = () => {
     })
 
     useEffect(() => {
-        var intervalTask = null;
+        let intervalTask = null;
         ShipperServices.getJob().then(data => {
             if (data.data.data) {
                 let shippers = data.data.data.filter(job => job.status == 'accepted').map(job => job.shipper);
@@ -72,13 +72,13 @@ const OrderManage = () => {
             if (data.data.data) {
                 OrderData = data.data.data
                 let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
-                console.log("Source data: " + OrderData.length)
                 setDeactivateOrder(doneOrder)
                 // setDisplayOrder(getCurrentTableData(doneOrder))
                 setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
             }
         })
-        setInterval(() => {
+        intervalTask = setInterval(() => {
+            console.log("Cập nhật đơn hàng!");
             OrderServices.getOrder('').then(data => {
                 let OrderData = []
                 if (data.data.data) {

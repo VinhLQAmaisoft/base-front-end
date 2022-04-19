@@ -2,6 +2,7 @@ import React from 'react'
 import ImageUploading from 'react-images-uploading';
 import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form } from 'reactstrap'
 import { UserServices, PostServices, ProductServices, AttachmentServices } from '@services';
+import { alert } from '@utils'
 export default function CreatePostTab(props) {
     const [images, setImages] = React.useState([]);
     const [cookie, setCookie] = React.useState('');
@@ -24,11 +25,11 @@ export default function CreatePostTab(props) {
         let fbCookie = document.getElementById('c-cookie').value;
         console.log("Token - Cookie: ", fbToken, fbCookie);
         if (fbCookie === "" || fbToken === "")
-            return alert("Không được bỏ trống Token hoặc Cookie")
+            return alert.warning("Không được bỏ trống Token hoặc Cookie")
         // KHỞI TẠO COOKIE & TOKEN
         await UserServices.addCookie({ fbCookie, fbToken })
             .then(data => {
-                alert(data.data.message)
+                alert.info(data.data.message)
                 if (data.data.data) {
                     setCookie(fbCookie);
                     setToken(fbToken);
@@ -39,7 +40,7 @@ export default function CreatePostTab(props) {
             if (data.data?.data && data.data?.data.length) {
                 setGroupList(data.data.data)
             } else {
-                alert("Không tìm thấy group facebook của bạn")
+                alert.error("Không tìm thấy group facebook của bạn")
             }
         })
         // KHỞI TẠO DANH SÁCH SẢN PHẨM
@@ -47,7 +48,7 @@ export default function CreatePostTab(props) {
             if (data.data?.data && data.data?.data.length) {
                 setProductList(data.data.data)
             } else {
-                alert("Không tìm thấy sản phẩm của bạn")
+                alert.error("Không tìm thấy sản phẩm của bạn")
             }
         })
     }
@@ -79,7 +80,7 @@ export default function CreatePostTab(props) {
         let content = document.getElementById("content").value
         let shipCost = parseInt(document.getElementById("shipCost").value);
         if (!shipCost || isNaN(shipCost) || shipCost < 1000) {
-            return alert("Phí ship không hợp lệ")
+            return alert.error("Phí ship không hợp lệ")
         }
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
@@ -89,7 +90,7 @@ export default function CreatePostTab(props) {
                 products: selectedProducts,
                 attachments
             }).then(data => {
-                alert(data.data.message)
+                alert.success(data.data.message)
                 if (data.data.data) {
                     window.location.reload()
                 }
@@ -133,22 +134,22 @@ export default function CreatePostTab(props) {
                 </CardTitle>
                 <hr className="bg-info" />
                 <CardBody>
-                    <Row className="justify-content-center align-items-end">
-                        <Col sm="4">
+                    <Row className="justify-content-center align-items-center">
+                        <Col sm="10">
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input id="c-cookie" type='text' className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
                                 Lấy cookie facebook tại đây
                             </a>
                         </Col>
-                        <Col sm="4">
+                        {/* <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
                             <Input id="c-token" type='text' className='form-control' />
                             <a target="_blank"
                                 href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
                                 Lấy token facebook tại đây
                             </a>
-                        </Col>
+                        </Col> */}
                         <Col sm="2">
                             <Button color="primary" onClick={() => { addCookie() }}>
                                 Bắt Đầu

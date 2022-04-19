@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
 import { User, Briefcase, Mail, Calendar, DollarSign, X, ChevronDown } from 'react-feather'
-import { formatMoney } from '@utils'
+import { formatMoney,alert } from '@utils'
 import { ShipperServices } from '@services'
 import DataTable from 'react-data-table-component'
 
@@ -41,7 +41,7 @@ const AddShipperModal = ({ open, handleModal }) => {
         console.log("ID: ", id)
         if (id != "") {
             ShipperServices.addShipper({ id }).then((data) => {
-                alert(data.data.message)
+                alert.info(data.data.message)
             })
         }
     }

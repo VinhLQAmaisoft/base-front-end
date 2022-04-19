@@ -21,7 +21,7 @@ import {
     Collapse
 } from 'reactstrap'
 import { User, Phone, Home } from 'react-feather'
-import { formatMoney } from '@utils'
+import { formatMoney,alert } from '@utils'
 import { OrderServices } from '@services'
 export default function OrderCard({ baseOrder, shipper, shipperOptions }) {
     const [modal, setModal] = useState(false)
@@ -76,7 +76,7 @@ export default function OrderCard({ baseOrder, shipper, shipperOptions }) {
     function handleUpdateStatus(id, status, shipper) {
         setOrderStatus(status.label)
         OrderServices.shipperUpdateStatus({ orderId: id, status, shipper, updateAt: Date.now() }).then(data => {
-            alert(data.data.message)
+            alert.success(data.data.message)
             OrderServices.getOrderDetail(`?id=${order._id}`).then(data => setOrder(data.data.data))
         })
     }

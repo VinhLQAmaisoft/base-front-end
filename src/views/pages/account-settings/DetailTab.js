@@ -74,21 +74,21 @@ const DetailTab = ({ data }) => {
 
   console.log(userPasswordUpdated)
 
-  useEffect(() => {
-    if (userPasswordUpdated != null) {
-      if (userPasswordUpdated.data == null && updateUserPasswordResult == true) {
-        toast.error(
-          <ToastContent name='lỗi' message={userPasswordUpdated.message} />,
-          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-        )
-      } else if (userPasswordUpdated.data != null && updateUserPasswordResult == true) {
-        toast.success(
-          <ToastContent name='thành công' message={userPasswordUpdated.message} />,
-          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-        )
-      }
-    }
-  }, [userPasswordUpdated, updateUserPasswordResult])
+  // useEffect(() => {
+  //   if (userPasswordUpdated != null) {
+  //     if (userPasswordUpdated.data == null && updateUserPasswordResult == true) {
+  //       toast.error(
+  //         <ToastContent name='lỗi' message={userPasswordUpdated.message} />,
+  //         { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+  //       )
+  //     } else if (userPasswordUpdated.data != null && updateUserPasswordResult == true) {
+  //       // toast.success(
+  //       //   <ToastContent name='thành công' message={userPasswordUpdated.message} />,
+  //       //   { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+  //       // )
+  //     }
+  //   }
+  // }, [userPasswordUpdated, updateUserPasswordResult])
 
   const handleUpdateSyntax =async () => {
     let dom = Array.from(document.getElementsByClassName('replySyntax'));
