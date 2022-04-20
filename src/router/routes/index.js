@@ -60,14 +60,6 @@ const outsiderRoutes = [
     }
   },
   {
-    path: '/verifycode',
-    component: lazy(() => import('../../views/pages/authentication/VerifyCode')),
-    layout: 'BlankLayout',
-    meta: {
-      authRoute: true
-    }
-  },
-  {
     path: '/reset-password',
     component: lazy(() => import('../../views/pages/authentication/ResetPassword')),
     layout: 'BlankLayout',

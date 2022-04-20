@@ -1,18 +1,34 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 // ** Icons Imports
 import { ChevronLeft } from 'react-feather'
-
+import { toast, Slide } from 'react-toastify'
 // ** Reactstrap Imports
 import { Card, CardBody, CardTitle, CardText, Form, Label, Input, Button, FormFeedback } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/pages/page-authentication.scss'
+
+const ToastContent = ({ name, message }) => (
+    <Fragment>
+      <div className='toastify-header'>
+        <div className='title-wrapper'>
+          <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+        </div>
+      </div>
+      <div className='toastify-body'>
+        <span>{message}</span>
+      </div>
+    </Fragment>
+  )
+
 const ForgotPassword = () => {
 
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
+    const [username, setUsername] = useState('')
+    const [usernameError, setUsernameError] = useState(false)
 
     const validateEmail = (e) => {
         const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -23,9 +39,25 @@ const ForgotPassword = () => {
         }
     }
 
+    const validateUsername = (e) => {
+        const usernameRegex = /^.{6,}$/
+        if (usernameRegex.test(e.target.value)) {
+            setUsernameError(false)
+        } else {
+            setUsernameError(true)
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(email)
+        if (email.length == 0 || username.length == 0) {
+            toast.warn(
+                <ToastContent name='mới' message={'Bạn phải nhập cả tên tài khoản và email'} />,
+                { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+              )
+        }
+        // console.log(email)
+        // console.log(username)
     }
 
     return (
@@ -50,14 +82,24 @@ const ForgotPassword = () => {
                             Quên mật khẩu? 🔒
                         </CardTitle>
                         <CardText className='mb-2'>
-                            Nhập email của bạn và chúng tôi sẽ gửi hướng dẫn khôi phục mật khẩu cho bạn
+                            Nhập email của bạn và chúng tôi sẽ gửi lại mật khẩu mới cho bạn
                         </CardText>
                         <Form className='auth-forgot-password-form mt-2' onSubmit={handleSubmit}>
+                            <div className='mb-1'>
+                                <Label className='form-label' for='login-username'>
+                                    Tên tài khoản
+                                </Label>
+                                <Input type='text' id='login-username' placeholder='abcd1234' autoFocus invalid={usernameError} onChange={(e) => {
+                                    validateUsername(e)
+                                    setUsername(e.target.value)
+                                }} />
+                                {usernameError ? <FormFeedback>Tên tài khoản không phù hợp</FormFeedback> : null}
+                            </div>
                             <div className='mb-1'>
                                 <Label className='form-label' for='login-email'>
                                     Email
                                 </Label>
-                                <Input type='email' id='login-email' placeholder='example@example.com' autoFocus invalid={emailError} onChange={(e) => {
+                                <Input type='text' id='login-email' placeholder='example@example.com' autoFocus invalid={emailError} onChange={(e) => {
                                     validateEmail(e)
                                     setEmail(e.target.value)
                                 }} />
