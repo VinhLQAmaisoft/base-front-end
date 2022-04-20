@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter, Spinner } from 'reactstrap'
 import { CommentServices, UserServices, PostServices } from '@services';
 import CreateOrderModal from '../Modals/CreateOrderModal'
 import { formatMoney, alert } from '@utils'
@@ -81,6 +81,17 @@ export default function PostDetailTab(props) {
         }, 1000)
     }
 
+    function updateComment() {
+        CommentServices.getComment(`?post_id=${post._id}`)
+            .then((data) => {
+                if (data.data.data) {
+                    setComments(sortComment(data.data.data));
+                    setCommentRender(renderComment(comments));
+                }
+
+            })
+    }
+
     async function handleUpdate() {
         let content = document.getElementById('content').value;
         if (content == post.content) {
@@ -155,7 +166,7 @@ export default function PostDetailTab(props) {
     const addCookie = () => {
         let fbToken = document.getElementById('token').value;
         let fbCookie = document.getElementById('cookie').value;
-        if (fbCookie === "" || fbToken === "")
+        if (fbCookie === "")
             return alert.error("Không được bỏ trống Token hoặc Cookie")
         // KHỞI TẠO COOKIE & TOKEN
         UserServices.addCookie({ fbCookie, fbToken })
@@ -181,7 +192,13 @@ export default function PostDetailTab(props) {
     }
 
     const disableComment = () => {
-        PostServices.disablePost({ postId: post.fb_id }).then(data => alert.info(data.data.message)).then(() => window.location.reload())
+        PostServices.disablePost({ postId: post.fb_id }).then(data => {
+            if (data.data.data) {
+                alert.success(data.data.message)
+                setTimeout(() => { window.location.reload() }, 2000)
+            } else alert.error(data.data.message)
+
+        })
     }
 
     const replyComment = (commentId, syntax) => {
@@ -260,13 +277,13 @@ export default function PostDetailTab(props) {
             comment.data.phone && match++;
             comment.data.address && match++;
             if (comment.data.isCancelled) {
-                console.log("Hủy đơn =  " + comment.data.isCancelled)
+                // console.log("Hủy đơn =  " + comment.data.isCancelled)
                 match = -1
             };
             let rating = match == -1 ? -1 : match == 0 ? 0 : 1;
             if (commentFilter.includes(rating))
                 result.push(
-                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#674ea7' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={comment.fb_id + "-" + result.length}>
+                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#674ea7' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={JSON.stringify(comment)}>
                         <CardTitle className="text-light mb-0">
                             <a href={`https://facebook.com/${comment.author.id}`} target="_blank" className="ms-1">
                                 {comment.author.name}
@@ -328,6 +345,18 @@ export default function PostDetailTab(props) {
         return <Badge color="success">Cập nhật sau: {timer}s</Badge>
     }
 
+    function renderAttachment(listAttachment) {
+        let result = [];
+        for (let attachment of listAttachment) {
+            result.push(
+                <Col key={`attachment-${result.length}`} className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
+                    {/* <img className='w-100' src={process.env.REACT_APP_BASE_SERVER_URL + '/' + attachment} /> */}
+                    <img className='w-100' src={attachment} />
+                </Col>)
+        }
+        return result
+    }
+
     return (
         <TabPane tabId={post.fb_id}>
             <Card className="bg-light p-1 mb-1">
@@ -337,17 +366,21 @@ export default function PostDetailTab(props) {
                 <hr className="bg-info" />
                 <CardBody>
                     <Row className="justify-content-center align-items-center">
-                        <Col sm="10">
+                        <Col sm="4">
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input type='text' id="cookie" className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
                                 Lấy cookie facebook tại đây
                             </a>
                         </Col>
-                        {/* <Col sm="4">
+                        <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
                             <Input type='text' id="token" className='form-control' />
-                        </Col> */}
+                            <a target="_blank"
+                                href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
+                                Lấy token facebook tại đây
+                            </a>
+                        </Col>
                         <Col sm="2">
                             <Button color="primary" onClick={() => { addCookie() }}>
                                 Cập Nhật
@@ -439,18 +472,7 @@ export default function PostDetailTab(props) {
                                 Ảnh đính kèm
                             </Label>
                             <Row>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
+                                {renderAttachment(post.attachment)}
                             </Row>
                         </Col>
                     </Row >
@@ -466,6 +488,7 @@ export default function PostDetailTab(props) {
                 <hr className="bg-info" />
                 <CardBody>
                     {/* {commentRender} */}
+                    {comments.length == 0 && (<Row><Col sm="12" className="text-center"><Spinner animation="border" variant="primary" /></Col></Row>)}
                     {comments && renderComment(comments)}
                 </CardBody>
             </Card>
@@ -477,7 +500,7 @@ export default function PostDetailTab(props) {
                     </Button>
                 </CardFooter>
             </Card>
-            <CreateOrderModal products={post.products} comment={selectedComment} setSelectedComment={setSelectedComment} open={modal} handleModal={handleModal} />
+            <CreateOrderModal products={post.products} comment={selectedComment} setComments={updateComment} open={modal} handleModal={handleModal} />
         </TabPane >
     )
 }

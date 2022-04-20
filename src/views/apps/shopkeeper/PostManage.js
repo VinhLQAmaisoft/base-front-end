@@ -120,11 +120,11 @@ const PostManage = () => {
 
   const handleSelect = post => {
     setSelectedPost(post);
-    handleModal();
+    handleModal()
   }
 
   function renderPostCard(listPost) {
-
+    console.log("Post count: ", listPost)
     let result = [];
     if (!listPost) return (
       <Col sm='12' className='mb-1' key={`card-${result.length}`}>

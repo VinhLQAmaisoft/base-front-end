@@ -88,7 +88,6 @@ const VerticalLayout = props => {
             let delay = Date.now() - order.updateAt
             let isWarn = delay - warn
             let isError = delay - error
-            console.log(isWarn + " >< " + isError)
 
             if (isWarn > 0 && isError < 0) {
               countWarn++
@@ -120,7 +119,6 @@ const VerticalLayout = props => {
             let delay = Date.now() - order.updateAt
             let isWarn = delay - warn
             let isError = delay - error
-            console.log(isWarn + " >< " + isError)
 
             if (isWarn > 0 && isError < 0) {
               countWarn++

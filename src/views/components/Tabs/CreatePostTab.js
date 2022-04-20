@@ -1,12 +1,13 @@
 import React from 'react'
 import ImageUploading from 'react-images-uploading';
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form, Spinner } from 'reactstrap'
 import { UserServices, PostServices, ProductServices, AttachmentServices } from '@services';
 import { alert } from '@utils'
 export default function CreatePostTab(props) {
     const [images, setImages] = React.useState([]);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
     const [groupList, setGroupList] = React.useState([]);
     const [productList, setProductList] = React.useState([]);
     const [selectedGroup, setSelectedGroup] = React.useState({});
@@ -21,36 +22,44 @@ export default function CreatePostTab(props) {
     };
 
     const addCookie = async () => {
-        let fbToken = document.getElementById('c-token').value;
-        let fbCookie = document.getElementById('c-cookie').value;
-        console.log("Token - Cookie: ", fbToken, fbCookie);
-        if (fbCookie === "" || fbToken === "")
-            return alert.warning("Không được bỏ trống Token hoặc Cookie")
-        // KHỞI TẠO COOKIE & TOKEN
-        await UserServices.addCookie({ fbCookie, fbToken })
-            .then(data => {
-                alert.info(data.data.message)
-                if (data.data.data) {
-                    setCookie(fbCookie);
-                    setToken(fbToken);
+        setLoading(true)
+        try {
+            let fbToken = document.getElementById('c-token').value;
+            let fbCookie = document.getElementById('c-cookie').value;
+            console.log("Token - Cookie: ", fbToken, fbCookie);
+            if (fbCookie === "" || fbToken === "") {
+                setLoading(false)
+                return alert.warning("Không được bỏ trống Token hoặc Cookie")
+            }
+            // KHỞI TẠO COOKIE & TOKEN
+            await UserServices.addCookie({ fbCookie, fbToken })
+                .then(data => {
+                    alert.info(data.data.message)
+                    if (data.data.data) {
+                        setCookie(fbCookie);
+                        setToken(fbToken);
+                    }
+                })
+            // KHỞI TẠO DANH SÁCH NHÓM
+            await UserServices.getGroupList("").then(data => {
+                if (data.data?.data && data.data?.data.length) {
+                    setGroupList(data.data.data)
+                } else {
+                    alert.error("Không tìm thấy group facebook của bạn")
                 }
             })
-        // KHỞI TẠO DANH SÁCH NHÓM
-        await UserServices.getGroupList("").then(data => {
-            if (data.data?.data && data.data?.data.length) {
-                setGroupList(data.data.data)
-            } else {
-                alert.error("Không tìm thấy group facebook của bạn")
-            }
-        })
-        // KHỞI TẠO DANH SÁCH SẢN PHẨM
-        await ProductServices.getProduct("").then(data => {
-            if (data.data?.data && data.data?.data.length) {
-                setProductList(data.data.data)
-            } else {
-                alert.error("Không tìm thấy sản phẩm của bạn")
-            }
-        })
+            // KHỞI TẠO DANH SÁCH SẢN PHẨM
+            await ProductServices.getProduct("").then(data => {
+                if (data.data?.data && data.data?.data.length) {
+                    setProductList(data.data.data)
+                } else {
+                    alert.error("Không tìm thấy sản phẩm của bạn")
+                }
+            })
+        } catch (error) {
+
+        }
+        setLoading(false)
     }
 
     function handleCheckProduct(value, product) {
@@ -76,8 +85,8 @@ export default function CreatePostTab(props) {
     }
 
     const uploadPost = async () => {
-        let attachments = await uploadAttachment().then(data => data.data.data).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
-        let content = document.getElementById("content").value
+        let attachments = await uploadAttachment().then(res => res.data.data.map(path => process.env.REACT_APP_BASE_SERVER_URL + path)).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
+        let content = document.getElementById("upload-content").value
         let shipCost = parseInt(document.getElementById("shipCost").value);
         if (!shipCost || isNaN(shipCost) || shipCost < 1000) {
             return alert.error("Phí ship không hợp lệ")
@@ -90,10 +99,11 @@ export default function CreatePostTab(props) {
                 products: selectedProducts,
                 attachments
             }).then(data => {
-                alert.success(data.data.message)
                 if (data.data.data) {
-                    window.location.reload()
-                }
+                    alert.success(data.data.message)
+                    // setTimeout(() => window.location.reload(), 4000)
+                } else
+                    alert.error(data.data.message)
             })
         }
     }
@@ -135,24 +145,24 @@ export default function CreatePostTab(props) {
                 <hr className="bg-info" />
                 <CardBody>
                     <Row className="justify-content-center align-items-center">
-                        <Col sm="10">
+                        <Col sm="4">
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input id="c-cookie" type='text' className='form-control' />
                             <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
                                 Lấy cookie facebook tại đây
                             </a>
                         </Col>
-                        {/* <Col sm="4">
+                        <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
                             <Input id="c-token" type='text' className='form-control' />
                             <a target="_blank"
                                 href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
                                 Lấy token facebook tại đây
                             </a>
-                        </Col> */}
+                        </Col>
                         <Col sm="2">
-                            <Button color="primary" onClick={() => { addCookie() }}>
-                                Bắt Đầu
+                            <Button color="primary" disabled={loading} onClick={() => { addCookie() }}>
+                                {loading ? (<Spinner size="sm"></Spinner>) : 'Bắt đầu'}
                             </Button>
                         </Col>
                     </Row>
@@ -192,7 +202,7 @@ export default function CreatePostTab(props) {
                                 Nội Dung
                             </Label>
                             <Input
-                                id="content"
+                                id="upload-content"
                                 name="text"
                                 type="textarea"
                                 style={{ minHeight: '200px' }}
@@ -271,8 +281,8 @@ export default function CreatePostTab(props) {
                             </ImageUploading>
                         </Col>
                         <Col sm="2">
-                            <Button color="primary" onClick={() => uploadPost()}>
-                                Bắt Đầu
+                            <Button color="primary" disabled={loading} onClick={() => uploadPost()}>
+                                {loading ? (<Spinner size="sm"></Spinner>) : 'Bắt đầu'}
                             </Button>
                         </Col>
                     </Row>
