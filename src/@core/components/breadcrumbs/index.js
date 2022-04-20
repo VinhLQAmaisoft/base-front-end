@@ -25,7 +25,7 @@ const BreadCrumbs = props => {
         <div className='row breadcrumbs-top'>
           <div className='col-12'>
             {breadCrumbTitle ? <h2 className='content-header-title float-start mb-0'>{breadCrumbTitle}</h2> : ''}
-            <div className='breadcrumb-wrapper vs-breadcrumbs d-sm-block d-none col-12'>
+            {/* <div className='breadcrumb-wrapper vs-breadcrumbs d-sm-block d-none col-12'>
               <Breadcrumb>
                 <BreadcrumbItem tag='li'>
                   <Link to='/'>Home</Link>
@@ -51,11 +51,11 @@ const BreadCrumbs = props => {
                   {breadCrumbActive}
                 </BreadcrumbItem>
               </Breadcrumb>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
-      <div className='content-header-right text-md-end col-md-3 col-12 d-md-block d-none'>
+      {/* <div className='content-header-right text-md-end col-md-3 col-12 d-md-block d-none'>
         <div className='breadcrumb-right dropdown'>
           <UncontrolledButtonDropdown>
             <DropdownToggle color='primary' size='sm' className='btn-icon btn-round dropdown-toggle'>
@@ -81,7 +81,7 @@ const BreadCrumbs = props => {
             </DropdownMenu>
           </UncontrolledButtonDropdown>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

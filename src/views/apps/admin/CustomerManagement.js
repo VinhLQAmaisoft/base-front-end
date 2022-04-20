@@ -6,6 +6,7 @@ import { getAllCustomer, getAllCustomerOrderDetail } from '../../../services/adm
 import { useDispatch, useSelector } from 'react-redux'
 import { formatTimeStamp } from '../../../utility/Utils'
 import OrderDetailModal from './OrderDetailModal'
+import { toast, Slide } from 'react-toastify'
 // import { Link } from 'react-router-dom'
 // ** Reactstrap Imports
 import {
@@ -22,13 +23,29 @@ import {
   UncontrolledButtonDropdown,
 } from 'reactstrap'
 
+const ToastContent = ({ name, message }) => (
+  <Fragment>
+    <div className='toastify-header'>
+      <div className='title-wrapper'>
+        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+      </div>
+    </div>
+    <div className='toastify-body'>
+      <span>{message}</span>
+    </div>
+  </Fragment>
+)
+
 const CustomerManagement = () => {
   const defaultSelectedData = { data: '', dtsg: '', uid: '', token: '', status: '' }
   // ** States
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
+  const [currentOrderPage, setCurrentOrderPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
+  const [searchOrderValue, setSearchOrderValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
+  const [filteredOrderData, setFilteredOrderData] = useState([])
   const [customerData, setCustomerData] = useState([])
   const [customerOrderData, setCustomerOrderData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
@@ -112,13 +129,6 @@ const CustomerManagement = () => {
       minWidth: '120px',
       selector: row => row.total
     },
-    {
-      name: 'Shop',
-      sortable: true,
-      minWidth: '100px',
-      selector: row => row.shop
-    },
-
   ]
 
   const customerOrderManageColumns = [
@@ -163,28 +173,40 @@ const CustomerManagement = () => {
     setSearchValue(value)
 
     if (value.length) {
-      updatedData = data.filter(item => {
-        const startsWith =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.post.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.email.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.age.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.start_date.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().startsWith(value.toLowerCase())
-
+      updatedData = customerData.filter(item => {
         const includes =
-          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
-          item.post.toLowerCase().includes(value.toLowerCase()) ||
-          item.email.toLowerCase().includes(value.toLowerCase()) ||
-          item.age.toLowerCase().includes(value.toLowerCase()) ||
-          item.salary.toLowerCase().includes(value.toLowerCase()) ||
-          item.start_date.toLowerCase().includes(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().includes(value.toLowerCase())
+          item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.fbid.toLowerCase().includes(value.toLowerCase()) ||
+          item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.address.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.order.toLowerCase().includes(value.toLowerCase()) ||
+          item.total.toLowerCase().includes(value.toLowerCase())
+        console.log(includes)
+        if (includes) {
+          return includes
+        } else return null
+      })
+      setFilteredData(updatedData)
+      setSearchValue(value)
+    }
+  }
 
-        if (startsWith) {
-          return startsWith
-        } else if (!startsWith && includes) {
+  const handleOrderFilter = e => {
+    const value = e.target.value
+    let updatedData = []
+    setSearchValue(value)
+
+    if (value.length) {
+      updatedData = customerData.filter(item => {
+        const includes =
+          item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.fbid.toLowerCase().includes(value.toLowerCase()) ||
+          item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.address.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.order.toLowerCase().includes(value.toLowerCase()) ||
+          item.total.toLowerCase().includes(value.toLowerCase())
+
+        if (includes) {
           return includes
         } else return null
       })
@@ -198,6 +220,10 @@ const CustomerManagement = () => {
     setCurrentPage(page.selected)
   }
 
+  const handleOrderPagination = page => {
+    setCurrentOrderPage(page.selected)
+  }
+
   // ** Custom Pagination
   const CustomPagination = () => (
     <ReactPaginate
@@ -205,7 +231,7 @@ const CustomerManagement = () => {
       nextLabel=''
       forcePage={currentPage}
       onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(customerData.length / 7) : Math.ceil(customerData.length / 7) || 1}
+      pageCount={searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(customerData.length / 7) || 1}
       breakLabel='...'
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}
@@ -226,9 +252,9 @@ const CustomerManagement = () => {
     <ReactPaginate
       previousLabel=''
       nextLabel=''
-      forcePage={currentPage}
-      onPageChange={page => handlePagination(page)}
-      pageCount={searchValue.length ? Math.ceil(customerOrderData.length / 7) : Math.ceil(customerOrderData.length / 7) || 1}
+      forcePage={currentOrderPage}
+      onPageChange={page => handleOrderPagination(page)}
+      pageCount={searchValue.length ? Math.ceil(filteredOrderData.length / 7) : Math.ceil(customerOrderData.length / 7) || 1}
       breakLabel='...'
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}
@@ -289,14 +315,54 @@ const CustomerManagement = () => {
     link.click()
   }
 
+  const conditionalRowStyles = [
+    {
+      when: row => {
+        return row.toggleSelected
+      },
+      style: {
+        backgroundColor: "#f0f0f0",
+        userSelect: "none"
+      }
+    }
+  ];
+
   const handleRowClicked = row => {
     dispatch(getAllCustomerOrderDetail({ data: row.fbid, orderType: 1 }))
-    console.log(row)
+
+    const newData = customerData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    const newSearchingData = filteredData.map(item => {
+      if (row.id != item.id) {
+        return {
+          ...item,
+          toggleSelected: false
+        }
+      }
+      return {
+        ...item,
+        toggleSelected: !item.toggleSelected
+      }
+    })
+
+    setFilteredData(newSearchingData)
+    setCustomerData(newData)
   };
 
   const handleOrderRowClicked = row => {
     // dispatch(getAllCustomerOrderDetail({ data: row.fbid, orderType: 1 }))
-    
+
     setModal(!modal)
     setSelectedData(row)
     console.log(row)
@@ -310,7 +376,7 @@ const CustomerManagement = () => {
   useEffect(() => {
     if (getResult == true && allCustomer !== null) {
       const data = allCustomer.map(item => {
-        return { id: item._id, fullname: item.fullname, fbid: item.facebook_id, phone: item.phone, address: item.address, order: '', total: '', shop: '' }
+        return { id: item._id, fullname: item.fullname, fbid: item.facebook_id, phone: item.phone, address: item.address, order: item.numberOfOrders, total: item.totalSpends }
       })
       setCustomerData(data)
       // console.log(allCustomer)
@@ -318,12 +384,19 @@ const CustomerManagement = () => {
   }, [getResult, allCustomer])
 
   useEffect(() => {
+    console.log(getCustomerOrderResult, allCustomerOrder)
     if (getCustomerOrderResult == true && allCustomerOrder !== null) {
-      const data = allCustomerOrder.map((item, key) => {
-        return { stt: key + 1, customerName: item.customerName, total: item.total, phone: item.phone, address: item.address, createAt: formatTimeStamp(item.createAt), status: item.status }
-      })
-      setCustomerOrderData(data)
-      // console.log(allCustomerOrder)
+      if (allCustomerOrder.data != null) {
+        const data = allCustomerOrder.map((item, key) => {
+          return { stt: key + 1, customerName: item.customerName, total: item.total, phone: item.phone, address: item.address, createAt: formatTimeStamp(item.createAt), status: item.status }
+        })
+        setCustomerOrderData(data)
+      } else {
+        toast.error(
+          <ToastContent name={'lỗi'} message={allCustomerOrder.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      }
     }
   }, [getCustomerOrderResult, allCustomerOrder])
 
@@ -364,14 +437,12 @@ const CustomerManagement = () => {
         </CardHeader>
         <Row className='justify-content-end mx-0'>
           <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Label className='me-1' for='search-input'>
-              Search
-            </Label>
             <Input
               className='dataTable-filter mb-50'
               type='text'
               bsSize='sm'
               id='search-input'
+              placeholder='Tìm kiếm'
               value={searchValue}
               onChange={handleFilter}
             />
@@ -389,6 +460,9 @@ const CustomerManagement = () => {
             paginationComponent={CustomPagination}
             data={searchValue.length ? filteredData : customerData}
             onRowClicked={handleRowClicked}
+            conditionalRowStyles={conditionalRowStyles}
+            pointerOnHover
+            highlightOnHover
           // onSelectedRowsChange={handleChange}
           />
         </div>
@@ -399,16 +473,14 @@ const CustomerManagement = () => {
         </CardHeader>
         <Row className='justify-content-end mx-0'>
           <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Label className='me-1' for='search-input'>
-              Search
-            </Label>
             <Input
               className='dataTable-filter mb-50'
               type='text'
               bsSize='sm'
               id='search-input'
-              value={searchValue}
-              onChange={handleFilter}
+              placeholder='Tìm kiếm'
+              value={searchOrderValue}
+              onChange={handleOrderFilter}
             />
           </Col>
         </Row>
@@ -420,14 +492,14 @@ const CustomerManagement = () => {
             paginationPerPage={7}
             className='react-dataTable'
             sortIcon={<ChevronDown size={10} />}
-            paginationDefaultPage={currentPage + 1}
+            paginationDefaultPage={currentOrderPage + 1}
             paginationComponent={OrderCustomPagination}
-            data={searchValue.length ? filteredData : customerOrderData}
+            data={searchValue.length ? filteredOrderData : customerOrderData}
             onRowClicked={handleOrderRowClicked}
           />
         </div>
       </Card>
-      <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData}/>
+      <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData} />
     </Fragment>
   )
 }

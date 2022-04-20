@@ -32,7 +32,7 @@ const Router = () => {
 
   // ** Current Active Item
   const currentActiveItem = null
-  const [userRole, setUserRole] = useState(4)
+  const [userRole, setUserRole] = useState()
   
   const { isAuth, currentUser } = useSelector(state => state.auth);
 
@@ -64,7 +64,7 @@ const Router = () => {
       })
     }
 
-    if (role == 4 && outsiderRoutes) {
+    if (role == undefined && outsiderRoutes) {
       console.log('outsider')
       outsiderRoutes.filter(route => {
         // ** Checks if Route layout or Default layout matches current layout

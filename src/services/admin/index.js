@@ -96,3 +96,13 @@ export const changeStatusUser= createAsyncThunk(`${BASE_URL}/account/changeStatu
         return thunkAPI.rejectWithValue(error.response.data);
     }
 });
+
+export const deleteCookie = createAsyncThunk(`${BASE_URL}/cookie/delete`, async (body, thunkAPI) => {
+    try {
+        const result = await newAxios.post('/cookie/delete', body);
+        console.log(result.data);
+        return result.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+});
