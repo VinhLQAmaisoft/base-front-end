@@ -1,9 +1,9 @@
 import { Fragment, useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { getAllCookie, createNewCookie, updateCookie } from '../../../services/admin/index'
+import { getAllCookie, createNewCookie, updateCookie, deleteCookie } from '../../../services/admin/index'
 import { useDispatch, useSelector } from 'react-redux'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Facebook } from 'react-feather'
+import { ChevronDown, Share, FileText, X } from 'react-feather'
 import { toast, Slide } from 'react-toastify'
 
 import {
@@ -43,10 +43,9 @@ const CookieManagement = () => {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [filteredData, setFilteredData] = useState([])
-  const [toggleSwitch, setToggleSwitch] = useState(false)
   const [cookieData, setCookieData] = useState([])
   const [selectedData, setSelectedData] = useState(defaultSelectedData)
-  const { allCookie, getResult, cookieResult, createCookieResult, cookieUpdated, updatedCookieResult } = useSelector(state => state.adminReducer);
+  const { allCookie, getResult, cookieResult, createCookieResult, cookieUpdated, updatedCookieResult, deletedCookie, deleteCookieResult } = useSelector(state => state.adminReducer);
   const [newCookie, setNewCookie] = useState('')
   const [updatedCookie, setUpdatedCookie] = useState('')
 
@@ -235,9 +234,9 @@ const CookieManagement = () => {
     setCookieData(newData)
   };
 
-  const handleSwitchClicked = () => {
-    // dispatch(changeStatusUser(selectedData._id))
-    setToggleSwitch(!toggleSwitch)
+  const deleteCookieClicked = () => {
+    dispatch(deleteCookie({ uid: selectedData.uid }))
+    console.log(selectedData)
   }
 
 
@@ -275,6 +274,26 @@ const CookieManagement = () => {
     }
     e.preventDefault()
   }
+
+  useEffect(() => {
+    if (deletedCookie == null && deleteCookieResult == false) {
+      console.log('csadcsd')
+    } else {
+      if (deletedCookie.data == null && deleteCookieResult == true) {
+        toast.error(
+          <ToastContent name={'lỗi'} message={deletedCookie.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (deletedCookie.data != null && deleteCookieResult == true) {
+        toast.success(
+          <ToastContent name={'mới'} message={deletedCookie.message} />,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        dispatch(getAllCookie())
+        setSelectedData(defaultSelectedData)
+      }
+    }
+  }, [deletedCookie, deleteCookieResult])
 
   useEffect(() => {
     if (cookieUpdated == null && updatedCookieResult == false) {
@@ -353,14 +372,12 @@ const CookieManagement = () => {
         </CardHeader>
         <Row className='justify-content-end mx-0'>
           <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Label className='me-1' for='search-input'>
-              Search
-            </Label>
             <Input
               className='dataTable-filter mb-50'
               type='text'
               bsSize='sm'
               id='search-input'
+              placeholder='Tìm kiếm'
               value={searchValue}
               onChange={handleFilter}
             />
@@ -379,6 +396,8 @@ const CookieManagement = () => {
             data={searchValue.length ? filteredData : cookieData}
             onRowClicked={handleRowClicked}
             conditionalRowStyles={conditionalRowStyles}
+            pointerOnHover
+            highlightOnHover
           // onSelectedRowsChange={handleChange}
           />
         </div>
@@ -401,14 +420,10 @@ const CookieManagement = () => {
                   <Button className='me-1' color='primary' type='submit'>
                     Cập nhật
                   </Button>
-                  <div className='d-flex flex-column'>
-                    <Label for='switch-primary' className='form-check-label mb-50'>
-                      Khóa
-                    </Label>
-                    <div className='form-switch form-check-primary'>
-                      <Input type='switch' id='switch-primary' name='primary' checked={toggleSwitch} onClick={handleSwitchClicked} />
-                    </div>
-                  </div>
+                  <Button color='danger' className='text-nowrap px-1' onClick={deleteCookieClicked} outline>
+                    <X size={14} className='me-50' />
+                    <span>Xóa</span>
+                  </Button>
                 </div>
 
               </Col>

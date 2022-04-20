@@ -51,6 +51,22 @@ const outsiderRoutes = [
       authRoute: true
     }
   },
+  {
+    path: '/forgot-password',
+    component: lazy(() => import('../../views/pages/authentication/ForgotPassword')),
+    layout: 'BlankLayout',
+    meta: {
+      authRoute: true
+    }
+  },
+  {
+    path: '/reset-password',
+    component: lazy(() => import('../../views/pages/authentication/ResetPassword')),
+    layout: 'BlankLayout',
+    meta: {
+      authRoute: true
+    }
+  },
 ]
 
 const shipperRoutes = [

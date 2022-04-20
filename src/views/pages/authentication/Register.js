@@ -59,8 +59,8 @@ const ToastErrorContent = () => (
 )
 
 const roleOptions = [
-  { value: '1', label: 'Shopkeeper' },
-  { value: '2', label: 'Shipper' },
+  { value: '1', label: 'Chủ cửa hàng' },
+  { value: '2', label: 'Người giao hàng' },
 ]
 
 const Register = () => {
@@ -68,7 +68,7 @@ const Register = () => {
   // const ability = useContext(AbilityContext)
 
   const SignupSchema = yup.object().shape({
-    fullname: yup.string().matches(/^([\w]{2,})+\s+([\w\s]{2,})+$/i, 'Tên không phù hợp').required('Bạn cần nhập họ và tên'),
+    fullname: yup.string().matches(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s\W|_]+$/i, 'Tên không phù hợp').required('Bạn cần nhập họ và tên'),
     email: yup.string().email('Email không hợp lệ').required('Bạn cần nhập email'),
     username: yup.string().min(5, 'Nhập ít nhất 5 kí tự').required('Bạn cần nhập tên tài khoản'),
     password: yup.string().min(8, 'Mật khẩu gồm ít nhất 8 kí tự').required('Bạn cần nhập mật khẩu').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, 'Mật khẩu gồm ít nhất 8 kí tự, 1 chữ hoa, 1 chữ thường'),

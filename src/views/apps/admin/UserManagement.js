@@ -97,10 +97,10 @@ const UserManagement = () => {
       selector: row => row.role
     },
     {
-      name: 'Doanh thu',
+      name: 'Ngày sinh',
       sortable: true,
       minWidth: '250px',
-      selector: row => row.salary
+      selector: row => row.birthdate
     },
     {
       name: 'Trạng thái',
@@ -221,6 +221,7 @@ const UserManagement = () => {
 
   const handleRowClicked = row => {
     UserServices.getUserDetail('?id=' + row.id).then(data => {
+      console.log(data.data.data)
       setSelectedData(data.data.data)
     })
     // Table not in searching 
@@ -399,9 +400,10 @@ const UserManagement = () => {
     if (getResult == true && allUser !== null) {
       let updatedData = []
       const data = allUser.map(item => {
+        // console.log(item)
         const fuid = item.facebook === undefined ? null : item.facebook.uid
         const status = item.isActive === undefined ? 0 : Number(item.isActive)
-        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100', status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid, toggleSelected: false }
+        return { id: item._id, username: item.username, replySyntaxs: item.replySyntaxs, full_name: `${item.fullname}`, phone: `${item.phone}`, role: getRoleByType(item.type), salary: '100'/*formatMoney(calTotal(item.type, item.order))*/, status: status, password: item.password, email: item.email, owner: 'Quang Vinh', birthdate: item.birthdate, joiningdate: formatTimeStamp(item.createAt), post_total: item.post.length, product_total: item.product.length, fuid: fuid, toggleSelected: false }
       })
       if (searchValue.length) {
         updatedData = data.filter(item => {
@@ -463,14 +465,12 @@ const UserManagement = () => {
         </CardHeader>
         <Row className='justify-content-end mx-0'>
           <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Label className='me-1' for='search-input'>
-              Search
-            </Label>
             <Input
               className='dataTable-filter mb-50'
               type='text'
               bsSize='sm'
               id='search-input'
+              placeholder='Tìm kiếm'
               value={searchValue}
               onChange={handleFilter}
             />
@@ -489,7 +489,8 @@ const UserManagement = () => {
             data={searchValue.length ? filteredData : userData}
             onRowClicked={handleRowClicked}
             conditionalRowStyles={conditionalRowStyles}
-
+            pointerOnHover
+            highlightOnHover
           />
         </div>
       </Card>
@@ -548,7 +549,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='ownerMulti'>
                   Người chủ
                 </Label>
-                <Input type='text' name='owner' id='ownerMulti' placeholder='Người quản lý' value={selectedData.owner} disabled />
+                <Input type='text' name='owner' id='ownerMulti' placeholder='Người quản lý' value={selectedData?.jobs == undefined ? '' : selectedData?.jobs[0].owner} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='postMulti'>

@@ -186,7 +186,7 @@ const Login = () => {
                   <Label className='form-label' for='login-password'>
                     Mật khẩu
                   </Label>
-                  <Link to='/pages/forgot-password-cover'>
+                  <Link to='/forgot-password'>
                     <small>Quên mật khẩu?</small>
                   </Link>
                 </div>

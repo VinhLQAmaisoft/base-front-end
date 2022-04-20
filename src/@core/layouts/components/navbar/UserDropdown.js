@@ -24,9 +24,9 @@ const UserDropdown = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
   let role
   if (userData.type === 0) {
-    role = 'Shipper'
+    role = 'Người giao hàng'
   } else if (userData.type === 1) {
-    role = 'Shopkeeper'
+    role = 'Chủ cửa hàng'
   } else if (userData.type === 2) {
     role = 'Admin'
   } else {
@@ -48,11 +48,11 @@ const UserDropdown = () => {
       <DropdownMenu end>
         <DropdownItem tag='a' href='/account-settings'>
           <Settings size={14} className='me-75' />
-          <span className='align-middle'>Settings</span>
+          <span className='align-middle'>Cài đặt</span>
         </DropdownItem>
         <DropdownItem tag={Link} onClick={() => dispatch(logoutAction())}>
           <Power size={14} className='me-75' />
-          <span className='align-middle'>Logout</span>
+          <span className='align-middle'>Đăng xuất</span>
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>

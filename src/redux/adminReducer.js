@@ -8,7 +8,8 @@ import {
   updateCookie,
   updateUser,
   updateUserPassword,
-  changeStatusUser
+  changeStatusUser,
+  deleteCookie
 } from '../services/admin/index'
 
 const initialState = {
@@ -26,7 +27,9 @@ const initialState = {
   passwordUpdated: null,
   updatedPasswordResult: false,
   deactiveUser: null,
-  deactiveUserResult: false
+  deactiveUserResult: false,
+  deletedCookie: null,
+  deleteCookieResult: false
 }
 
 const slice = createSlice({
@@ -85,7 +88,7 @@ const slice = createSlice({
     });
 
     builder.addCase(getAllCustomerOrderDetail.fulfilled, (state, action) => {
-      state.allCustomerOrder = action.payload.data;
+      state.allCustomerOrder = action.payload;
       state.getCustomerOrderResult = true
       console.log(state, action)
     });
@@ -149,6 +152,18 @@ const slice = createSlice({
       state.deactiveUserResult = false;
       console.log('err:', action.error);
     });
+
+    builder.addCase(deleteCookie.fulfilled, (state, action) => {
+      state.deletedCookie= action.payload;
+      state.deleteCookieResult = true
+      console.log(state, action)
+    });
+
+    builder.addCase(deleteCookie.rejected, (state, action) => {
+      state.deleteCookieResult = false;
+      console.log('err:', action.error);
+    });
+
   }
 });
 

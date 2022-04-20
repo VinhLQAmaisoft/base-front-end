@@ -15,7 +15,7 @@ const statusColors = {
 
 const OrderDetailModal = ({ show, setShow, detailData }) => {
 
-    console.log(detailData)
+    // console.log(detailData)
 
     return (
         <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>

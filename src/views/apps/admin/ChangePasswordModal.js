@@ -15,7 +15,6 @@ import InputPasswordToggle from '@components/input-password-toggle'
 
 const defaultValues = {
     newPassword: '',
-    currentPassword: '',
     retypeNewPassword: ''
 }
 
@@ -61,8 +60,7 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
         if (Object.values(submitData).every(field => field.length > 0)) {
           dispatch(updateUserPassword({
             _id: data._id,
-            username: data.username,
-            oldpassword: data.password,
+            // username: data.username,
             newpassword: submitData.newPassword,
             repass: submitData.retypeNewPassword
           }))
@@ -110,20 +108,20 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
                             <Col sm='6' className='mb-1'>
                                 <Controller
                                     control={control}
-                                    id='currentPassword'
-                                    name='currentPassword'
+                                    id='newPassword'
+                                    name='newPassword'
                                     render={({ field }) => (
                                         <InputPasswordToggle
-                                            label='Mật khẩu hiện tại'
-                                            htmlFor='currentPassword'
+                                            label='Mật khẩu mới'
+                                            htmlFor='newPassword'
                                             className='input-group-merge'
-                                            invalid={errors.currentPassword && true}
+                                            invalid={errors.newPassword && true}
                                             {...field}
                                         />
                                     )}
                                 />
-                                {errors.currentPassword && (
-                                    <FormFeedback className='d-block'>{errors.currentPassword.message}</FormFeedback>
+                                {errors.newPassword && (
+                                    <FormFeedback className='d-block'>{errors.newPassword.message}</FormFeedback>
                                 )}
                             </Col>
                         </Row>
