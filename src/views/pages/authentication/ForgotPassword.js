@@ -1,5 +1,5 @@
 // ** React Imports
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useState, useEffect, Fragment } from 'react'
 // ** Icons Imports
 import { ChevronLeft } from 'react-feather'
@@ -7,7 +7,7 @@ import { toast, Slide } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { sendMailResetPassword } from '../../../services/auth'
 // ** Reactstrap Imports
-import { Card, CardBody, CardTitle, CardText, Form, Label, Input, Button, FormFeedback } from 'reactstrap'
+import { Card, CardBody, CardTitle, CardText, Form, Label, Input, Button, FormFeedback, Spinner } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/pages/page-authentication.scss'
@@ -31,10 +31,12 @@ const ForgotPassword = () => {
     const [emailError, setEmailError] = useState(false)
     const [username, setUsername] = useState('')
     const [usernameError, setUsernameError] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const { sendMail, sendMailResult } = useSelector(state => state.auth);
 
     const dispatch = useDispatch()
+    const history = useHistory()
 
     const validateEmail = (e) => {
         const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -67,24 +69,27 @@ const ForgotPassword = () => {
                 { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
             )
         } else {
-            dispatch(sendMailResetPassword({ email, username }))
+            setLoading(true)
+            setTimeout(() => { dispatch(sendMailResetPassword({ email, username })) }, 2000)
         }
     }
 
     useEffect(() => {
         if (sendMail == true && sendMailResult != null) {
-            if(sendMailResult.error){
+            if (sendMailResult.error) {
                 toast.error(
                     <ToastContent name='lỗi' message={sendMailResult.message} />,
                     { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
                 )
+                setLoading(false)
             } else {
                 toast.success(
                     <ToastContent name='thành công' message={sendMailResult.message} />,
                     { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
                 )
+                history.push('/login')
             }
-        } 
+        }
     }, [sendMail, sendMailResult])
 
 
@@ -134,7 +139,8 @@ const ForgotPassword = () => {
                                 {emailError ? <FormFeedback>Email không phù hợp</FormFeedback> : null}
                             </div>
                             <Button color='primary' block>
-                                Gửi mã khôi phục
+                                {loading ? <div><Spinner color='white' size='sm' />
+                                    <span className='ms-50'>Đang tải...</span></div> : 'Gửi mật khẩu khôi phục'}
                             </Button>
                         </Form>
                         <p className='text-center mt-2'>

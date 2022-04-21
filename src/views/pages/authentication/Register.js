@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useSkin } from '@hooks/useSkin'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,7 +14,7 @@ import { toast, Slide } from 'react-toastify'
 // ** Context
 import { AbilityContext } from '@src/utility/context/Can'
 import InputPasswordToggle from '@components/input-password-toggle'
-import { Row, Col, CardTitle, CardText, Label, Button, Form, Input, FormFeedback } from 'reactstrap'
+import { Row, Col, CardTitle, CardText, Label, Button, Form, Input, FormFeedback, Spinner } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/pages/page-authentication.scss'
@@ -82,6 +82,7 @@ const Register = () => {
   const { skin } = useSkin()
   const history = useHistory()
   const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
   const { isSignup, signUpResult } = useSelector(state => state.auth);
   const {
     control,
@@ -98,9 +99,10 @@ const Register = () => {
     // delete tempData.repeatpassword
     delete tempData.role
     const { fullname, username, password, rePassword, email, phone, birthday, type } = tempData
-    console.log(data)
-    console.log({ fullname, username, password, rePassword, email, phone, birthday, type })
-    dispatch(sendUserSignup({ fullname, username, password, rePassword, email, phone, birthday, type }))
+    // console.log(data)
+    // console.log({ fullname, username, password, rePassword, email, phone, birthday, type })
+    setLoading(true)
+    setTimeout(() => { dispatch(sendUserSignup({ fullname, username, password, rePassword, email, phone, birthday, type })) }, 2000)
   }
 
   useEffect(() => {
@@ -110,6 +112,7 @@ const Register = () => {
           <ToastErrorContent />,
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
+        setLoading(false)
       } else {
         toast.success(
           <ToastContent />,
@@ -273,7 +276,8 @@ const Register = () => {
                 {errors.role ? <FormFeedback>{errors.role.message}</FormFeedback> : null}
               </div>
               <Button type='submit' block color='primary'>
-                Đăng Ký
+              {loading ? <div><Spinner color='white' size='sm' />
+                  <span className='ms-50'>Đang tải...</span></div> : 'Đăng kí'}
               </Button>
             </Form>
             <p className='text-center mt-2'>
