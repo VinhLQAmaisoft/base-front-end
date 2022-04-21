@@ -1,19 +1,108 @@
 // ** React Imports
-import { Link } from 'react-router-dom'
-
+import { Link, useHistory } from 'react-router-dom'
+import { useEffect, Fragment } from 'react'
 // ** Icons Imports
 import { ChevronLeft } from 'react-feather'
 
 // ** Custom Components
-import InputPassword from '@components/input-password-toggle'
-
+import InputPasswordToggle from '@components/input-password-toggle'
+import * as yup from 'yup'
+import { useForm, Controller } from 'react-hook-form'
+import { toast, Slide } from 'react-toastify'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateUserPassword } from '../../../services/admin'
 // ** Reactstrap Imports
-import { Card, CardBody, CardTitle, CardText, Form, Label, Button } from 'reactstrap'
+import { Card, CardBody, CardTitle, CardText, Form, Label, Button, Input, FormFeedback } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/pages/page-authentication.scss'
 
+const ToastContent = ({ name, message }) => (
+  <Fragment>
+      <div className='toastify-header'>
+          <div className='title-wrapper'>
+              <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+          </div>
+      </div>
+      <div className='toastify-body'>
+          <span>{message}</span>
+      </div>
+  </Fragment>
+)
+
 const ResetPassword = () => {
+
+  const defaultValues = {
+    username: '',
+    oldPassword: '',
+    newPassword: '',
+    retypeNewPassword: ''
+  }
+
+  const SignupSchema = yup.object().shape({
+    username: yup.string().required('Bạn cần nhập tên tài khoản'),
+    oldPassword: yup.string().required('Bạn cần nhập mật khẩu cũ'),
+    newPassword: yup.string().min(8, 'Mật khẩu gồm ít nhất 8 kí tự')
+      .required('Bạn cần nhập mật khẩu mới')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, 'Mật khẩu gồm ít nhất 8 kí tự, 1 chữ hoa, 1 chữ thường'),
+    retypeNewPassword: yup.string()
+      .oneOf([yup.ref('newPassword'), null], 'Bạn hãy nhập đúng với mật khẩu vừa nhập'),
+  })
+  // ** Hooks
+  const dispatch = useDispatch()
+  const history = useHistory()
+  // const { passwordUpdated, updatedPasswordResult } = useSelector(state => state.adminReducer);
+  const { passwordUpdated, updatedPasswordResult } = useSelector(state => state.adminReducer);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(SignupSchema)
+  })
+
+  const onSubmit = submitData => {
+    if (Object.values(submitData).every(field => field.length > 0)) {
+      dispatch(updateUserPassword({
+        // _id: data._id,
+        username: submitData.username,
+        oldPassword: submitData.oldPassword,
+        newpassword: submitData.newPassword,
+        repass: submitData.retypeNewPassword
+      }))
+      console.log(submitData)
+    } else {
+      for (const key in data) {
+        if (data[key].length === 0) {
+          setError(key, {
+            type: 'manual'
+          })
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (passwordUpdated != null ) {
+      if (passwordUpdated.data == null && updatedPasswordResult == true) {
+        toast.error(
+          <ToastContent name='lỗi' message={passwordUpdated.message}/>,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+      } else if (passwordUpdated.data != null && updatedPasswordResult == true) {
+        toast.success(
+          <ToastContent name='thành công' message={passwordUpdated.message}/>,
+          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+        )
+        history.push('/login')
+      }
+    }
+  }, [passwordUpdated, updatedPasswordResult])
+
   return (
     <div className='auth-wrapper auth-basic px-2'>
       <div className='auth-inner my-2'>
@@ -74,20 +163,79 @@ const ResetPassword = () => {
               Reset Password 🔒
             </CardTitle>
             <CardText className='mb-2'>Your new password must be different from previously used passwords</CardText>
-            <Form className='auth-reset-password-form mt-2' onSubmit={e => e.preventDefault()}>
-              <div className='mb-1'>
-                <Label className='form-label' for='new-password'>
-                  New Password
+            <Form className='auth-reset-password-form mt-2' onSubmit={handleSubmit(onSubmit)}>
+            <div className='mb-1'>
+                <Label className='form-label' for='register-username'>
+                  Tên tài khoản
                 </Label>
-                <InputPassword className='input-group-merge' id='new-password' autoFocus />
+                <Controller
+                  id='username'
+                  name='username'
+                  control={control}
+                  render={({ field }) => (
+                    <Input autoFocus placeholder='dtran3565' invalid={errors.username && true} {...field} />
+                  )}
+                />
+                {errors.username ? <FormFeedback>{errors.username.message}</FormFeedback> : null}
               </div>
               <div className='mb-1'>
-                <Label className='form-label' for='confirm-password'>
-                  Confirm Password
-                </Label>
-                <InputPassword className='input-group-merge' id='confirm-password' />
+                <Controller
+                  control={control}
+                  id='oldPassword'
+                  name='oldPassword'
+                  render={({ field }) => (
+                    <InputPasswordToggle
+                      label='Mật khẩu cũ'
+                      htmlFor='oldPassword'
+                      className='input-group-merge'
+                      invalid={errors.oldPassword && true}
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.oldPassword && (
+                  <FormFeedback className='d-block'>{errors.oldPassword.message}</FormFeedback>
+                )}
               </div>
-              <Button color='primary' block>
+              <div className='mb-1'>
+                <Controller
+                  control={control}
+                  id='newPassword'
+                  name='newPassword'
+                  render={({ field }) => (
+                    <InputPasswordToggle
+                      label='Mật khẩu mới'
+                      htmlFor='newPassword'
+                      className='input-group-merge'
+                      invalid={errors.newPassword && true}
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.newPassword && (
+                  <FormFeedback className='d-block'>{errors.newPassword.message}</FormFeedback>
+                )}
+              </div>
+              <div className='mb-1'>
+                <Controller
+                  control={control}
+                  id='retypeNewPassword'
+                  name='retypeNewPassword'
+                  render={({ field }) => (
+                    <InputPasswordToggle
+                      label='Nhập lại mật khẩu mới'
+                      htmlFor='retypeNewPassword'
+                      className='input-group-merge'
+                      invalid={errors.newPassword && true}
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.retypeNewPassword && (
+                  <FormFeedback className='d-block'>{errors.retypeNewPassword.message}</FormFeedback>
+                )}
+              </div>
+              <Button type='submit' color='primary' block>
                 Set New Password
               </Button>
             </Form>

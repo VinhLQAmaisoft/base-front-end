@@ -23,3 +23,13 @@ export const sendUserSignup = createAsyncThunk(`${BASE_URL}/account/register`, a
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const sendMailResetPassword = createAsyncThunk(`${BASE_URL}/account/send-email-password`, async (body, thunkAPI) => {
+  try {
+    const result = await newAxios.post('/account/send-email-password', body);
+    console.log(result.data)
+    return result.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

@@ -4,6 +4,8 @@ import { useState, useEffect, Fragment } from 'react'
 // ** Icons Imports
 import { ChevronLeft } from 'react-feather'
 import { toast, Slide } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { sendMailResetPassword } from '../../../services/auth'
 // ** Reactstrap Imports
 import { Card, CardBody, CardTitle, CardText, Form, Label, Input, Button, FormFeedback } from 'reactstrap'
 
@@ -12,16 +14,16 @@ import '@styles/react/pages/page-authentication.scss'
 
 const ToastContent = ({ name, message }) => (
     <Fragment>
-      <div className='toastify-header'>
-        <div className='title-wrapper'>
-          <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+        <div className='toastify-header'>
+            <div className='title-wrapper'>
+                <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
+            </div>
         </div>
-      </div>
-      <div className='toastify-body'>
-        <span>{message}</span>
-      </div>
+        <div className='toastify-body'>
+            <span>{message}</span>
+        </div>
     </Fragment>
-  )
+)
 
 const ForgotPassword = () => {
 
@@ -29,6 +31,10 @@ const ForgotPassword = () => {
     const [emailError, setEmailError] = useState(false)
     const [username, setUsername] = useState('')
     const [usernameError, setUsernameError] = useState(false)
+
+    const { sendMail, sendMailResult } = useSelector(state => state.auth);
+
+    const dispatch = useDispatch()
 
     const validateEmail = (e) => {
         const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -40,7 +46,7 @@ const ForgotPassword = () => {
     }
 
     const validateUsername = (e) => {
-        const usernameRegex = /^.{6,}$/
+        const usernameRegex = /^.{3,}$/
         if (usernameRegex.test(e.target.value)) {
             setUsernameError(false)
         } else {
@@ -54,11 +60,33 @@ const ForgotPassword = () => {
             toast.warn(
                 <ToastContent name='mới' message={'Bạn phải nhập cả tên tài khoản và email'} />,
                 { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-              )
+            )
+        } else if (emailError || usernameError) {
+            toast.error(
+                <ToastContent name='lỗi' message={'Bạn phải nhập đúng cả tên tài khoản và email'} />,
+                { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+            )
+        } else {
+            dispatch(sendMailResetPassword({ email, username }))
         }
-        // console.log(email)
-        // console.log(username)
     }
+
+    useEffect(() => {
+        if (sendMail == true && sendMailResult != null) {
+            if(sendMailResult.error){
+                toast.error(
+                    <ToastContent name='lỗi' message={sendMailResult.message} />,
+                    { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+                )
+            } else {
+                toast.success(
+                    <ToastContent name='thành công' message={sendMailResult.message} />,
+                    { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+                )
+            }
+        } 
+    }, [sendMail, sendMailResult])
+
 
     return (
         <div className='auth-wrapper auth-basic px-2'>
