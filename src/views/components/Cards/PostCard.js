@@ -14,7 +14,6 @@ import { formatTimeStamp } from '../../../utility/Utils'
 export default function PostCard({ props, handleSelect }) {
     const [imageUrl, setImageUrl] = useState('https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg')
 
-    console.log("Post Found: ", props)
 
     function renderAttachment(listAttachment) {
         let result = [];
@@ -22,7 +21,7 @@ export default function PostCard({ props, handleSelect }) {
             result.push(
                 <Col key={`attachment-${result.length}`} className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
                     {/* <img className='w-100' src={process.env.REACT_APP_BASE_SERVER_URL + '/' + attachment} /> */}
-                    <img className='w-100' src={imageUrl} />
+                    <img className='w-100' src={attachment} />
                 </Col>)
         }
         return result
@@ -30,7 +29,6 @@ export default function PostCard({ props, handleSelect }) {
 
     function getStatus(status) {
         status = parseInt(status)
-        console.log("Post status: ", status)
         switch (status) {
             case 1: return 'Đang hoạt động'
             case -1: return 'Kết thúc'

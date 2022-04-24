@@ -8,6 +8,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [commentRender, setCommentRender] = useState([])
     useEffect(() => {
+        console.log("TRigger")
         CommentServices.getComment(`?post_id=${post._id}`)
             .then((data) => {
                 if (data.data.data) {
@@ -17,10 +18,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
             })
             // setComments(postComment);
             ;
-        UserServices.getProfile(``).then(data => {
-            setReplySyntax(data.data.data.replySyntaxs)
-        })
-    }, [])
+    }, [post])
 
     function sortComment(rawList) {
         let parent = rawList.filter(comment => comment.parentId == null);
@@ -41,52 +39,9 @@ export default function PostDetailTab({ post, open, handleModal }) {
         return result
     }
 
-    const createScanInterval = (second) => {
-        const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
-        let x = setInterval(() => {
-            CommentServices.scanComment({
-                postId: post._id
-            }).then(data => {
-                if (!data.data?.data) {
-                    alert(data.data.message)
-                    clearInterval(x)
-                }
-                CommentServices.getComment(`?post_id=${post._id}`)
-                    .then((data) => {
-                        setComments(sortComment(data.data.data));
-                        setCommentRender(renderComment(comments));
-                    })
-                console.log("Tạo Comment Mới!!!!!!")
-                CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
-            })
-        }, second * 1000)
-        return x
-    }
-
     //------------------------------------------------------------------------------ LOGIC FUNCTION ------------------------------------------------------------------------------
 
-    const createOrder = comment => {
-        setSelectedComment(comment)
-        handleModal()
-        // alert(`Create Order ${commentId}`)
-    }
 
-    const cancelOrder = commentId => {
-        alert(`Cancel Order ${commentId}`)
-    }
-
-    const disableComment = () => {
-        PostServices.disablePost({ postId: post.fb_id }).then(data => alert(data.data.message))
-    }
-
-    const replyComment = (commentId, syntax) => {
-        alert(`Reply Comment ${commentId}: ${syntax}`)
-        CommentServices.replyComment({
-            postId: post.fb_id,
-            content: syntax,
-            commentId: commentId,
-        }).then(data => alert(data.data.message))
-    }
 
     const handleCommentFilter = (evt, value) => {
         // console.log(evt)
@@ -139,7 +94,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
 
 
     const renderComment = (comments) => {
-        console.log("Comment Base: ", comments);
+        // console.log("Comment Base: ", comments);
         const result = [];
         for (const comment of comments) {
             let match = 0
@@ -181,6 +136,18 @@ export default function PostDetailTab({ post, open, handleModal }) {
                         </CardBody>
                     </Card>
                 )
+        }
+        return result
+    }
+
+    function renderAttachment(listAttachment) {
+        let result = [];
+        for (let attachment of listAttachment) {
+            result.push(
+                <Col key={`attachment-${result.length}`} className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
+                    {/* <img className='w-100' src={process.env.REACT_APP_BASE_SERVER_URL + '/' + attachment} /> */}
+                    <img className='w-100' src={attachment} />
+                </Col>)
         }
         return result
     }
@@ -240,18 +207,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
                                 Ảnh đính kèm
                             </Label>
                             <Row>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
+                                {renderAttachment(post.attachment)}
                             </Row>
                         </Col>
                     </Row >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { ProductServices } from '@services'
-import { formatMoney, formatTimeStamp } from '@utils'
+import { formatMoney, formatTimeStamp, alert } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row, UncontrolledButtonDropdown } from 'reactstrap'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
@@ -157,18 +157,18 @@ export default function ProductManage() {
         if (newKeyWord && newKeyWord.length > 0) {
             for (const keyword of newKeyWord) {
                 if (oldKeyWord.indexOf(keyword) > -1)
-                    return alert(`Trùng từ khóa "${keyword}"`)
+                    return alert.warn(`Trùng từ khóa "${keyword}"`)
             }
         }
         if (title == "" || /\D/.test(price)) {
-            return alert("Tên hoặc giá không phù hợp");
+            return alert.error("Tên hoặc giá không phù hợp");
         }
         let newProduct = JSON.parse(JSON.stringify(selectedProduct));
         newProduct.title = title;
         newProduct.price = parseFloat(price);
         newProduct.keyword = [...oldKeyWord, ...newKeyWord];
         ProductServices.updateProduct(newProduct).then(data => {
-            alert(data.data.message);
+            alert.info(data.data.message);
             ProductServices.getProduct().then(data => {
                 if (data.data.data) {
                     setProduct(data.data.data)
@@ -184,17 +184,17 @@ export default function ProductManage() {
         let price = document.getElementById("a-price").value;
         if (!/\D/.test(price) && !title == "") {
             ProductServices.createProduct({ title, price }).then(data => {
-                alert(data.data.message);
+                alert.success(data.data.message);
                 setProduct([...product, data.data.data])
                 getCurrentObject(product)
 
             })
-        } else alert("Giá tiền hoặc tên sản phẩm không phù hợp")
+        } else alert.error("Giá tiền hoặc tên sản phẩm không phù hợp")
     }
 
     const deleteProduct = (id) => {
         ProductServices.deleteProduct({ _id: id }).then(data => {
-            alert(data.data.message);
+            alert.info(data.data.message);
             ProductServices.getProduct().then(data => {
                 if (data.data.data) {
                     setProduct(data.data.data)
@@ -256,8 +256,8 @@ export default function ProductManage() {
             return listKeywords.map(keyword => (
                 <Badge
                     outline={true}
-                    style={{ padding: '5px' }}
-                    className='me-1'
+                    style={{ padding: '5px', margin: '5px' }}
+                    // className='m-1'
                     color='info'
                     key={`detail - ${keyword}`}
                 >

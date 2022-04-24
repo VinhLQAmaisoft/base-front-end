@@ -5,9 +5,7 @@ export const sendUserLogin = createAsyncThunk(`${BASE_URL}/account/login`, async
   try {
     const result = await newAxios.post('/account/login', body);
     if (result?.data?.data?.token) {
-      console.log("Add user token: ", result?.data?.data?.token);
       const cookies = new Cookies();
-      cookies.set('token', result?.data?.data?.token, { path: '/' });
     }
     return result.data
   } catch (error) {

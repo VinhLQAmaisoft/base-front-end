@@ -1,47 +1,47 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter } from 'reactstrap'
+import { Card, CardBody, Label, Input, Button, CardTitle, Col, Row, TabPane, Badge, FormGroup, UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, CardFooter, Spinner } from 'reactstrap'
 import { CommentServices, UserServices, PostServices } from '@services';
 import CreateOrderModal from '../Modals/CreateOrderModal'
-import { formatMoney } from '@utils'
+import { formatMoney, alert } from '@utils'
 export default function PostDetailTab(props) {
     // console.log("PostDetailTab PROPS: ", props)
     const [modal, setModal] = useState(false);
+    const [isScan, setIsScan] = useState(true)
+    const [isComment, setIsComment] = useState(true)
     const [post, SetPost] = useState(props?.post);
-    const [scanJob, setScanJob] = useState(null);
-    const [counterJob, setCounterJob] = useState(null)
+
     const [comments, setComments] = useState([]);
     const [replySyntax, setReplySyntax] = useState([]);
     const [commentFilter, setCommentFilter] = useState([-1, 0, 1])
     const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
-    const [isScan, setIsScan] = useState(true)
-    const [isComment, setIsComment] = useState(true)
+
     const [timer, setTimer] = useState(120);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
     useEffect(() => {
-        CommentServices.getComment(`?post_id=${post._id}`)
-            .then((data) => {
-                if (data.data.data) {
-                    setComments(sortComment(data.data.data));
-                    setCommentRender(renderComment(comments));
-                }
-                CommentServices.scanComment({
-                    postId: post._id
-                }).then(data => {
-                    const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
-                    if (!data.data?.data) {
-                        alert(data.data.message)
+        CommentServices.scanComment({
+            postId: post._id
+        }).then(data => {
+            const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
+            if (!data.data?.data) {
+                alert.success(data.data.message)
+            }
+            CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+                .then(res => {
+                    if (res.data.data == null) {
+                        alert.warning(res.data.message)
                     }
-                    let taskId = setCounter();
-                    setCounterJob(taskId)
-                    CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
-                    let task = createScanInterval(120)
-                    setScanJob(task)
+                    CommentServices.getComment(`?post_id=${post._id}`)
+                        .then((data) => {
+                            if (data.data.data) {
+                                setComments(sortComment(data.data.data));
+                                setCommentRender(renderComment(comments));
+                            }
 
-
+                        })
                 })
-            })
+        })
             // setComments(postComment);
             ;
         UserServices.getProfile(``).then(data => {
@@ -51,16 +51,20 @@ export default function PostDetailTab(props) {
 
     //Clear Interval Task!!!
     useEffect(() => {
+        console.log("Init Interval Task!!!!!!!!!!!!!!!!!!!")
+        let x = setCounter()
+        let y = createScanInterval(120)
+
         return () => {
-            console.log("Leave Page!!!!!!!!!!!!!!!!!!!")
-            // if (scanJob) {
-            console.log("hủy job scan")
-            clearInterval(scanJob)
-            // }
-            // if (counterJob) {
-            console.log("hủy job counter")
-            clearInterval(counterJob)
-            // }
+            console.log("Leave Page!!!!!!!!!!!!!!!y!!!!")
+            if (y) {
+                console.log("hủy job scan")
+                window.clearInterval(y)
+            }
+            if (x) {
+                console.log("hủy job counter")
+                window.clearInterval(x)
+            }
         };
     }, []);
 
@@ -77,7 +81,31 @@ export default function PostDetailTab(props) {
         }, 1000)
     }
 
+    function updateComment() {
+        CommentServices.getComment(`?post_id=${post._id}`)
+            .then((data) => {
+                if (data.data.data) {
+                    setComments(sortComment(data.data.data));
+                    setCommentRender(renderComment(comments));
+                }
 
+            })
+    }
+
+    async function handleUpdate() {
+        let content = document.getElementById('content').value;
+        if (content == post.content) {
+            alert.warning('Nội dung chưa được thay đổi');
+            return
+        }
+        PostServices.editPost({
+            fb_id: post.fb_id,
+            content,
+            attachments: post.attachment
+        }).then(res => {
+            alert.success(res.data.message)
+        })
+    }
 
     function sortComment(rawList) {
         let parent = rawList.filter(comment => comment.parentId == null);
@@ -103,30 +131,34 @@ export default function PostDetailTab(props) {
 
     const createScanInterval = (second) => {
         const baseDot = ['Uppp', "Mại Zô", "Lênn", ".", '...']
-        let x = setInterval(() => {
+        let x = setInterval(async () => {
+            let comment = document.getElementById('isCommentDot').value
+            let scan = document.getElementById('isScanComment').value
             let now = new Date()
-            console.log(`${now.toLocaleString()} Bắt Đầu Quét`)
-            isScan && CommentServices.scanComment({
-                postId: post._id
-            }).then(data => {
-                if (!data.data?.data) {
-                    alert(data.data.message)
-                    setIsScan = false;
-                    setIsComment = false;
-                } else {
-                    let now2 = new Date()
-                    console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài`)
-                    if (isComment) {
-                        CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+            if (scan) {
+                console.log(`${now.toLocaleString()} Bắt Đầu Quét ${isScan}`)
+                await CommentServices.scanComment({
+                    postId: post._id
+                }).then(data => {
+                    if (!data.data?.data) {
+                        alert.error(data.data.message)
+                        setIsScan(false);
+                        setIsComment(false);
+                    } else {
+                        let now2 = new Date()
+                        if (comment) {
+                            console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài ${isComment}`)
+                            CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
+                        }
                     }
-                }
-                CommentServices.getComment(`?post_id=${post._id}`)
-                    .then((data) => {
-                        setComments(sortComment(data.data.data));
-                        setCommentRender(renderComment(comments));
-                        setTimer(second)
-                    })
-            })
+                    CommentServices.getComment(`?post_id=${post._id}`)
+                        .then((data) => {
+                            setComments(sortComment(data.data.data));
+                            setCommentRender(renderComment(comments));
+                        })
+                })
+            }
+            setTimer(second)
         }, second * 1000)
         return x
     }
@@ -134,12 +166,12 @@ export default function PostDetailTab(props) {
     const addCookie = () => {
         let fbToken = document.getElementById('token').value;
         let fbCookie = document.getElementById('cookie').value;
-        if (fbCookie === "" || fbToken === "")
-            return alert("Không được bỏ trống Token hoặc Cookie")
+        if (fbCookie === "")
+            return alert.error("Không được bỏ trống Token hoặc Cookie")
         // KHỞI TẠO COOKIE & TOKEN
         UserServices.addCookie({ fbCookie, fbToken })
             .then(data => {
-                alert(data.data.message)
+                alert.success(data.data.message)
                 if (data.data.data) {
                     setCookie(fbCookie);
                     setToken(fbToken);
@@ -156,20 +188,26 @@ export default function PostDetailTab(props) {
     }
 
     const cancelOrder = commentId => {
-        alert(`Cancel Order ${commentId}`)
+        alert.info(`Cancel Order ${commentId}`)
     }
 
     const disableComment = () => {
-        PostServices.disablePost({ postId: post.fb_id }).then(data => alert(data.data.message)).then(() => window.location.reload())
+        PostServices.disablePost({ postId: post.fb_id }).then(data => {
+            if (data.data.data) {
+                alert.success(data.data.message)
+                setTimeout(() => { window.location.reload() }, 2000)
+            } else alert.error(data.data.message)
+
+        })
     }
 
     const replyComment = (commentId, syntax) => {
-        alert(`Reply Comment ${commentId}: ${syntax}`)
+        alert.info(`Reply Comment ${commentId}: ${syntax}`)
         CommentServices.replyComment({
             postId: post.fb_id,
             content: syntax,
             commentId: commentId,
-        }).then(data => alert(data.data.message))
+        }).then(data => alert.success(data.data.message))
     }
 
     const handleCommentFilter = (evt, value) => {
@@ -232,7 +270,6 @@ export default function PostDetailTab(props) {
 
 
     const renderComment = (comments) => {
-
         const result = [];
         for (const comment of comments) {
             let match = 0
@@ -240,13 +277,13 @@ export default function PostDetailTab(props) {
             comment.data.phone && match++;
             comment.data.address && match++;
             if (comment.data.isCancelled) {
-                console.log("Hủy đơn =  " + comment.data.isCancelled)
+                // console.log("Hủy đơn =  " + comment.data.isCancelled)
                 match = -1
             };
             let rating = match == -1 ? -1 : match == 0 ? 0 : 1;
             if (commentFilter.includes(rating))
                 result.push(
-                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#674ea7' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={comment.fb_id + "-" + result.length}>
+                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#674ea7' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={JSON.stringify(comment)}>
                         <CardTitle className="text-light mb-0">
                             <a href={`https://facebook.com/${comment.author.id}`} target="_blank" className="ms-1">
                                 {comment.author.name}
@@ -308,6 +345,18 @@ export default function PostDetailTab(props) {
         return <Badge color="success">Cập nhật sau: {timer}s</Badge>
     }
 
+    function renderAttachment(listAttachment) {
+        let result = [];
+        for (let attachment of listAttachment) {
+            result.push(
+                <Col key={`attachment-${result.length}`} className='d-flex pl-0 align-items-center justify-content-end mt-1 post-attachment-item' md='4' sm='12'>
+                    {/* <img className='w-100' src={process.env.REACT_APP_BASE_SERVER_URL + '/' + attachment} /> */}
+                    <img className='w-100' src={attachment} />
+                </Col>)
+        }
+        return result
+    }
+
     return (
         <TabPane tabId={post.fb_id}>
             <Card className="bg-light p-1 mb-1">
@@ -316,14 +365,21 @@ export default function PostDetailTab(props) {
                 </CardTitle>
                 <hr className="bg-info" />
                 <CardBody>
-                    <Row className="justify-content-center align-items-end">
+                    <Row className="justify-content-center align-items-center">
                         <Col sm="4">
                             <Label className="text-dark fs-5">Cookie: </Label>
                             <Input type='text' id="cookie" className='form-control' />
+                            <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
+                                Lấy cookie facebook tại đây
+                            </a>
                         </Col>
                         <Col sm="4">
                             <Label className="text-dark fs-5">Token: </Label>
                             <Input type='text' id="token" className='form-control' />
+                            <a target="_blank"
+                                href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
+                                Lấy token facebook tại đây
+                            </a>
                         </Col>
                         <Col sm="2">
                             <Button color="primary" onClick={() => { addCookie() }}>
@@ -338,6 +394,9 @@ export default function PostDetailTab(props) {
                 <CardTitle className="text-primary mb-0 fs-4">
                     Thông tin bài viết {counter()}
                 </CardTitle>
+                <input type="hidden" value={isComment} id="isCommentDot" />
+                <input type="hidden" value={isScan} id="isScanComment" />
+
                 <hr className="bg-info" />
                 <CardBody>
                     <Row >
@@ -355,17 +414,26 @@ export default function PostDetailTab(props) {
                         </Col>
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Tự động quét comment: </Label>
-                            <Input
-                                type="checkbox"
-                                checked={isScan}
-                                onChange={(e) => setIsScan(e.target.checked)} />
+                            <Button size="sm" color={isScan ? 'warning' : 'success'} onClick={() => { setIsScan(!isScan); }}>
+                                {isScan ? 'Dừng' : 'Bắt Đầu'}
+                            </Button>
                         </Col >
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Tự động chấm bài: </Label>
-                            <Input
+                            <Button size="sm" color={isComment ? 'warning' : 'success'} onClick={() => { setIsComment(!isComment); }}>
+                                {isComment ? 'Dừng' : 'Bắt Đầu'}
+                            </Button>
+                            {/* <Input
                                 type="checkbox"
                                 checked={isComment}
-                                onChange={(e) => setIsComment(e.target.checked)} />
+                                onChange={(e) => {
+                                    console.log("Input = " + e.target.checked)
+                                    setIsComment(e.target.checked)
+                                    setTimeout(() => {
+                                        console.log("New IS COMMENT: ", isComment)
+                                    }, 1000)
+
+                                }} /> */}
                         </Col >
                         <Col sm="12" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
@@ -375,15 +443,20 @@ export default function PostDetailTab(props) {
                         <Col sm="12" className="mb-2">
                             <Label className="text-dark fs-5" for="exampleText">
                                 Nội Dung
+                            </Label><br></br>
+                            <Label className="text-warning fs-6" >
+                                <i> Chỉ có thể chỉnh sửa tối đa 2 lần!!!</i>
                             </Label>
                             <Input
                                 id="content"
                                 name="text"
                                 type="textarea"
                                 defaultValue={post.content}
-                                style={{ minHeight: '200px' }}
-                                editable="false"
+                                style={{ minHeight: '200px', marginBottom: '5px' }}
+                                editable="true"
+                                className="mb-1"
                             />
+                            <Button color="primary" size="sm" onClick={() => handleUpdate()}>Cập nhật</Button>
                         </Col>
 
                         {/* SẢN PHẨM */}
@@ -399,18 +472,7 @@ export default function PostDetailTab(props) {
                                 Ảnh đính kèm
                             </Label>
                             <Row>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
-                                <Col sm="3" className="">
-                                    <img className="w-100" src='https://i.pinimg.com/564x/78/90/e1/7890e13d8985d3a5360e3e62831575fd.jpg' />
-                                </Col>
+                                {renderAttachment(post.attachment)}
                             </Row>
                         </Col>
                     </Row >
@@ -426,6 +488,7 @@ export default function PostDetailTab(props) {
                 <hr className="bg-info" />
                 <CardBody>
                     {/* {commentRender} */}
+                    {comments.length == 0 && (<Row><Col sm="12" className="text-center"><Spinner animation="border" variant="primary" /></Col></Row>)}
                     {comments && renderComment(comments)}
                 </CardBody>
             </Card>
@@ -437,7 +500,7 @@ export default function PostDetailTab(props) {
                     </Button>
                 </CardFooter>
             </Card>
-            <CreateOrderModal products={post.products} comment={selectedComment} setSelectedComment={setSelectedComment} open={modal} handleModal={handleModal} />
+            <CreateOrderModal products={post.products} comment={selectedComment} setComments={updateComment} open={modal} handleModal={handleModal} />
         </TabPane >
     )
 }

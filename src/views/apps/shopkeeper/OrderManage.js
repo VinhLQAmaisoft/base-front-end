@@ -1,7 +1,7 @@
 // ** React Imports
 import { Fragment, useState, forwardRef, useEffect } from 'react'
 import { formatMoney, formatTimeStamp } from '@utils'
-import { OrderServices, ProductServices, UserServices } from '@services'
+import { OrderServices, ProductServices, ShipperServices } from '@services'
 import OrderCard from '@my-components/Cards/OrderCard'
 // ** Table Data & Columns
 // ** Add New Modal Component
@@ -54,16 +54,10 @@ const OrderManage = () => {
     })
 
     useEffect(() => {
-        UserServices.getProfile().then(data => {
+        let intervalTask = null;
+        ShipperServices.getJob().then(data => {
             if (data.data.data) {
-                let rawShipper = data.data.data.shippers;
-                let shippers = rawShipper.map(shipper => {
-                    let data = shipper.split('---');
-                    return {
-                        fullName: data[0],
-                        username: data[1],
-                    }
-                })
+                let shippers = data.data.data.filter(job => job.status == 'accepted').map(job => job.shipper);
                 setShipperOptions(shippers)
                 console.log("My Shipper: ", shippers)
             }
@@ -78,12 +72,31 @@ const OrderManage = () => {
             if (data.data.data) {
                 OrderData = data.data.data
                 let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
-                console.log("Source data: " + OrderData.length)
                 setDeactivateOrder(doneOrder)
                 // setDisplayOrder(getCurrentTableData(doneOrder))
                 setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
             }
         })
+        intervalTask = setInterval(() => {
+            console.log("Cập nhật đơn hàng!");
+            OrderServices.getOrder('').then(data => {
+                let OrderData = []
+                if (data.data.data) {
+                    OrderData = data.data.data
+                    let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
+                    setDeactivateOrder(doneOrder)
+                    // setDisplayOrder(getCurrentTableData(doneOrder))
+                    setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
+                }
+            })
+        }, 5000)
+        return () => {
+            console.log("Rời Order Manage")
+            if (intervalTask) {
+                console.log("Hủy Interval Task")
+                window.clearInterval(intervalTask)
+            }
+        }
     }, [])
 
     // Cập nhật thứ tự bảng khi sắp xếp  
@@ -280,33 +293,33 @@ const OrderManage = () => {
 
 
     // ** Custom Pagination
-    const CustomPagination = () => {
-        // console.log(`${deactivateOrder.length}/${pageSize} = ${Math.ceil(deactivateOrder.length / pageSize)}`)
-        return (
-            <ReactPaginate
-                previousLabel=''
-                nextLabel=''
-                forcePage={currentPage}
-                onPageChange={page => {
-                    setCurrentPage(page.selected)
-                }}
-                pageCount={Math.ceil(deactivateOrder.length / pageSize)}
-                breakLabel='...'
-                pageRangeDisplayed={2}
-                marginPagesDisplayed={2}
-                activeClassName='active'
-                pageClassName='page-item'
-                breakClassName='page-item'
-                nextLinkClassName='page-link'
-                pageLinkClassName='page-link'
-                breakLinkClassName='page-link'
-                previousLinkClassName='page-link'
-                nextClassName='page-item next-item'
-                previousClassName='page-item prev-item'
-                containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
-            />
-        )
-    }
+    // const CustomPagination = () => {
+    //     // console.log(`${deactivateOrder.length}/${pageSize} = ${Math.ceil(deactivateOrder.length / pageSize)}`)
+    //     return (
+    //         <ReactPaginate
+    //             previousLabel=''
+    //             nextLabel=''
+    //             forcePage={currentPage}
+    //             onPageChange={page => {
+    //                 setCurrentPage(page.selected)
+    //             }}
+    //             pageCount={Math.ceil(deactivateOrder.length / pageSize)}
+    //             breakLabel='...'
+    //             pageRangeDisplayed={2}
+    //             marginPagesDisplayed={2}
+    //             activeClassName='active'
+    //             pageClassName='page-item'
+    //             breakClassName='page-item'
+    //             nextLinkClassName='page-link'
+    //             pageLinkClassName='page-link'
+    //             breakLinkClassName='page-link'
+    //             previousLinkClassName='page-link'
+    //             nextClassName='page-item next-item'
+    //             previousClassName='page-item prev-item'
+    //             containerClassName='pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1 mt-1'
+    //         />
+    //     )
+    // }
 
     function updateOrderView(newOrder) {
         let match = activeOrder.filter(order => order._id === newOrder._id);
@@ -319,8 +332,7 @@ const OrderManage = () => {
         let result = [].concat(activeOrder)
             .sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
             .map((order, i) => {
-                console.log(`Order Card at ${i}: ` + order[sortOption.key])
-                return (<Col lg={4} md={6} sm={12} key={order._id.$oid}>
+                return (<Col lg={4} md={6} sm={12} key={JSON.stringify(order)}>
                     <OrderCard shipperOptions={shipperOptions} products={products} baseOrder={order} />
                 </Col>)
             }

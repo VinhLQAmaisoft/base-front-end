@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react'
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
 import { User, Briefcase, Mail, Calendar, DollarSign, X } from 'react-feather'
-import { formatMoney } from '@utils'
-import { OrderServices } from '@services'
+import { formatMoney, alert } from '@utils'
+import { OrderServices,CommentServices } from '@services'
 
 // ** Reactstrap Imports
 import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputGroupText, Row, Col, FormGroup, Form, UncontrolledButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap'
@@ -13,20 +13,20 @@ import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputG
 // ** Styles
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
-const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products }) => {
+const AddNewModal = ({ open, handleModal, comment, setComments, products }) => {
     // ** State
     const [selectedProduct, setSelectedProduct] = useState({})
     const [productOptions, setProductOptions] = useState(products ? products : [])
     const [tempListProduct, setTempListProduct] = useState(comment?.data?.products ? comment?.data?.products : [])
-    console.log("tempListProduct: ", tempListProduct)
+    // console.log("tempListProduct: ", tempListProduct)
     // ** Custom close btn
     const CloseBtn = <X className='cursor-pointer' size={15} onClick={handleModal} />
-
+    const baseConfirm = ['oki nha', 'okee', 'mình đang làm nha', 'oki', 'oke']
     useEffect(() => {
         if (comment?.data?.products && comment?.data?.products.length > 0) {
             setTempListProduct(comment?.data?.products);
         }
-    })
+    },[])
 
     useEffect(() => {
         let option = [];
@@ -62,13 +62,12 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
         setProductOptions(option)
     }, [selectedProduct, tempListProduct])
 
-
     const addProduct = () => {
         let quantity = document.getElementById("p-price").value.trim();
-        console.log(`Add  ${selectedProduct} * ${quantity} `)
+        console.log(`${tempListProduct.length } Add  `, selectedProduct, ` * ${quantity} `)
 
         if (!selectedProduct || /\D/.test(quantity) || quantity == "") {
-            return alert("Thông tin không phù hợp");
+            return alert.error("Thông tin không phù hợp");
         }
         else {
             if (tempListProduct.length > 0) {
@@ -93,13 +92,14 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
             postId: comment.post_id,
             createAt: Date.now(),
         }).then(data => {
-            alert(data.data.message);
             if (data.data.data) {
+                alert.success(data.data.message);
+                CommentServices.createComment({ content: baseConfirm[Math.floor(Math.random() * baseConfirm.length)], postId: comment.fb_id })
                 let tempComment = { ...comment };
                 tempComment.type = 1;
-                setSelectedComment(tempComment)
-            }
-            handleModal()
+                setComments()
+                handleModal()
+            } else alert.error(data.data.message);
         })
 
     }
@@ -189,12 +189,12 @@ const AddNewModal = ({ open, handleModal, comment, setSelectedComment, products 
                     {tempListProduct.length > 0 && renderProduct()}
                     {productOptions.length > 0 && (
                         <Row>
-                            <Col md={6} sm={12}>
+                            <Col md={6} sm={12} >
                                 <Label for="exampleNumber">
                                     Chọn sản phẩm
                                 </Label>
                                 <UncontrolledButtonDropdown className="ml-2">
-                                    <DropdownToggle size="sm" color='warning' caret outline>
+                                    <DropdownToggle style={{ textAlign: 'left', paddingLeft: "5px", maxWidth: '150px', overflow: 'hidden' }} size="md" color='warning' caret outline>
                                         <span className='align-middle ms-50'>{selectedProduct?.title ? selectedProduct?.title : 'Sản Phẩm'}</span>
                                     </DropdownToggle>
                                     <DropdownMenu>

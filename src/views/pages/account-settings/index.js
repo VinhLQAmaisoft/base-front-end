@@ -38,7 +38,7 @@ const AccountSettings = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs breadCrumbTitle='Cài đặt thông tin'   />
+      <Breadcrumbs breadCrumbTitle='Cài đặt thông tin'/>
       {data !== null ? (
         <Row>
           <Col xs={12}>

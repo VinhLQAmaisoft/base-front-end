@@ -29,6 +29,11 @@ export const shipperNavigation = [
     title: 'Quản lý đơn hàng',
     icon: <User size={20} />,
     navLink: '/shipper/order-manage'
+  }, {
+    id: 'shipperJobManage',
+    title: 'Quản lý công việc',
+    icon: <DollarSign size={20} />,
+    navLink: '/shipper/job-manage'
   },
 ]
 

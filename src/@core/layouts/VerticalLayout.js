@@ -1,7 +1,8 @@
 // ** React Imports
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-
+import { OrderServices } from '@services'
+import { alert } from '@utils'
 // ** Store & Actions
 import { useSelector, useDispatch } from 'react-redux'
 import { handleMenuCollapsed, handleContentWidth, handleMenuHidden } from '@store/layout'
@@ -33,6 +34,7 @@ import { useNavbarColor } from '@hooks/useNavbarColor'
 // ** Styles
 import '@styles/base/core/menu/menu-types/vertical-menu.scss'
 import '@styles/base/core/menu/menu-types/vertical-overlay-menu.scss'
+import { data } from 'jquery'
 
 const VerticalLayout = props => {
   // ** Props
@@ -76,9 +78,60 @@ const VerticalLayout = props => {
 
   //** This function will detect the Route Change and will hide the menu on menu item click
   useEffect(() => {
+    let intervalTask = setInterval(() => OrderServices.getOrder().then((res) => {
+      if (res.data.data) {
+        let countWarn = 0, countError = 0;
+        let warn = 1000 * 60 * 20
+        let error = 1000 * 60 * 40
+        for (const order of res.data.data) {
+          if (order.status != 'done' && order.status != 'cancel') {
+            let delay = Date.now() - order.updateAt
+            let isWarn = delay - warn
+            let isError = delay - error
+
+            if (isWarn > 0 && isError < 0) {
+              countWarn++
+            } else if (isError > 0) {
+              countError++
+            }
+          }
+        }
+        if (countWarn > 0) alert.warning(`Có ${countWarn} đơn hàng chưa được cập nhật trong 20 phút`)
+        if (countError > 0) alert.error(`Có ${countError} đơn hàng chưa được cập nhật trong 40 phút`)
+        console.log(countWarn + " - " + countError)
+      }
+    }), 1000 * 60 * 5)
+    return () => window.clearInterval(intervalTask)
+  }, [])
+
+
+  useEffect(() => {
     if (menuVisibility && windowWidth < 1200) {
       setMenuVisibility(false)
     }
+    OrderServices.getOrder().then((res) => {
+      if (res.data.data) {
+        let countWarn = 0, countError = 0;
+        let warn = 1000 * 60 * 20
+        let error = 1000 * 60 * 40
+        for (const order of res.data.data) {
+          if (order.status != 'done' && order.status != 'cancel') {
+            let delay = Date.now() - order.updateAt
+            let isWarn = delay - warn
+            let isError = delay - error
+
+            if (isWarn > 0 && isError < 0) {
+              countWarn++
+            } else if (isError > 0) {
+              countError++
+            }
+          }
+        }
+        if (countWarn > 0) alert.warning(`Có ${countWarn} đơn hàng chưa được cập nhật trong 20 phút`)
+        if (countError > 0) alert.error(`Có ${countError} đơn hàng chưa được cập nhật trong 40 phút`)
+        console.log(countWarn + " - " + countError)
+      }
+    })
   }, [location])
 
   //** Sets Window Size & Layout Props
@@ -123,8 +176,7 @@ const VerticalLayout = props => {
   return (
     <div
       className={classnames(
-        `wrapper vertical-layout ${navbarWrapperClasses[navbarType] || 'navbar-floating'} ${
-          footerClasses[footerType] || 'footer-static'
+        `wrapper vertical-layout ${navbarWrapperClasses[navbarType] || 'navbar-floating'} ${footerClasses[footerType] || 'footer-static'
         }`,
         {
           // Modern Menu

@@ -21,6 +21,14 @@ const ShipperService = {
         params = params ? params : {}
         return newAxios.post('/shipper/shipper-detail', params).catch(err => console.log("Get Shipper Detail Service Fail: ", err.message));
     },
+    getJob: async (params) => {
+        params = params ? params : {}
+        return newAxios.post('/shipper/get-job', params).catch(err => console.log("Get job Service Fail: ", err.message));
+    },
+    updateJob: async (params) => {
+        params = params ? params : {}
+        return newAxios.post('/shipper/update-job', params).catch(err => console.log("Update job Service Fail: ", err.message));
+    },
 
 }
 export default ShipperService;
