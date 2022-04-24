@@ -15,6 +15,7 @@ import ChangePasswordModal from './ChangePasswordModal'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/pages/page-form-validation.scss'
+import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Reactstrap Imports
 import {
@@ -543,7 +544,7 @@ const UserManagement = () => {
                 <Label className='form-label' for='passwordMulti'>
                   Mật khẩu
                 </Label>
-                <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} />
+                <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} disabled/>
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='ownerMulti'>

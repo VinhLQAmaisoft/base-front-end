@@ -128,7 +128,13 @@ const Login = () => {
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
       }
-    }
+    } /* else if (currentUser == null && isAuth == true) {
+      toast.error(
+        <ToastErrorContent name='lỗi' content='Server ngừng hoạt động' />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+      setLoading(false)
+    }*/
   }, [currentUser, isAuth])
 
 

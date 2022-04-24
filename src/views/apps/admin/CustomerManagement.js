@@ -102,7 +102,7 @@ const CustomerManagement = () => {
     {
       name: 'Địa chỉ',
       sortable: true,
-      minWidth: '15 0px',
+      minWidth: '240px',
       selector: row => {
         if (row.address == undefined) {
           return 'undefined'
@@ -120,13 +120,13 @@ const CustomerManagement = () => {
     {
       name: 'Số đơn',
       sortable: true,
-      minWidth: '80px',
+      minWidth: '50px',
       selector: row => row.order
     },
     {
       name: 'Tổng tiền',
       sortable: true,
-      minWidth: '120px',
+      minWidth: '100px',
       selector: row => row.total
     },
   ]
