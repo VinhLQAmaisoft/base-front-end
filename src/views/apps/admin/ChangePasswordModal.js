@@ -60,7 +60,7 @@ const ChangePasswordModal = ({ show, setShow, data }) => {
         if (Object.values(submitData).every(field => field.length > 0)) {
           dispatch(updateUserPassword({
             _id: data._id,
-            // username: data.username,
+            username: data.username,
             newpassword: submitData.newPassword,
             repass: submitData.retypeNewPassword
           }))

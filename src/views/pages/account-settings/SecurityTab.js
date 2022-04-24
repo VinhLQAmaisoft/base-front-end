@@ -8,6 +8,8 @@ import { useForm, Controller } from 'react-hook-form'
 import { toast, Slide } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import InputPasswordToggle from '@components/input-password-toggle'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 const defaultValues = {
   newPassword: '',
@@ -15,7 +17,7 @@ const defaultValues = {
   retypeNewPassword: ''
 }
 
-const ToastContent = ({name, message}) => (
+const ToastContent = ({ name, message }) => (
   <Fragment>
     <div className='toastify-header'>
       <div className='title-wrapper'>
@@ -28,7 +30,9 @@ const ToastContent = ({name, message}) => (
   </Fragment>
 )
 
-const SecurityTab = ({data}) => {
+const MySwal = withReactContent(Swal)
+
+const SecurityTab = ({ data }) => {
   const SignupSchema = yup.object().shape({
     currentPassword: yup.string()
       .required('Bạn cần nhập mật khẩu hiện tại'),
@@ -45,6 +49,7 @@ const SecurityTab = ({data}) => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors }
   } = useForm({
     defaultValues,
@@ -71,24 +76,33 @@ const SecurityTab = ({data}) => {
     }
   }
 
-  console.log(userPasswordUpdated)
-
   useEffect(() => {
-    if (userPasswordUpdated != null ) {
+    if (userPasswordUpdated != null) {
       if (userPasswordUpdated.data == null && updateUserPasswordResult == true) {
         toast.error(
-          <ToastContent name='lỗi' message={userPasswordUpdated.message}/>,
+          <ToastContent name='lỗi' message={userPasswordUpdated.message} />,
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
       } else if (userPasswordUpdated.data != null && updateUserPasswordResult == true) {
-        toast.success(
-          <ToastContent name='thành công' message={userPasswordUpdated.message}/>,
-          { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-        )
+        return MySwal.fire({
+          title: 'Thành công!',
+          text: 'Bạn đã thay đổi mật khẩu!',
+          icon: 'success',
+          customClass: {
+            confirmButton: 'btn btn-primary'
+          },
+          buttonsStyling: false
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setValue('newPassword', '')
+            setValue('currentPassword', '')
+            setValue('retypeNewPassword', '')
+          }
+        })
       }
     }
   }, [userPasswordUpdated, updateUserPasswordResult])
-  
+
 
   return (
     <Fragment>
@@ -168,18 +182,11 @@ const SecurityTab = ({data}) => {
                 <Button type='submit' className='me-1' color='primary'>
                   Cập nhật
                 </Button>
-                <Button color='secondary' outline>
-                  Huỷ
-                </Button>
               </Col>
             </Row>
           </Form>
         </CardBody>
       </Card>
-      {/* <TwoFactorAuth />
-      <CreateApiKey />
-      <ApiKeysList />
-      <RecentDevices /> */}
     </Fragment>
   )
 }

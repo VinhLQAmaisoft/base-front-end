@@ -1,94 +1,10 @@
 // ** React Imports
-import { Fragment, useEffect } from 'react'
-import { Row, Col, Card, Form, Button, CardBody, CardTitle, CardHeader, FormFeedback, Label, Input, Badge } from 'reactstrap'
+import { Fragment } from 'react'
+import { Row, Col, Card, Button, CardBody, CardTitle, CardHeader, Label, Input, Badge } from 'reactstrap'
 import { UserServices } from '@services'
-import { useDispatch, useSelector } from 'react-redux'
-import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
-import { toast, Slide } from 'react-toastify'
-import { yupResolver } from '@hookform/resolvers/yup'
-import InputPasswordToggle from '@components/input-password-toggle'
 import { formatTimeStamp } from '../../../utility/Utils'
 
-const defaultValues = {
-  newPassword: '',
-  currentPassword: '',
-  retypeNewPassword: ''
-}
-
-const ToastContent = ({ name, message }) => (
-  <Fragment>
-    <div className='toastify-header'>
-      <div className='title-wrapper'>
-        <h6 className='toast-title fw-bold'>Thông báo {name}</h6>
-      </div>
-    </div>
-    <div className='toastify-body'>
-      <span>{message}</span>
-    </div>
-  </Fragment>
-)
-
 const DetailTab = ({ data }) => {
-  const SignupSchema = yup.object().shape({
-    currentPassword: yup.string()
-      .required('Bạn cần nhập mật khẩu hiện tại'),
-    newPassword: yup.string().min(8, 'Mật khẩu gồm ít nhất 8 kí tự')
-      .required('Bạn cần nhập mật khẩu')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, 'Mật khẩu gồm ít nhất 8 kí tự, 1 chữ hoa, 1 chữ thường'),
-    retypeNewPassword: yup.string()
-      .oneOf([yup.ref('newPassword'), null], 'Bạn hãy nhập đúng với mật khẩu vừa nhập'),
-  })
-  // ** Hooks
-  const dispatch = useDispatch()
-  const { userPasswordUpdated, updateUserPasswordResult } = useSelector(state => state.userReducer);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues,
-    mode: 'onChange',
-    resolver: yupResolver(SignupSchema)
-  })
-
-  const onSubmit = submitData => {
-    if (Object.values(submitData).every(field => field.length > 0)) {
-      dispatch(changeUserPassword({
-        username: data.username,
-        oldpassword: submitData.currentPassword,
-        newpassword: submitData.newPassword,
-        repass: submitData.retypeNewPassword
-      }))
-    } else {
-      for (const key in data) {
-        if (data[key].length === 0) {
-          setError(key, {
-            type: 'manual'
-          })
-        }
-      }
-    }
-  }
-
-  console.log(userPasswordUpdated)
-
-  // useEffect(() => {
-  //   if (userPasswordUpdated != null) {
-  //     if (userPasswordUpdated.data == null && updateUserPasswordResult == true) {
-  //       toast.error(
-  //         <ToastContent name='lỗi' message={userPasswordUpdated.message} />,
-  //         { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-  //       )
-  //     } else if (userPasswordUpdated.data != null && updateUserPasswordResult == true) {
-  //       // toast.success(
-  //       //   <ToastContent name='thành công' message={userPasswordUpdated.message} />,
-  //       //   { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-  //       // )
-  //     }
-  //   }
-  // }, [userPasswordUpdated, updateUserPasswordResult])
 
   const handleUpdateSyntax =async () => {
     let dom = Array.from(document.getElementsByClassName('replySyntax'));
@@ -135,10 +51,6 @@ const DetailTab = ({ data }) => {
           </Row>
         </CardBody>
       </Card>
-      {/* <TwoFactorAuth />
-      <CreateApiKey />
-      <ApiKeysList />
-      <RecentDevices /> */}
     </Fragment >
   )
 }

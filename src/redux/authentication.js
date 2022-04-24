@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { sendUserLogin, sendUserSignup } from '../services/auth/index'
+import { sendMailResetPassword, sendUserLogin, sendUserSignup } from '../services/auth/index'
 
 function eraseCookie(name) {   
   document.cookie = name+'=; Max-Age=-99999999;';  
@@ -10,6 +10,8 @@ const initialState = {
   isAuth: false,
   isSignup: false,
   signUpResult: null,
+  sendMail: false,
+  sendMailResult: null
 }
 
 const slice = createSlice({
@@ -48,6 +50,16 @@ const slice = createSlice({
     });
     builder.addCase(sendUserSignup.rejected, (state, action) => {
       state.isSignup = false;
+      console.log(state, action)
+    });
+    //Send mail reset password
+    builder.addCase(sendMailResetPassword.fulfilled, (state, action) => {
+      state.sendMail = true;
+      state.sendMailResult = action.payload
+      console.log(state, action)
+    });
+    builder.addCase(sendMailResetPassword.rejected, (state, action) => {
+      state.sendMail = false;
       console.log(state, action)
     });
   }

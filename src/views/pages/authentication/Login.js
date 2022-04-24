@@ -1,10 +1,10 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSkin } from '@hooks/useSkin'
 import { Link, useHistory } from 'react-router-dom'
 import InputPasswordToggle from '@components/input-password-toggle'
 import { useForm, Controller } from 'react-hook-form'
-import { Row, Col, CardTitle, CardText, Form, Label, Input, Button, FormFeedback } from 'reactstrap'
+import { Row, Col, CardTitle, CardText, Form, Label, Input, Button, FormFeedback, Spinner } from 'reactstrap'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import '@styles/react/pages/page-authentication.scss'
@@ -56,7 +56,7 @@ const Login = () => {
     loginUsername: yup.string().required('Bạn cần nhập tên tài khoản'),
     loginPassword: yup.string().required('Bạn cần nhập mật khẩu')
   })
-
+  const [loading, setLoading] = useState(false)
   const { skin } = useSkin()
   const dispatch = useDispatch()
   const history = useHistory()
@@ -74,7 +74,8 @@ const Login = () => {
   const onSubmit = data => {
     if (Object.values(data).every(field => field.length > 0)) {
       console.log({ username: data.loginUsername, password: data.loginPassword })
-      dispatch(sendUserLogin({ username: data.loginUsername, password: data.loginPassword }))
+      setLoading(true)
+      setTimeout(() => { dispatch(sendUserLogin({ username: data.loginUsername, password: data.loginPassword })) }, 2000)
       console.log(currentUser)
     } else {
       for (const key in data) {
@@ -95,6 +96,7 @@ const Login = () => {
           <ToastErrorContent name='lỗi' content={currentUser.message} />,
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
+        setLoading(false)
       } else {
         setCookie('token', currentUser.data.token, 99)
         const userData = {
@@ -126,7 +128,13 @@ const Login = () => {
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
       }
-    }
+    } /* else if (currentUser == null && isAuth == true) {
+      toast.error(
+        <ToastErrorContent name='lỗi' content='Server ngừng hoạt động' />,
+        { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
+      )
+      setLoading(false)
+    }*/
   }, [currentUser, isAuth])
 
 
@@ -202,7 +210,8 @@ const Login = () => {
               </div>
 
               <Button color='primary' block>
-                Đăng nhập
+                {loading ? <div><Spinner color='white' size='sm' />
+                  <span className='ms-50'>Đang tải...</span></div> : 'Đăng nhập'}
               </Button>
             </Form>
             <p className='text-center mt-2'>
