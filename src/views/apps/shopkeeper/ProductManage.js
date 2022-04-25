@@ -6,6 +6,8 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
 // import { isNum } from 'react-toastify/dist/utils'
+import '@styles/react/libs/tables/react-dataTable-component.scss'
+
 export default function ProductManage() {
     const [currentPage, setCurrentPage] = useState(0)
     const [product, setProduct] = useState([])
@@ -249,7 +251,7 @@ export default function ProductManage() {
     )
 
     const renderKeywords = (listKeywords) => {
-        return listKeywords.map(keyword => (<Badge className='me-1' color='info' keyword={keyword}>{keyword}</Badge>))
+        return listKeywords.map(keyword => (<Badge className='me-1' color='secondary' keyword={keyword}>{keyword}</Badge>))
     }
     const renderDetailKeywords = (listKeywords) => {
         if (listKeywords) {
@@ -385,7 +387,7 @@ export default function ProductManage() {
                             </Row>
                         </CardBody>
                         <CardFooter >
-                            <Button color='success' onClick={() => { addProduct() }}>Thêm Sản Phẩm</Button>
+                            <Button color='primary' onClick={() => { addProduct() }}>Thêm Sản Phẩm</Button>
                         </CardFooter>
                     </Card>
                 </Col>

@@ -9,6 +9,9 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
 // import { isNum } from 'react-toastify/dist/utils'
+
+import '@styles/react/libs/charts/apex-charts.scss'
+
 export default function ProductManage() {
     const [modal, setModal] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)

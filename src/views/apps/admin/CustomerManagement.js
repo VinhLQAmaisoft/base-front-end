@@ -9,6 +9,8 @@ import OrderDetailModal from './OrderDetailModal'
 import { toast, Slide } from 'react-toastify'
 // import { Link } from 'react-router-dom'
 // ** Reactstrap Imports
+import '@styles/react/libs/tables/react-dataTable-component.scss'
+
 import {
   Row,
   Col,
@@ -174,38 +176,18 @@ const CustomerManagement = () => {
 
     if (value.length) {
       updatedData = customerData.filter(item => {
+        console.log(item.address)
         const includes =
           item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
           item.fbid.toLowerCase().includes(value.toLowerCase()) ||
           item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
-          item.address.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.address.filter(i => {
+            console.log(i)
+            i.toLowerCase().includes(value.toLowerCase())
+          }) ||
           item.order.toLowerCase().includes(value.toLowerCase()) ||
           item.total.toLowerCase().includes(value.toLowerCase())
         console.log(includes)
-        if (includes) {
-          return includes
-        } else return null
-      })
-      setFilteredData(updatedData)
-      setSearchValue(value)
-    }
-  }
-
-  const handleOrderFilter = e => {
-    const value = e.target.value
-    let updatedData = []
-    setSearchValue(value)
-
-    if (value.length) {
-      updatedData = customerData.filter(item => {
-        const includes =
-          item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
-          item.fbid.toLowerCase().includes(value.toLowerCase()) ||
-          item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
-          item.address.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
-          item.order.toLowerCase().includes(value.toLowerCase()) ||
-          item.total.toLowerCase().includes(value.toLowerCase())
-
         if (includes) {
           return includes
         } else return null
@@ -277,7 +259,7 @@ const CustomerManagement = () => {
 
     const columnDelimiter = ','
     const lineDelimiter = '\n'
-    const keys = Object.keys(data[0])
+    const keys = Object.keys(customerData[0])
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -304,7 +286,7 @@ const CustomerManagement = () => {
     let csv = convertArrayOfObjectsToCSV(array)
     if (csv === null) return
 
-    const filename = 'export.csv'
+    const filename = 'Dữ liệu khách hàng.csv'
 
     if (!csv.match(/^data:text\/csv/i)) {
       csv = `data:text/csv;charset=utf-8,${csv}`
@@ -411,25 +393,9 @@ const CustomerManagement = () => {
                 <span className='align-middle ms-50'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer size={15} />
-                  <span className='align-middle ms-50'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(data)}>
+                <DropdownItem className='w-100' onClick={() => downloadCSV(customerData)}>
                   <FileText size={15} />
                   <span className='align-middle ms-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid size={15} />
-                  <span className='align-middle ms-50'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File size={15} />
-                  <span className='align-middle ms-50'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy size={15} />
-                  <span className='align-middle ms-50'>Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledButtonDropdown>
@@ -471,19 +437,6 @@ const CustomerManagement = () => {
         <CardHeader>
           <CardTitle tag='h4'>Chi tiết</CardTitle>
         </CardHeader>
-        <Row className='justify-content-end mx-0'>
-          <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
-            <Input
-              className='dataTable-filter mb-50'
-              type='text'
-              bsSize='sm'
-              id='search-input'
-              placeholder='Tìm kiếm'
-              value={searchOrderValue}
-              onChange={handleOrderFilter}
-            />
-          </Col>
-        </Row>
         <div className='react-dataTable'>
           <DataTable
             noHeader

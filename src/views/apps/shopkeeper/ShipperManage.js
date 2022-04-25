@@ -7,6 +7,8 @@ import { ChevronDown } from 'react-feather'
 import ReactPaginate from 'react-paginate'
 import AddShipperModal from '@my-components/Modals/AddShipperModal'
 // import { isNum } from 'react-toastify/dist/utils'
+
+
 export default function ProductManage() {
     const [modal, setModal] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
@@ -203,7 +205,7 @@ export default function ProductManage() {
                     <Card className="p-1">
                         <CardTitle style={{ display: "flex", justifyContent: 'space-between' }}>
                             Danh Sách Shipper Của Bạn
-                            <Button color="success" onClick={() => { handleModal() }}>
+                            <Button color="primary" onClick={() => { handleModal() }}>
                                 Thêm Shipper
                             </Button>
                         </CardTitle>

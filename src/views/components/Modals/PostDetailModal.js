@@ -64,7 +64,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
         const result = [];
         for (const product of productList) {
             result.push((
-                <Badge color='info' className="m-1 fs-6" key={product._id}>{product.title} - {formatMoney(product.price)}</Badge>
+                <Badge color='primary' className="m-1 fs-6" key={product._id}>{product.title} - {formatMoney(product.price)}</Badge>
             ))
         }
         return result
@@ -108,7 +108,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
             let rating = match == -1 ? -1 : match == 0 ? 0 : 1;
             if (commentFilter.includes(rating))
                 result.push(
-                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#fdfdfd' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={comment.fb_id + "-" + result.length}>
+                    <Card style={{ "backgroundColor": (match == -1 ? '#fcefee' : match == 0 ? '#fdfdfd' : '#e2f3f5') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={comment.fb_id + "-" + result.length}>
                         <CardTitle className="text-light mb-0">
                             <a href={`https://facebook.com/${comment.author.id}`} target="_blank" className="ms-1">
                                 {comment.author.name}
@@ -165,13 +165,13 @@ export default function PostDetailTab({ post, open, handleModal }) {
                 <CardTitle className="text-primary mb-0 fs-4">
                     Thông tin bài viết
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}
                         <Col sm="8" className="d-flex mb-1">
                             <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
-                            <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
+                            <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-primary fs-6">{post.group.name}</a>
                         </Col >
                         <Col sm="4">
                             <a target="_blank" href={`https://facebook.com/${post.fb_id}`}>
@@ -220,7 +220,7 @@ export default function PostDetailTab({ post, open, handleModal }) {
                     <b className="me-1">Comment</b>
                     {renderCommentFilter(commentFilter)}
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     {/* {commentRender} */}
                     {comments && renderComment(comments)}

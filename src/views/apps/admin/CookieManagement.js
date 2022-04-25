@@ -24,6 +24,8 @@ import {
   Badge
 } from 'reactstrap'
 
+import '@styles/react/libs/tables/react-dataTable-component.scss'
+
 const ToastContent = ({ name, message }) => (
   <Fragment>
     <div className='toastify-header'>
