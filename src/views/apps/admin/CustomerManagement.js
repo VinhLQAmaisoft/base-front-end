@@ -457,7 +457,7 @@ const CustomerManagement = () => {
         </div>
       </Card>
       {selectedData && <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData} />}
-    </Fragment>
+      </Fragment>
   )
 }
 
