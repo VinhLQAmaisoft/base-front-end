@@ -122,6 +122,10 @@ const shopkeeperRoutes = [
     component: lazy(() => import('../../views/apps/shipper/OrderManage')),
     layout: 'VerticalLayout'
   },
+  {
+    path: '/shopkeeper/customer-management',
+    component: lazy(() => import('../../views/apps/admin/CustomerManagement'))
+  }
 ]
 
 export { DefaultRoute, TemplateTitle, Routes, adminRoutes, shopkeeperRoutes, outsiderRoutes, shipperRoutes }

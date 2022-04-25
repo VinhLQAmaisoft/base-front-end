@@ -72,6 +72,12 @@ export const shopkeeperNavigation = [
     title: 'Quản Lý Số Liệu',
     icon: <BarChart size={20} />,
     navLink: '/shopkeeper/figure-manage'
+  },
+  {
+    id: 'customermanage',
+    title: 'Quản lý khách hàng',
+    icon: <Users size={20} />,
+    navLink: '/shopkeeper/customer-management'
   }
 
 ]
