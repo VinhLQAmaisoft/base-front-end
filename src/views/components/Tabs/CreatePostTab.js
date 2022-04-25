@@ -85,6 +85,7 @@ export default function CreatePostTab(props) {
     }
 
     const uploadPost = async () => {
+        setLoading(true)
         let attachments = await uploadAttachment().then(res => res.data.data.map(path => process.env.REACT_APP_BASE_SERVER_URL + path)).catch(err => { console.log("Upload Ảnh thất bại"); return [] })
         let content = document.getElementById("upload-content").value
         let shipCost = parseInt(document.getElementById("shipCost").value);
@@ -94,18 +95,19 @@ export default function CreatePostTab(props) {
         console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
             PostServices.uploadPost({
-                content: content + '\n #3FS',
+                content: content + '\n #3SF',
                 group: selectedGroup,
                 products: selectedProducts,
                 attachments
             }).then(data => {
                 if (data.data.data) {
                     alert.success(data.data.message)
-                    // setTimeout(() => window.location.reload(), 4000)
+                    setTimeout(() => window.location.reload(), 4000)
                 } else
                     alert.error(data.data.message)
             })
         }
+        setLoading(false)
     }
 
     const uploadAttachment = () => {
@@ -142,7 +144,7 @@ export default function CreatePostTab(props) {
                 <CardTitle className="text-primary mb-0 fs-4">
                     Cookie
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     <Row className="justify-content-center align-items-center">
                         <Col sm="4">
@@ -172,7 +174,7 @@ export default function CreatePostTab(props) {
                 <CardTitle className="text-primary mb-0 fs-4">
                     Thông tin bài viết
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}

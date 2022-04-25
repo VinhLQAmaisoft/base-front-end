@@ -131,6 +131,7 @@ const UserManagement = () => {
 
     if (value.length) {
       updatedData = userData.filter(item => {
+        console.log(item)
         const includes =
           item.full_name.toLowerCase().includes(value.toLowerCase()) ||
           item.phone.toLowerCase().includes(value.toLowerCase()) ||

@@ -93,7 +93,7 @@ export default function PostDetailTab(props) {
     }
 
     async function handleUpdate() {
-        let content = document.getElementById('content').value;
+        let content = document.getElementById('content').value + '\n #3SF';
         if (content == post.content) {
             alert.warning('Nội dung chưa được thay đổi');
             return
@@ -397,7 +397,7 @@ export default function PostDetailTab(props) {
                 <input type="hidden" value={isComment} id="isCommentDot" />
                 <input type="hidden" value={isScan} id="isScanComment" />
 
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     <Row >
                         {/* NHÓM CHỈ ĐỊNH */}
@@ -451,7 +451,7 @@ export default function PostDetailTab(props) {
                                 id="content"
                                 name="text"
                                 type="textarea"
-                                defaultValue={post.content}
+                                defaultValue={post.content.replace('#3SF','')}
                                 style={{ minHeight: '200px', marginBottom: '5px' }}
                                 editable="true"
                                 className="mb-1"
@@ -485,7 +485,7 @@ export default function PostDetailTab(props) {
                     <b className="me-1">Comment</b>
                     {renderCommentFilter(commentFilter)}
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     {/* {commentRender} */}
                     {comments.length == 0 && (<Row><Col sm="12" className="text-center"><Spinner animation="border" variant="primary" /></Col></Row>)}

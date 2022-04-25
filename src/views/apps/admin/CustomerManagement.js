@@ -390,7 +390,7 @@ const CustomerManagement = () => {
     <Fragment>
       <Card>
         <CardHeader className='flex-md-row flex-column align-md-items-center align-items-start border-bottom'>
-          <div className='d-flex mt-md-0 mt-1'>
+          {/* <div className='d-flex mt-md-0 mt-1'>
             <UncontrolledButtonDropdown>
               <DropdownToggle color='secondary' caret outline>
                 <Share size={15} />
@@ -403,7 +403,10 @@ const CustomerManagement = () => {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledButtonDropdown>
-          </div>
+          </div> */}
+          <CardTitle>
+            Danh sách khách hàng
+          </CardTitle>
         </CardHeader>
         <Row className='justify-content-end mx-0'>
           <Col className='d-flex align-items-center justify-content-end mt-1' md='3' sm='12'>
@@ -428,7 +431,7 @@ const CustomerManagement = () => {
             sortIcon={<ChevronDown size={10} />}
             paginationDefaultPage={currentPage + 1}
             paginationComponent={CustomPagination}
-            data={searchValue.length ? filteredData : customerData}
+            data={searchValue.length > 0 ? filteredData : customerData}
             onRowClicked={handleRowClicked}
             conditionalRowStyles={conditionalRowStyles}
             pointerOnHover

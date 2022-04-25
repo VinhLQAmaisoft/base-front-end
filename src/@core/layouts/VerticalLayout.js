@@ -109,29 +109,29 @@ const VerticalLayout = props => {
     if (menuVisibility && windowWidth < 1200) {
       setMenuVisibility(false)
     }
-    OrderServices.getOrder().then((res) => {
-      if (res.data.data) {
-        let countWarn = 0, countError = 0;
-        let warn = 1000 * 60 * 20
-        let error = 1000 * 60 * 40
-        for (const order of res.data.data) {
-          if (order.status != 'done' && order.status != 'cancel') {
-            let delay = Date.now() - order.updateAt
-            let isWarn = delay - warn
-            let isError = delay - error
+    // OrderServices.getOrder().then((res) => {
+    //   if (res.data.data) {
+    //     let countWarn = 0, countError = 0;
+    //     let warn = 1000 * 60 * 20
+    //     let error = 1000 * 60 * 40
+    //     for (const order of res.data.data) {
+    //       if (order.status != 'done' && order.status != 'cancel') {
+    //         let delay = Date.now() - order.updateAt
+    //         let isWarn = delay - warn
+    //         let isError = delay - error
 
-            if (isWarn > 0 && isError < 0) {
-              countWarn++
-            } else if (isError > 0) {
-              countError++
-            }
-          }
-        }
-        if (countWarn > 0) alert.warning(`Có ${countWarn} đơn hàng chưa được cập nhật trong 20 phút`)
-        if (countError > 0) alert.error(`Có ${countError} đơn hàng chưa được cập nhật trong 40 phút`)
-        console.log(countWarn + " - " + countError)
-      }
-    })
+    //         if (isWarn > 0 && isError < 0) {
+    //           countWarn++
+    //         } else if (isError > 0) {
+    //           countError++
+    //         }
+    //       }
+    //     }
+    //     if (countWarn > 0) alert.warning(`Có ${countWarn} đơn hàng chưa được cập nhật trong 20 phút`)
+    //     if (countError > 0) alert.error(`Có ${countError} đơn hàng chưa được cập nhật trong 40 phút`)
+    //     console.log(countWarn + " - " + countError)
+    //   }
+    // })
   }, [location])
 
   //** Sets Window Size & Layout Props
