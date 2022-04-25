@@ -4,7 +4,7 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 import { getAllCustomer, getAllCustomerOrderDetail } from '../../../services/admin/index'
 import { useDispatch, useSelector } from 'react-redux'
-import { formatTimeStamp } from '../../../utility/Utils'
+import { formatTimeStamp, alert, formatMoney } from '../../../utility/Utils'
 import OrderDetailModal from './OrderDetailModal'
 import { toast, Slide } from 'react-toastify'
 // import { Link } from 'react-router-dom'
@@ -37,7 +37,7 @@ const ToastContent = ({ name, message }) => (
 )
 
 const CustomerManagement = () => {
-  const defaultSelectedData = { data: '', dtsg: '', uid: '', token: '', status: '' }
+  // const defaultSelectedData = { data: '', dtsg: '', uid: '', token: '', status: '' }
   // ** States
   const [modal, setModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
@@ -48,7 +48,7 @@ const CustomerManagement = () => {
   const [filteredOrderData, setFilteredOrderData] = useState([])
   const [customerData, setCustomerData] = useState([])
   const [customerOrderData, setCustomerOrderData] = useState([])
-  const [selectedData, setSelectedData] = useState(defaultSelectedData)
+  const [selectedData, setSelectedData] = useState(null)
 
   const { allCustomer, allCustomerOrder, getResult, getCustomerOrderResult } = useSelector(state => state.adminReducer);
 
@@ -127,7 +127,8 @@ const CustomerManagement = () => {
       name: 'Tổng tiền',
       sortable: true,
       minWidth: '100px',
-      selector: row => row.total
+      selector: row => row.total,
+      format: row => formatMoney(row.total)
     },
   ]
 
@@ -136,13 +137,15 @@ const CustomerManagement = () => {
       name: 'STT',
       sortable: true,
       minWidth: '150px',
-      selector: row => row.stt
+      selector: row => row.id,
+      format: row => row.stt
     },
     {
       name: 'Giá trị',
       sortable: true,
       minWidth: '200px',
-      selector: row => row.total
+      selector: row => row.total,
+      format: row => formatMoney(row.total)
     },
     {
       name: 'SĐT',
@@ -385,10 +388,11 @@ const CustomerManagement = () => {
 
   useEffect(() => {
     console.log(getCustomerOrderResult, allCustomerOrder)
-    if (getCustomerOrderResult == true && allCustomerOrder !== null) {
+    if (getCustomerOrderResult == true && allCustomerOrder.data !== null) {
       if (allCustomerOrder.data != null) {
-        const data = allCustomerOrder.map((item, key) => {
-          return { stt: key + 1, customerName: item.customerName, total: item.total, phone: item.phone, address: item.address, createAt: formatTimeStamp(item.createAt), status: item.status }
+        alert.success(allCustomerOrder.message)
+        const data = allCustomerOrder.data.map((item, key) => {
+          return { stt: key + 1, ...item, createAt: formatTimeStamp(item.createAt), status: item.status }
         })
         setCustomerOrderData(data)
       } else {
@@ -411,25 +415,9 @@ const CustomerManagement = () => {
                 <span className='align-middle ms-50'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer size={15} />
-                  <span className='align-middle ms-50'>Print</span>
-                </DropdownItem>
                 <DropdownItem className='w-100' onClick={() => downloadCSV(data)}>
                   <FileText size={15} />
                   <span className='align-middle ms-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid size={15} />
-                  <span className='align-middle ms-50'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File size={15} />
-                  <span className='align-middle ms-50'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy size={15} />
-                  <span className='align-middle ms-50'>Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledButtonDropdown>
@@ -499,7 +487,7 @@ const CustomerManagement = () => {
           />
         </div>
       </Card>
-      <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData} />
+      {selectedData && <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData} />}
     </Fragment>
   )
 }
