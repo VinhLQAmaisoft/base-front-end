@@ -142,7 +142,7 @@ export default function CreatePostTab(props) {
                 <CardTitle className="text-primary mb-0 fs-4">
                     Cookie
                 </CardTitle>
-                <hr className="bg-info" />
+                <hr className="bg-primary" />
                 <CardBody>
                     <Row className="justify-content-center align-items-center">
                         <Col sm="4">
