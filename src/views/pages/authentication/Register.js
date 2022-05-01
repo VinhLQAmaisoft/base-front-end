@@ -23,12 +23,12 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/pages/page-form-validation.scss'
 
 const defaultValues = {
-  fullname: 'Tran Duc Anh',
-  email: 'dtran3565@gmail.com',
-  username: 'admin10',
-  password: 'Tda123456',
-  phone: '0866585470',
-  repeatpassword: 'Tda123456',
+  fullname: '',
+  email: '',
+  username: '',
+  password: '',
+  phone: '',
+  repeatpassword: '',
   birthdate: new Date(),
   role: 1
 }

@@ -46,8 +46,8 @@ const setCookie = (cname, cvalue, exdays) => {
 }
 
 const defaultValues = {
-  loginPassword: 'Tda123456789',
-  loginUsername: 'admin'
+  loginPassword: '',
+  loginUsername: ''
 }
 
 const Login = () => {

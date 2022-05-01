@@ -283,7 +283,7 @@ export default function PostDetailTab(props) {
             let rating = match == -1 ? -1 : match == 0 ? 0 : 1;
             if (commentFilter.includes(rating))
                 result.push(
-                    <Card style={{ "backgroundColor": (match == -1 ? '#3a3b3c' : match == 0 ? '#674ea7' : '#45818e') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={JSON.stringify(comment)}>
+                    <Card style={{ "backgroundColor": (match == -1 ? '#fcefee' : match == 0 ? '#fdfdfd' : '#e2f3f5') }} className={`${comment.parentId ? 'ms-5' : ''} p-1 mb-1`} key={JSON.stringify(comment)}>
                         <CardTitle className="text-light mb-0">
                             <a href={`https://facebook.com/${comment.author.id}`} target="_blank" className="ms-1">
                                 {comment.author.name}
@@ -307,7 +307,7 @@ export default function PostDetailTab(props) {
 
                                 </Col>
                             </Row>
-                            {comment.content}
+                            <p style={{color:'#2d4059'}} >{comment.content}</p>
                         </CardBody>
                         <CardFooter>
                             {match > 0 && comment.type == 0 && <Button color="success" size="sm" outline={true} onClick={() => createOrder(comment)} className="create-button me-1">

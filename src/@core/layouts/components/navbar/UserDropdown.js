@@ -16,6 +16,8 @@ import { User, Mail, CheckSquare, MessageSquare, Settings, CreditCard, HelpCircl
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap'
 
 // ** Default Avatar Image
+import shipperAvatar from '@src/assets/images/portrait/small/cute-shipper-avatar.jpg'
+import shopkeeperAvatar from '@src/assets/images/portrait/small/cute-shopkeeper-avatar.jpg'
 import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
 
 const UserDropdown = () => {
@@ -23,18 +25,23 @@ const UserDropdown = () => {
   const dispatch = useDispatch()
   const userData = JSON.parse(localStorage.getItem('userData'))
   let role
+  let userAvatar
   if (userData.type === 0) {
     role = 'Người giao hàng'
+    userAvatar = shipperAvatar
   } else if (userData.type === 1) {
     role = 'Chủ cửa hàng'
+    userAvatar = shopkeeperAvatar
   } else if (userData.type === 2) {
     role = 'Admin'
+    userAvatar = shipperAvatar
   } else {
-
+    role = ''
+    userAvatar = defaultAvatar
   }
 
 
-  const userAvatar =  defaultAvatar
+ 
 
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
