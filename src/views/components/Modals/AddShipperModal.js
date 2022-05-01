@@ -100,7 +100,7 @@ const AddShipperModal = ({ open, handleModal }) => {
                 <h5 className='modal-title'>Thêm Shipper</h5>
             </ModalHeader>
             <ModalBody className='flex-grow-1'>
-                <Row>
+                {/* <Row>
                     <Col sm={12}>
                         <Input
                             className='mb-1'
@@ -116,7 +116,7 @@ const AddShipperModal = ({ open, handleModal }) => {
                             Liên hệ shipper để lấy ID của họ!
                         </Label>
                     </Col>
-                </Row>
+                </Row> */}
                 <Row>
                     <Col className='react-dataTable'>
                         <Card className="p-1">
@@ -140,14 +140,14 @@ const AddShipperModal = ({ open, handleModal }) => {
                 </Row>
             </ModalBody>
             <ModalFooter>
-                <Button
+                {/* <Button
                     className='me-1'
                     color='primary'
                     onClick={addShipper}
                     disabled={selectedId == ""}
                 >
                     Thêm Shipper
-                </Button>
+                </Button> */}
                 <Button color='secondary' onClick={handleModal} outline>
                     Hủy
                 </Button>

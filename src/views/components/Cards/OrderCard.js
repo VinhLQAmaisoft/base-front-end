@@ -21,7 +21,7 @@ import {
     Collapse
 } from 'reactstrap'
 import { User, Phone, Home } from 'react-feather'
-import { formatMoney,alert } from '@utils'
+import { formatMoney, alert } from '@utils'
 import UpdateOrderModal from '@my-components/Modals/UpdateOrderModal'
 import { OrderServices } from '@services'
 export default function OrderCard({ baseOrder, products, shipperOptions }) {
@@ -177,7 +177,7 @@ export default function OrderCard({ baseOrder, products, shipperOptions }) {
                 </CardHeader>
                 <CardBody className='text-center p-1'>
                     {/* CONTENT */}
-                    <Row className='mb-1'>
+                    <Row className='mb-1 text-left'>
                         <Col sm={12} className='text-center'><User size={18} /> Khách: <b>{order.customerName}</b></Col>
                         <Col sm={12} className='text-center'><Phone size={18} /> SĐT:  <b>{order.phone}</b> </Col>
                         <Col sm={12} className='text-center'><Home size={18} /> Địa chỉ:<b>{order.address}</b></Col>

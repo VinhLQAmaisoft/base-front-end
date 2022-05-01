@@ -131,16 +131,6 @@ const OrderManage = () => {
 
   const sortOptions = [
     {
-      key: "createAt",
-      value: -1,
-      label: "Mới nhất"
-    },
-    {
-      key: "createAt",
-      value: 1,
-      label: "Cũ nhất"
-    },
-    {
       key: "updateAt",
       value: -1,
       label: "Mới cập nhật"

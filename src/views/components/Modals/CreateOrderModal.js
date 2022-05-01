@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import Flatpickr from 'react-flatpickr'
 import { User, Briefcase, Mail, Calendar, DollarSign, X } from 'react-feather'
 import { formatMoney, alert } from '@utils'
-import { OrderServices,CommentServices } from '@services'
+import { OrderServices, CommentServices } from '@services'
 
 // ** Reactstrap Imports
 import { Modal, Input, Label, Button, ModalHeader, ModalBody, InputGroup, InputGroupText, Row, Col, FormGroup, Form, UncontrolledButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap'
@@ -18,7 +18,7 @@ const AddNewModal = ({ open, handleModal, comment, setComments, products }) => {
     const [selectedProduct, setSelectedProduct] = useState({})
     const [productOptions, setProductOptions] = useState(products ? products : [])
     const [tempListProduct, setTempListProduct] = useState(comment?.data?.products ? comment?.data?.products : [])
-    // console.log("tempListProduct: ", tempListProduct)
+    // console.log("Selected Comment: ", comment)
     // ** Custom close btn
     const CloseBtn = <X className='cursor-pointer' size={15} onClick={handleModal} />
     const baseConfirm = ['oki nha', 'okee', 'mình đang làm nha', 'oki', 'oke']
@@ -26,7 +26,13 @@ const AddNewModal = ({ open, handleModal, comment, setComments, products }) => {
         if (comment?.data?.products && comment?.data?.products.length > 0) {
             setTempListProduct(comment?.data?.products);
         }
-    },[])
+    }, [])
+
+    useEffect(() => {
+        console.log("Comment: ", comment)
+        comment && setTempListProduct(comment?.data?.products ? comment?.data?.products : [])
+        console.log("Product : ", tempListProduct)
+    }, [open])
 
     useEffect(() => {
         let option = [];
@@ -64,7 +70,7 @@ const AddNewModal = ({ open, handleModal, comment, setComments, products }) => {
 
     const addProduct = () => {
         let quantity = document.getElementById("p-price").value.trim();
-        console.log(`${tempListProduct.length } Add  `, selectedProduct, ` * ${quantity} `)
+        console.log(`${tempListProduct.length} Add  `, selectedProduct, ` * ${quantity} `)
 
         if (!selectedProduct || /\D/.test(quantity) || quantity == "") {
             return alert.error("Thông tin không phù hợp");

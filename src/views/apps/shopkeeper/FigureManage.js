@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { ShipperServices, OrderServices } from '@services'
-import { formatMoney, formatTimeStamp } from '@utils'
+import { formatMoney, formatTimeStamp,alert } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, CardSubtitle, CardHeader, Col, Input, Label, Row } from 'reactstrap'
 import Chart from 'react-apexcharts'
 import Flatpickr from 'react-flatpickr'
@@ -11,6 +11,7 @@ import ReactPaginate from 'react-paginate'
 // import { isNum } from 'react-toastify/dist/utils'
 
 import '@styles/react/libs/charts/apex-charts.scss'
+
 
 export default function ProductManage() {
     const [modal, setModal] = useState(false)
@@ -33,6 +34,7 @@ export default function ProductManage() {
         OrderServices.getOrder('').then(data => {
             let OrderData = []
             if (data.data.data) {
+                alert.success(data.data.message)
                 OrderData = data.data.data
                 setOrders(OrderData)
                 let newProducts = []
@@ -54,9 +56,12 @@ export default function ProductManage() {
                 }
                 console.log("Số sản phẩm tìm thấy: ", newProducts.length)
                 setProducts(newProducts)
+            } else {
+                alert.error(data.data.message)
             }
             ShipperServices.getShipper().then(data => {
                 if (data.data.data) {
+                    alert.success(data.data.message)
                     for (let shipper of data.data.data) {
                         let count = 0;
                         let salary = 0;
@@ -70,6 +75,9 @@ export default function ProductManage() {
                         shipper.salary = salary;
                     }
                     setShippers(data.data.data)
+                } else {
+                    console.log('!!!!!!!!!!!')
+                    alert.error(data.data.message)
                 }
             })
         })

@@ -23,6 +23,7 @@ import {
   DropdownItem,
   DropdownToggle,
   UncontrolledButtonDropdown,
+  Badge,
 } from 'reactstrap'
 
 const ToastContent = ({ name, message }) => (
@@ -138,16 +139,25 @@ const CustomerManagement = () => {
     {
       name: 'STT',
       sortable: true,
-      minWidth: '150px',
+      minWidth: '50px',
       selector: row => row.id,
       format: row => row.stt
     },
     {
       name: 'Giá trị',
       sortable: true,
-      minWidth: '200px',
+      minWidth: '100px',
       selector: row => row.total,
       format: row => formatMoney(row.total)
+    },
+    {
+      name: "Trạng thái",
+      sortable: true,
+      minWidth: '100px',
+      selector: row => row.status,
+      format: row => <Badge className='text-capitalize' color={statusColors[row.status]}>
+        {statusLabel[row.status]}
+      </Badge>
     },
     {
       name: 'SĐT',
@@ -282,7 +292,20 @@ const CustomerManagement = () => {
 
     return result
   }
-
+  const statusColors = {
+    done: 'light-secondary',
+    cancel: 'light-danger',
+    shipping: 'light-warning',
+    created: 'light-info',
+    ready: 'light-success'
+  }
+  const statusLabel = {
+    done: 'Hoàn Thành',
+    cancel: 'Hủy Đơn',
+    shipping: 'Đang Giao',
+    created: 'Vừa Tạo',
+    ready: 'Sẵn Sàng'
+  }
   // ** Downloads CSV
   function downloadCSV(array) {
     const link = document.createElement('a')
@@ -388,7 +411,7 @@ const CustomerManagement = () => {
 
   return (
     <Fragment>
-      <Card>
+      <Card className="p-1">
         <CardHeader className='flex-md-row flex-column align-md-items-center align-items-start border-bottom'>
           {/* <div className='d-flex mt-md-0 mt-1'>
             <UncontrolledButtonDropdown>
@@ -440,7 +463,7 @@ const CustomerManagement = () => {
           />
         </div>
       </Card>
-      <Card>
+      <Card className="p-1">
         <CardHeader>
           <CardTitle tag='h4'>Chi tiết</CardTitle>
         </CardHeader>
@@ -460,7 +483,7 @@ const CustomerManagement = () => {
         </div>
       </Card>
       {selectedData && <OrderDetailModal show={modal} setShow={setModal} detailData={selectedData} />}
-      </Fragment>
+    </Fragment>
   )
 }
 

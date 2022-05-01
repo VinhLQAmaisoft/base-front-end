@@ -105,7 +105,21 @@ const OrderManage = () => {
         if (sortOption) {
             let tempPrd = JSON.parse(JSON.stringify(activeOrder))
             setActiveOrder([]);
-            tempPrd = tempPrd.sort((a, b) => (a[sortOption.key] - b[sortOption.key]) * sortOption.value)
+            tempPrd = tempPrd.sort((a, b) => {
+                if (sortOption.key != 'product.length')
+                    return (a[sortOption.key] - b[sortOption.key]) * sortOption.value
+                else {
+                    let aTotal = 0, bTotal = 0;
+                    a.product.forEach((prd) => {
+                        aTotal += parseInt(prd.quantity)
+                    })
+                    b.product.forEach((prd) => {
+                        bTotal += parseInt(prd.quantity)
+                    })
+                    console.log(aTotal +" - "+ bTotal)
+                    return (aTotal - bTotal) * sortOption.value
+                }
+            })
             setTimeout(() => setActiveOrder(tempPrd), 1)
         }
     }, [sortOption])
@@ -125,16 +139,6 @@ const OrderManage = () => {
 
 
     const sortOptions = [
-        {
-            key: "createAt",
-            value: -1,
-            label: "Mới nhất"
-        },
-        {
-            key: "createAt",
-            value: 1,
-            label: "Cũ nhất"
-        },
         {
             key: "updateAt",
             value: -1,

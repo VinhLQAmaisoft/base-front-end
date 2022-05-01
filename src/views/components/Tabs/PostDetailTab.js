@@ -16,7 +16,7 @@ export default function PostDetailTab(props) {
     const [selectedComment, setSelectedComment] = useState({})
     const [commentRender, setCommentRender] = useState([])
 
-    const [timer, setTimer] = useState(120);
+    const [timer, setTimer] = useState(60);
     const [cookie, setCookie] = React.useState('');
     const [token, setToken] = React.useState('');
     useEffect(() => {
@@ -53,7 +53,7 @@ export default function PostDetailTab(props) {
     useEffect(() => {
         console.log("Init Interval Task!!!!!!!!!!!!!!!!!!!")
         let x = setCounter()
-        let y = createScanInterval(120)
+        let y = createScanInterval(60)
 
         return () => {
             console.log("Leave Page!!!!!!!!!!!!!!!y!!!!")
@@ -135,8 +135,8 @@ export default function PostDetailTab(props) {
             let comment = document.getElementById('isCommentDot').value
             let scan = document.getElementById('isScanComment').value
             let now = new Date()
-            if (scan) {
-                console.log(`${now.toLocaleString()} Bắt Đầu Quét ${isScan}`)
+            console.log(`${now.toLocaleString()} Bắt Đầu Quét ${scan}`)
+            if (scan == 'true') {
                 await CommentServices.scanComment({
                     postId: post._id
                 }).then(data => {
@@ -146,8 +146,8 @@ export default function PostDetailTab(props) {
                         setIsComment(false);
                     } else {
                         let now2 = new Date()
-                        if (comment) {
-                            console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài ${isComment}`)
+                        if (comment=='true') {
+                            console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài ${comment}`)
                             CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
                         }
                     }
@@ -451,7 +451,7 @@ export default function PostDetailTab(props) {
                                 id="content"
                                 name="text"
                                 type="textarea"
-                                defaultValue={post.content.replace('#3SF','')}
+                                defaultValue={post.content.replace('#3SF', '')}
                                 style={{ minHeight: '200px', marginBottom: '5px' }}
                                 editable="true"
                                 className="mb-1"

@@ -229,7 +229,7 @@ const PostManage = () => {
         </Col>
       </Row>
       <Row>
-        {postData.length == 0 && (<Row><Col sm="12" className="text-center"><Spinner animation="border" variant="primary" /></Col></Row>)}
+        {postData?.length == 0 && (<Row><Col sm="12" className="text-center"><Spinner animation="border" variant="primary" /></Col></Row>)}
         {renderPostCard(postData)}
       </Row>
       {selectedPost && <PostDetailModal post={selectedPost} open={modal} handleModal={handleModal} />}
