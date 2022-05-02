@@ -137,6 +137,7 @@ const Login = () => {
     }*/
   }, [currentUser, isAuth])
 
+  // console.log)
 
   return (
     <div className='auth-wrapper auth-cover'>
