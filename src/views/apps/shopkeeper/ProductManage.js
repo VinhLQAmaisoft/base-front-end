@@ -86,14 +86,14 @@ export default function ProductManage() {
     }, {
         name: 'Từ Khóa',
         sortable: true,
-        minWidth: '200px',
+        minWidth: '100px',
         selector: row => row.keyword.length,
-        format: row => renderKeywords(row.keyword)
+        format: row => renderKeywords(row.keyword.slice(0,3))
 
     }, {
         name: 'Hành Động',
         sortable: false,
-        minWidth: '200px',
+        minWidth: '100px',
         selector: row => {
             return (
                 <Fragment>

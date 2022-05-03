@@ -59,12 +59,10 @@ const OrderManage = () => {
             if (data.data.data) {
                 let shippers = data.data.data.filter(job => job.status == 'accepted').map(job => job.shipper);
                 setShipperOptions(shippers)
-                console.log("My Shipper: ", shippers)
             }
         })
 
         ProductServices.getProduct('').then(data => {
-            // console.log("My Products: ", data.data.data)
             setProducts(data.data.data)
         })
         OrderServices.getOrder('').then(data => {
@@ -78,22 +76,18 @@ const OrderManage = () => {
             }
         })
         intervalTask = setInterval(() => {
-            console.log("Cập nhật đơn hàng!");
             OrderServices.getOrder('').then(data => {
                 let OrderData = []
                 if (data.data.data) {
                     OrderData = data.data.data
                     let doneOrder = OrderData.filter(order => ["cancel", "done"].includes(order.status))
                     setDeactivateOrder(doneOrder)
-                    // setDisplayOrder(getCurrentTableData(doneOrder))
                     setActiveOrder(OrderData.filter(order => ["created", "ready", "shipping"].includes(order.status)))
                 }
             })
         }, 5000)
         return () => {
-            console.log("Rời Order Manage")
             if (intervalTask) {
-                console.log("Hủy Interval Task")
                 window.clearInterval(intervalTask)
             }
         }
@@ -101,7 +95,6 @@ const OrderManage = () => {
 
     // Cập nhật thứ tự bảng khi sắp xếp  
     useEffect(() => {
-        console.log(`Sort by - ${sortOption.key} -  - ${sortOption.value} `,)
         if (sortOption) {
             let tempPrd = JSON.parse(JSON.stringify(activeOrder))
             setActiveOrder([]);
@@ -116,7 +109,6 @@ const OrderManage = () => {
                     b.product.forEach((prd) => {
                         bTotal += parseInt(prd.quantity)
                     })
-                    console.log(aTotal +" - "+ bTotal)
                     return (aTotal - bTotal) * sortOption.value
                 }
             })
@@ -126,8 +118,6 @@ const OrderManage = () => {
 
     // Phân Trang Bảng
     useEffect(() => {
-        console.log("Current Page: " + currentPage)
-        console.log("Page Size: " + pageSize)
         // setDisplayOrder(getCurrentTableData(deactivateOrder))
 
     }, [currentPage])

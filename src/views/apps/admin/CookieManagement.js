@@ -114,7 +114,6 @@ const CookieManagement = () => {
 
     if (value.length) {
       updatedData = cookieData.filter(item => {
-        console.log(item)
         const includes =
           item.data.toLowerCase().includes(value.toLowerCase()) ||
           item.dtsg.toLowerCase().includes(value.toLowerCase()) ||
@@ -238,7 +237,6 @@ const CookieManagement = () => {
 
   const deleteCookieClicked = () => {
     dispatch(deleteCookie({ uid: selectedData.uid }))
-    console.log(selectedData)
   }
 
 
@@ -255,7 +253,6 @@ const CookieManagement = () => {
   ];
 
   const onUpdateSubmit = e => {
-    console.log(updatedCookie)
     if (updatedCookie != '') {
       dispatch(updateCookie({ cookie: updatedCookie, uid: selectedData.uid }))
     } else {
@@ -268,18 +265,15 @@ const CookieManagement = () => {
   }
 
   const onAddSubmit = e => {
-    console.log(newCookie)
     if (newCookie != '') {
       dispatch(createNewCookie({ cookie: newCookie }))
     } else {
-      console.log('Rong')
     }
     e.preventDefault()
   }
 
   useEffect(() => {
     if (deletedCookie == null && deleteCookieResult == false) {
-      console.log('csadcsd')
     } else {
       if (deletedCookie.data == null && deleteCookieResult == true) {
         toast.error(
@@ -299,7 +293,6 @@ const CookieManagement = () => {
 
   useEffect(() => {
     if (cookieUpdated == null && updatedCookieResult == false) {
-      console.log('csadcsd')
     } else {
       if (cookieUpdated.data == null && updatedCookieResult == true) {
         toast.error(
@@ -314,13 +307,11 @@ const CookieManagement = () => {
         dispatch(getAllCookie())
       }
     }
-    console.log(cookieResult)
   }, [cookieUpdated, updatedCookieResult])
 
 
   useEffect(() => {
     if (cookieResult == null && createCookieResult == false) {
-      console.log('csadcsd')
     } else {
       if (cookieResult.data == null && createCookieResult == true) {
         toast.error(
@@ -335,7 +326,6 @@ const CookieManagement = () => {
         dispatch(getAllCookie())
       }
     }
-    console.log(cookieResult)
   }, [cookieResult, createCookieResult])
 
   useEffect(() => {
@@ -349,7 +339,6 @@ const CookieManagement = () => {
         return { id: item._id, data: item.data, dtsg: item.dtsg, uid: item.uid, token: item.token, status: item.status, toggleSelected: false }
       })
       setCookieData(data)
-      console.log(allCookie)
     }
   }, [getResult, allCookie])
 

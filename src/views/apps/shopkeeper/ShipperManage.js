@@ -43,7 +43,7 @@ export default function ProductManage() {
             fullname.value = selectedShipper.fullname
             email.value = selectedShipper.email
             phone.value = selectedShipper.phone
-            createAt.value = formatTimeStamp(selectedShipper.jobs.createAt)
+            createAt.value = formatTimeStamp(selectedShipper.createAt)
             ShipperServices.getShipperDetail({ id: selectedShipper._id }).then((data) => {
                 if (data.data.data) {
                     orderCount.value = data.data.data.orderCount;
@@ -78,7 +78,7 @@ export default function ProductManage() {
         sortable: true,
         minWidth: '50px',
         selector: row => row.createAt,
-        format: row => row.createAt != 'Chưa đồng ý' ? formatTimeStamp(row.jobs.createAt) : row.createAt
+        format: row => row?.createAt != 'Chưa đồng ý' ? formatTimeStamp(row?.createAt) : row?.createAt
 
     }, {
         name: 'Hành Động',
@@ -257,7 +257,7 @@ export default function ProductManage() {
                                 </Col>
                                 <Col>
                                     <Label className="text-primary">Ngày Tham Gia</Label>
-                                    <Input id="d-jobs-createAt" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper?.jobs && formatTimeStamp(selectedShipper?.jobs.createAt)} />
+                                    <Input id="d-jobs-createAt" type='text' placeholder="Mời Chọn Shipper" disabled={true} defaultValue={selectedShipper && formatTimeStamp(selectedShipper.createAt)} />
                                 </Col>
                             </Row>
                         </CardBody>

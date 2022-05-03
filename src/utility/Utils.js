@@ -179,6 +179,9 @@ export const formatMoney = (str) => {
 }
 
 export const formatTimeStamp = (timestamp) => {
+  if (timestamp == "Chưa đồng ý") {
+    return timestamp
+  }
   if (typeof timestamp == "string") {
     let result = timestamp.split('.')[0].replace('_', '  ').replace('T', '  ')
     return result

@@ -186,21 +186,13 @@ const CustomerManagement = () => {
     const value = e.target.value
     let updatedData = []
     setSearchValue(value)
-
     if (value.length) {
       updatedData = customerData.filter(item => {
-        console.log(item.address)
         const includes =
-          item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
+          item.fullname.filter(i => i.toLowerCase().includes(value.toLowerCase())).length > 0 ||
           item.fbid.toLowerCase().includes(value.toLowerCase()) ||
-          item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())) ||
-          item.address.filter(i => {
-            console.log(i)
-            i.toLowerCase().includes(value.toLowerCase())
-          }) ||
-          item.order.toLowerCase().includes(value.toLowerCase()) ||
-          item.total.toLowerCase().includes(value.toLowerCase())
-        console.log(includes)
+          item.phone.filter(i => i.toLowerCase().includes(value.toLowerCase())).length > 0 ||
+          item.address.filter(i => i.toLowerCase().includes(value.toLowerCase())).length > 0
         if (includes) {
           return includes
         } else return null
@@ -373,7 +365,6 @@ const CustomerManagement = () => {
 
     setModal(!modal)
     setSelectedData(row)
-    console.log(row)
   };
 
   useEffect(() => {
@@ -392,7 +383,6 @@ const CustomerManagement = () => {
   }, [getResult, allCustomer])
 
   useEffect(() => {
-    console.log(getCustomerOrderResult, allCustomerOrder)
     if (getCustomerOrderResult == true && allCustomerOrder.data !== null) {
       if (allCustomerOrder.data != null) {
         alert.success(allCustomerOrder.message)

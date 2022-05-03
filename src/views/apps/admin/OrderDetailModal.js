@@ -26,7 +26,6 @@ import { formatTimeStamp, alert, formatMoney } from '../../../utility/Utils'
 
 const OrderDetailModal = ({ show, setShow, detailData }) => {
 
-    console.log("Selected Order: ", detailData)
 
     function renderProduct() {
         let index = 1;

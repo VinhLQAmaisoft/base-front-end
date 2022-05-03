@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { ShipperServices, OrderServices } from '@services'
-import { formatMoney, formatTimeStamp,alert } from '@utils'
+import { formatMoney, formatTimeStamp, alert } from '@utils'
 import { Badge, Button, Card, CardBody, CardFooter, CardTitle, CardSubtitle, CardHeader, Col, Input, Label, Row } from 'reactstrap'
 import Chart from 'react-apexcharts'
 import Flatpickr from 'react-flatpickr'
@@ -15,6 +15,7 @@ import '@styles/react/libs/charts/apex-charts.scss'
 
 export default function ProductManage() {
     const [modal, setModal] = useState(false)
+    const [random, setRandom] = useState(true)
     const [currentPage, setCurrentPage] = useState(0)
     const [products, setProducts] = useState([])
     const [orders, setOrders] = useState([])
@@ -34,17 +35,15 @@ export default function ProductManage() {
         OrderServices.getOrder('').then(data => {
             let OrderData = []
             if (data.data.data) {
-                alert.success(data.data.message)
+                // alert.success(data.data.message)
                 OrderData = data.data.data
                 setOrders(OrderData)
                 let newProducts = []
                 for (const order of OrderData) {
-                    console.log("Đơn hàng : ", order.product.length, " - ", order.status)
                     if (
                         order.status == 'done'
                     ) {
                         for (const data of order.product) {
-                            console.log("Sản phẩm : ", data)
                             let isExist = newProducts.filter(prd => prd.title === data.product.title && prd.price === data.product.price)
                             if (isExist.length > 0) {
                                 isExist[0].saleCount += parseInt(data.quantity)
@@ -54,14 +53,13 @@ export default function ProductManage() {
                         }
                     }
                 }
-                console.log("Số sản phẩm tìm thấy: ", newProducts.length)
                 setProducts(newProducts)
             } else {
-                alert.error(data.data.message)
+                // alert.error(data.data.message)
             }
             ShipperServices.getShipper().then(data => {
                 if (data.data.data) {
-                    alert.success(data.data.message)
+                    // alert.success(data.data.message)
                     for (let shipper of data.data.data) {
                         let count = 0;
                         let salary = 0;
@@ -74,10 +72,10 @@ export default function ProductManage() {
                         shipper.orderCount = count;
                         shipper.salary = salary;
                     }
-                    setShippers(data.data.data)
+                    let validShipper = data.data.data.filter(shipper => typeof shipper.createAt != 'String')
+                    setShippers(validShipper)
                 } else {
-                    console.log('!!!!!!!!!!!')
-                    alert.error(data.data.message)
+                    // alert.error(data.data.message)
                 }
             })
         })
@@ -130,7 +128,7 @@ export default function ProductManage() {
         sortable: true,
         minWidth: '50px',
         selector: row => row.jobs.createAt,
-        format: row => formatTimeStamp(row.jobs.createAt)
+        format: row => formatTimeStamp(row.createAt)
 
     }, {
         name: 'Số đơn đã ship',
@@ -169,15 +167,11 @@ export default function ProductManage() {
     ]
 
     useEffect(() => {
-        console.log("Time Range 1: ", timeRange)
         setXAxis(getDates(timeRange[0].getTime(), timeRange[1].getTime()))
         getFigure(timeRange[0].getTime(), timeRange[1].getTime())
-        console.log("Order Figure: ", orderFigure)
-        console.log("Product Figure: ", productFigure)
-        console.log("Revenue Figure: ", revenueFigure)
         getShipperFigure()
         getProductFigure()
-    }, [timeRange])
+    }, [timeRange, random])
     // ** Chart Options
     const areaColors = {
         series3: '#a4f8cd95',
@@ -417,7 +411,6 @@ export default function ProductManage() {
         var dateArray = [];
         // Phân tích theo ngày
         if (startTimeStamp !== stopTimeStamp) {
-            console.log("Case 1: " + startTimeStamp + " - " + stopTimeStamp)
             var currentDate = new Date(startTimeStamp);
             var stopDate = new Date(stopTimeStamp)
             while (currentDate <= stopDate) {
@@ -426,7 +419,6 @@ export default function ProductManage() {
             }
         } else {//phân tích theo giờ
             if (startTimeStamp == stopTimeStamp) {
-                console.log("Case 2")
                 var currentDate = new Date(startTimeStamp);
                 var stopDate = new Date(stopTimeStamp)
                 currentDate.setHours(0)
@@ -442,7 +434,6 @@ export default function ProductManage() {
             }
 
         }
-        console.log("Date Arr: ", dateArray);
 
         return dateArray;
     }
@@ -459,7 +450,6 @@ export default function ProductManage() {
         // Phân tích theo ngày
         if (startTimeStamp !== stopTimeStamp) {
             let currentTime = startTimeStamp;
-            console.log("New Day: ", startTimeStamp, stopTimeStamp)
             while (currentTime <= stopTimeStamp + aDay) {
                 orderData.push(countOrderByDate(currentTime, currentTime + aDay))
                 productData.push(countProductByDate(currentTime, currentTime + aDay))
@@ -491,7 +481,7 @@ export default function ProductManage() {
     function countOrderByDate(start, stop) {
         let validOrder = orders.filter(order => order.createAt >= start && order.createAt <= stop);
         // Fake Data
-        return Math.floor(Math.random() * 100 + 5)
+        if (random) return Math.floor(Math.random() * 100 + 5)
         return parseInt(validOrder.length)
     }
 
@@ -505,7 +495,7 @@ export default function ProductManage() {
             }
         });
         //   Fake Data
-        count = Math.floor(Math.random() * 100 + 5)
+        if (random) count = Math.floor(Math.random() * 100 + 5)
         return count
     }
 
@@ -519,7 +509,7 @@ export default function ProductManage() {
             }
         });
         //   Fake Data
-        total = Math.floor(Math.random() * 1000000 + 100000)
+        if (random) total = Math.floor(Math.random() * 1000000 + 100000)
         return total
     }
 
@@ -535,7 +525,12 @@ export default function ProductManage() {
                                 <CardTitle className='mb-75' tag='h4'>
                                     Thống kê doanh thu
                                 </CardTitle>
-                                <CardSubtitle className='text-muted'>Thống kê Doanh Thu Bán Hàng</CardSubtitle>
+                                <CardSubtitle className='text-muted'>Thống kê Doanh Thu Bán Hàng
+                                    <Input className='ms-1' type="checkbox" checked={random} onChange={() => { setRandom(!random) }} />
+                                    <Label>
+                                        Gen số liệu?
+                                    </Label>
+                                </CardSubtitle>
                             </Col>
                             <Col sm={3} className='d-flex align-items-center mt-md-0 mt-1'>
                                 <Calendar size={17} />
@@ -551,8 +546,6 @@ export default function ProductManage() {
                                         if (!to) {
                                             to = from
                                         }
-                                        console.log("From Time: ", new Date(from).getTime())
-                                        console.log("To Time: ", new Date(to).getTime())
                                         setTimeRange([from, to])
                                     }}
                                 />

@@ -90,14 +90,15 @@ export default function CreatePostTab(props) {
         let content = document.getElementById("upload-content").value
         let shipCost = parseInt(document.getElementById("shipCost").value);
         if (!shipCost || isNaN(shipCost) || shipCost < 1000) {
+            setLoading(false)
             return alert.error("Phí ship không hợp lệ")
         }
-        console.log("Bài viết mới:")
         if (content != "" && selectedProducts.length > 0 && selectedGroup) {
-            PostServices.uploadPost({
+            await PostServices.uploadPost({
                 content: content + '\n #3SF',
                 group: selectedGroup,
                 products: selectedProducts,
+                shipCost,
                 attachments
             }).then(data => {
                 if (data.data.data) {

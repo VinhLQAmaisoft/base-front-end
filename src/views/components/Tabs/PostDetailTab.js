@@ -146,7 +146,7 @@ export default function PostDetailTab(props) {
                         setIsComment(false);
                     } else {
                         let now2 = new Date()
-                        if (comment=='true') {
+                        if (comment == 'true') {
                             console.log(`${now2.toLocaleString()} Bắt Đầu Chấm Bài ${comment}`)
                             CommentServices.createComment({ content: baseDot[Math.floor(Math.random() * baseDot.length)], postId: post.fb_id })
                         }
@@ -307,7 +307,7 @@ export default function PostDetailTab(props) {
 
                                 </Col>
                             </Row>
-                            <p style={{color:'#2d4059'}} >{comment.content}</p>
+                            <p style={{ color: '#2d4059' }} >{comment.content}</p>
                         </CardBody>
                         <CardFooter>
                             {match > 0 && comment.type == 0 && <Button color="success" size="sm" outline={true} onClick={() => createOrder(comment)} className="create-button me-1">
@@ -436,8 +436,8 @@ export default function PostDetailTab(props) {
                                 }} /> */}
                         </Col >
                         <Col sm="12" className="d-flex mb-1">
-                            <Label className="text-dark fs-5 me-1">Group đăng bài: </Label>
-                            <a href={`https://facebook.com/${post.group.groupId}`} target="_blank" className="text-info fs-6">{post.group.name}</a>
+                            <Label className="text-dark fs-5 me-1">Giá ship/đơn hàng: </Label>
+                            <b>{formatMoney(post.shipCost)}</b>
                         </Col >
                         {/* NỘI DUNG */}
                         <Col sm="12" className="mb-2">
