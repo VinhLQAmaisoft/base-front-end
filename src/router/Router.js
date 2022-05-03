@@ -266,8 +266,9 @@ const Router = () => {
             if (userData != null) {
               return <Redirect to={DefaultRoute(userData.type)} />
             } else {
-              return <Redirect to='/misc/not-authorized' />
+              return <Redirect to='/login' />
             }
+            // return <Redirect to={DefaultRoute(userData.type)} />
           }}
         />
         {/* Not Auth Route */}

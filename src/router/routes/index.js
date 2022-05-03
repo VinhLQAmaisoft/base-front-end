@@ -31,7 +31,15 @@ const Routes = [
     path: '/error',
     component: lazy(() => import('../../views/Error')),
     layout: 'BlankLayout'
-  }
+  },
+  // {
+  //   path: '/login',
+  //   component: lazy(() => import('../../views/pages/authentication/Login')),
+  //   layout: 'BlankLayout',
+  //   meta: {
+  //     authRoute: true
+  //   }
+  // },
 ]
 
 const outsiderRoutes = [
