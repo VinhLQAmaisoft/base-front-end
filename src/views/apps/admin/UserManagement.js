@@ -542,16 +542,10 @@ const UserManagement = () => {
                 <Flatpickr id='date-time-picker' className='form-control' defaultValue={selectedData.birthdate} onChange={(date) => setBirthDate(date)} />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
-                <Label className='form-label' for='passwordMulti'>
-                  Mật khẩu
-                </Label>
-                <Input type='password' name='password' id='passwordMulti' placeholder='Mật khẩu' value={selectedData.password} disabled/>
-              </Col>
-              <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='ownerMulti'>
                   Người chủ
                 </Label>
-                <Input type='text' name='owner' id='ownerMulti' placeholder='Người quản lý' value={selectedData?.jobs == undefined ? '' : selectedData?.jobs[0].owner} disabled />
+                <Input type='text' name='owner' id='ownerMulti' placeholder='Người quản lý' value={selectedData?.jobs == undefined ? '' : selectedData?.jobs[0]?.owner} disabled />
               </Col>
               <Col md='6' sm='12' className='mb-1'>
                 <Label className='form-label' for='postMulti'>
