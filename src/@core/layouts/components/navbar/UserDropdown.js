@@ -18,6 +18,7 @@ import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from
 // ** Default Avatar Image
 import shipperAvatar from '@src/assets/images/portrait/small/cute-shipper-avatar.jpg'
 import shopkeeperAvatar from '@src/assets/images/portrait/small/cute-shopkeeper-avatar.jpg'
+import adminAvatar from '@src/assets/images/portrait/small/cute-admin-avatar.jpg'
 import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
 
 const UserDropdown = () => {
@@ -34,7 +35,7 @@ const UserDropdown = () => {
     userAvatar = shopkeeperAvatar
   } else if (userData.type === 2) {
     role = 'Admin'
-    userAvatar = shipperAvatar
+    userAvatar = adminAvatar
   } else {
     role = ''
     userAvatar = defaultAvatar

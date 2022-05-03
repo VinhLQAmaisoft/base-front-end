@@ -60,7 +60,7 @@ const ToastErrorContent = () => (
 
 const roleOptions = [
   { value: '1', label: 'Chủ cửa hàng' },
-  { value: '2', label: 'Người giao hàng' },
+  { value: '0', label: 'Người giao hàng' },
 ]
 
 const Register = () => {
