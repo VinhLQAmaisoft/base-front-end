@@ -61,6 +61,7 @@ const Login = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const { currentUser, isAuth } = useSelector(state => state.auth);
+  const [clicked, setClicked] = useState(false)
   const {
     control,
     setError,
@@ -86,18 +87,19 @@ const Login = () => {
         }
       }
     }
+    setClicked(true)
     // console.log(data)
   }
 
   useEffect(() => {
     if (currentUser !== null && isAuth == true) {
-      if (currentUser.data == null) {
+      if (currentUser.data == null && clicked == true) {
         toast.error(
           <ToastErrorContent name='lỗi' content={currentUser.message} />,
           { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
         )
         setLoading(false)
-      } else {
+      } else if (currentUser.data != null) {
         setCookie('token', currentUser.data.token, 99)
         const userData = {
           fullname: currentUser.data.fullname,
@@ -137,6 +139,7 @@ const Login = () => {
     }*/
   }, [currentUser, isAuth])
 
+  console.log(currentUser, isAuth, clicked)
 
   return (
     <div className='auth-wrapper auth-cover'>
